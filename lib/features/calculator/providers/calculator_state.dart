@@ -1,5 +1,6 @@
 class CalculatorState {
-  final String expression;
+  final List<String> tokens;
+  final int cursorIndex;
   final String preview;
   final String result;
   final bool isScientificMode;
@@ -12,8 +13,11 @@ class CalculatorState {
   final bool hasMemory;
   final String? error;
 
+  String get expression => tokens.join('');
+
   const CalculatorState({
-    this.expression = '',
+    this.tokens = const [],
+    this.cursorIndex = 0,
     this.preview = '',
     this.result = '',
     this.isScientificMode = false,
@@ -28,7 +32,8 @@ class CalculatorState {
   });
 
   CalculatorState copyWith({
-    String? expression,
+    List<String>? tokens,
+    int? cursorIndex,
     String? preview,
     String? result,
     bool? isScientificMode,
@@ -43,7 +48,8 @@ class CalculatorState {
     bool clearError = false,
   }) {
     return CalculatorState(
-      expression: expression ?? this.expression,
+      tokens: tokens ?? this.tokens,
+      cursorIndex: cursorIndex ?? this.cursorIndex,
       preview: preview ?? this.preview,
       result: result ?? this.result,
       isScientificMode: isScientificMode ?? this.isScientificMode,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/features/calculator/providers/calculator_provider.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/widgets/token_text_field.dart';
 
 class DisplayPanel extends ConsumerWidget {
   const DisplayPanel({super.key});
@@ -19,16 +20,7 @@ class DisplayPanel extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           // Expression
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            reverse: true,
-            child: Text(
-              state.expression,
-              style: theme.textTheme.headlineMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
+          const TokenTextField(),
           const SizedBox(height: 8),
           
           // Error or Preview

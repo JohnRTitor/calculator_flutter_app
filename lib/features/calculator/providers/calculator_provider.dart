@@ -22,9 +22,11 @@ class Calculator extends _$Calculator {
 
   void append(String text) {
     if (state.showResult) {
-      state = state.copyWith(expression: state.result + text, showResult: false, clearError: true, preview: '');
+      state = state.copyWith(tokens: [text], cursorIndex: 1, showResult: false, clearError: true, preview: '');
     } else {
-      state = state.copyWith(expression: state.expression + text, clearError: true);
+      final newTokens = List<String>.from(state.tokens);
+      newTokens.insert(state.cursorIndex, text);
+      state = state.copyWith(tokens: newTokens, cursorIndex: state.cursorIndex + 1, clearError: true);
     }
     _updatePreview();
   }
@@ -34,12 +36,21 @@ class Calculator extends _$Calculator {
       state = state.copyWith(showResult: false, clearError: true, preview: '');
       return;
     }
-    if (state.expression.isNotEmpty) {
+    if (state.tokens.isNotEmpty && state.cursorIndex > 0) {
+      final newTokens = List<String>.from(state.tokens);
+      newTokens.removeAt(state.cursorIndex - 1);
       state = state.copyWith(
-        expression: state.expression.substring(0, state.expression.length - 1),
+        tokens: newTokens,
+        cursorIndex: state.cursorIndex - 1,
         clearError: true,
       );
       _updatePreview();
+    }
+  }
+
+  void setCursor(int index) {
+    if (index >= 0 && index <= state.tokens.length) {
+      state = state.copyWith(cursorIndex: index);
     }
   }
 
