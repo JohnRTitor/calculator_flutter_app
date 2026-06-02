@@ -13,7 +13,16 @@ class CalculatorScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(''),
+        title: TextButton.icon(
+          onPressed: () {
+            ref.read(calculatorProvider.notifier).toggleScientificMode();
+          },
+          icon: Icon(ref.watch(calculatorProvider).isScientificMode ? Icons.science : Icons.science_outlined, size: 18),
+          label: Text(ref.watch(calculatorProvider).isScientificMode ? 'Scientific' : 'Standard'),
+          style: TextButton.styleFrom(
+            foregroundColor: Theme.of(context).colorScheme.primary,
+          ),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
@@ -27,12 +36,6 @@ class CalculatorScreen extends ConsumerWidget {
             icon: const Icon(Icons.settings),
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
-            },
-          ),
-          IconButton(
-            icon: Icon(ref.watch(calculatorProvider).isScientificMode ? Icons.science : Icons.science_outlined),
-            onPressed: () {
-              ref.read(calculatorProvider.notifier).toggleScientificMode();
             },
           ),
         ],
