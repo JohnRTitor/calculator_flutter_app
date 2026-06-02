@@ -145,12 +145,19 @@ class RustBuilder {
   Future<String> build() async {
     final extraArgs = _buildOptions?.flags ?? [];
     final manifestPath = path.join(environment.manifestDir, 'Cargo.toml');
+    final rustupPath = Rustup.executablePath();
+    final executable = rustupPath != null ? 'rustup' : 'cargo';
+    final cmdArgs = <String>[
+      if (rustupPath != null) ...['run', _toolchain, 'cargo'],
+      (target.android == null && environment.glibcVersion != null)
+          ? 'zigbuild'
+          : 'build',
+    ];
+    
     runCommand(
-      'cargo',
+      executable,
       [
-        (target.android == null && environment.glibcVersion != null)
-            ? 'zigbuild'
-            : 'build',
+        ...cmdArgs,
         ...extraArgs,
         '--manifest-path',
         manifestPath,

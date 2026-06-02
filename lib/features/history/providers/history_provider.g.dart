@@ -20,7 +20,7 @@ final class HistoryProvider
         argument: null,
         retry: null,
         name: r'historyProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -33,7 +33,7 @@ final class HistoryProvider
   History create() => History();
 }
 
-String _$historyHash() => r'1a0ba15c103bdcdd0843b74172c2d1cf8c0d8069';
+String _$historyHash() => r'332da9d9b4777e84981f2f74a2b136ab305b5beb';
 
 abstract class _$History extends $AsyncNotifier<List<HistoryEntry>> {
   FutureOr<List<HistoryEntry>> build();

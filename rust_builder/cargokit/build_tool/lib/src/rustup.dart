@@ -69,6 +69,11 @@ class Rustup {
       ?.targets;
 
   static List<_Toolchain> _getInstalledToolchains() {
+    if (executablePath() == null) {
+      // Fallback for NixOS: assume stable toolchain with system targets
+      return [_Toolchain('stable', _getInstalledTargets('stable'))];
+    }
+
     String extractToolchainName(String line) {
       // ignore (default) after toolchain name
       final parts = line.split(' ');
@@ -98,6 +103,30 @@ class Rustup {
   }
 
   static List<String> _getInstalledTargets(String toolchain) {
+    if (executablePath() == null) {
+      // Fallback for NixOS: Check rustlib directory directly and intersect with target-list
+      final sysrootRes = runCommand("rustc", ["--print", "sysroot"]);
+      final sysroot = sysrootRes.stdout.toString().trim();
+      final rustlibDir = Directory(path.join(sysroot, "lib", "rustlib"));
+      
+      if (rustlibDir.existsSync()) {
+        final targetListRes = runCommand("rustc", ["--print", "target-list"]);
+        final validTargets = targetListRes.stdout
+            .toString()
+            .split('\n')
+            .where((e) => e.isNotEmpty)
+            .toSet();
+
+        return rustlibDir
+            .listSync()
+            .whereType<Directory>()
+            .map((e) => path.basename(e.path))
+            .where((target) => validTargets.contains(target))
+            .toList(growable: true);
+      }
+      return [];
+    }
+
     final res = runCommand("rustup", [
       'target',
       'list',

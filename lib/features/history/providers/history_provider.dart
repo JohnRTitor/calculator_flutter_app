@@ -6,7 +6,7 @@ import 'package:calculator_flutter_app/src/rust/history.dart';
 
 part 'history_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class History extends _$History {
   @override
   Future<List<HistoryEntry>> build() async {
