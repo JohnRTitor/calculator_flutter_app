@@ -11,6 +11,10 @@ class CalculatorScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isSci = ref.watch(calculatorProvider).isScientificMode;
+    final isMem = ref.watch(calculatorProvider).isMemoryMode;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -19,10 +23,11 @@ class CalculatorScreen extends ConsumerWidget {
               onPressed: () {
                 ref.read(calculatorProvider.notifier).toggleScientificMode();
               },
-              icon: Icon(ref.watch(calculatorProvider).isScientificMode ? Icons.science : Icons.science_outlined, size: 18),
-              label: Text(ref.watch(calculatorProvider).isScientificMode ? 'Scientific' : 'Standard'),
+              icon: Icon(isSci ? Icons.science : Icons.science_outlined, size: 18),
+              label: Text(isSci ? 'Scientific' : 'Standard'),
               style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: isSci ? colorScheme.onSecondaryContainer : colorScheme.primary,
+                backgroundColor: isSci ? colorScheme.secondaryContainer : Colors.transparent,
               ),
             ),
             const SizedBox(width: 8),
@@ -30,10 +35,11 @@ class CalculatorScreen extends ConsumerWidget {
               onPressed: () {
                 ref.read(calculatorProvider.notifier).toggleMemoryMode();
               },
-              icon: Icon(ref.watch(calculatorProvider).isMemoryMode ? Icons.memory : Icons.memory_outlined, size: 18),
-              label: Text(ref.watch(calculatorProvider).isMemoryMode ? 'Memory' : 'Memory'),
+              icon: Icon(isMem ? Icons.memory : Icons.memory_outlined, size: 18),
+              label: const Text('Memory'),
               style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: isMem ? colorScheme.onSecondaryContainer : colorScheme.primary,
+                backgroundColor: isMem ? colorScheme.secondaryContainer : Colors.transparent,
               ),
             ),
           ],
