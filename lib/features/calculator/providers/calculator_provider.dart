@@ -44,11 +44,15 @@ class Calculator extends _$Calculator {
   }
 
   void clear() {
-    state = CalculatorState(isScientificMode: state.isScientificMode, hasMemory: state.hasMemory);
+    state = CalculatorState(isScientificMode: state.isScientificMode, isMemoryMode: state.isMemoryMode, hasMemory: state.hasMemory);
   }
 
   void toggleScientificMode() {
     state = state.copyWith(isScientificMode: !state.isScientificMode);
+  }
+
+  void toggleMemoryMode() {
+    state = state.copyWith(isMemoryMode: !state.isMemoryMode);
   }
 
   void _updatePreview() {

@@ -13,15 +13,30 @@ class CalculatorScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: TextButton.icon(
-          onPressed: () {
-            ref.read(calculatorProvider.notifier).toggleScientificMode();
-          },
-          icon: Icon(ref.watch(calculatorProvider).isScientificMode ? Icons.science : Icons.science_outlined, size: 18),
-          label: Text(ref.watch(calculatorProvider).isScientificMode ? 'Scientific' : 'Standard'),
-          style: TextButton.styleFrom(
-            foregroundColor: Theme.of(context).colorScheme.primary,
-          ),
+        title: Row(
+          children: [
+            TextButton.icon(
+              onPressed: () {
+                ref.read(calculatorProvider.notifier).toggleScientificMode();
+              },
+              icon: Icon(ref.watch(calculatorProvider).isScientificMode ? Icons.science : Icons.science_outlined, size: 18),
+              label: Text(ref.watch(calculatorProvider).isScientificMode ? 'Scientific' : 'Standard'),
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            const SizedBox(width: 8),
+            TextButton.icon(
+              onPressed: () {
+                ref.read(calculatorProvider.notifier).toggleMemoryMode();
+              },
+              icon: Icon(ref.watch(calculatorProvider).isMemoryMode ? Icons.memory : Icons.memory_outlined, size: 18),
+              label: Text(ref.watch(calculatorProvider).isMemoryMode ? 'Memory' : 'Memory'),
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ],
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,

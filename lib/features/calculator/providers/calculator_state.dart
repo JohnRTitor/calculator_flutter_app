@@ -3,6 +3,7 @@ class CalculatorState {
   final String preview;
   final String result;
   final bool isScientificMode;
+  final bool isMemoryMode;
   final bool showResult;
   final bool hasMemory;
   final String? error;
@@ -12,6 +13,7 @@ class CalculatorState {
     this.preview = '',
     this.result = '',
     this.isScientificMode = false,
+    this.isMemoryMode = false,
     this.showResult = false,
     this.hasMemory = false,
     this.error,
@@ -22,6 +24,7 @@ class CalculatorState {
     String? preview,
     String? result,
     bool? isScientificMode,
+    bool? isMemoryMode,
     bool? showResult,
     bool? hasMemory,
     String? error,
@@ -32,6 +35,7 @@ class CalculatorState {
       preview: preview ?? this.preview,
       result: result ?? this.result,
       isScientificMode: isScientificMode ?? this.isScientificMode,
+      isMemoryMode: isMemoryMode ?? this.isMemoryMode,
       showResult: showResult ?? this.showResult,
       hasMemory: hasMemory ?? this.hasMemory,
       error: clearError ? null : (error ?? this.error),

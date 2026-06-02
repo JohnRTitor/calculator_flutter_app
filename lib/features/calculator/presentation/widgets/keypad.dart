@@ -17,7 +17,7 @@ class Keypad extends ConsumerWidget {
       child: Column(
         children: [
           // Memory Row
-          if (state.hasMemory || isSci)
+          if (state.isMemoryMode)
             Expanded(
               flex: 1,
               child: Row(
