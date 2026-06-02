@@ -15,11 +15,21 @@ pub enum Token {
     Sin,
     Cos,
     Tan,
+    Asin,
+    Acos,
+    Atan,
+    Sinh,
+    Cosh,
+    Tanh,
+    Asinh,
+    Acosh,
+    Atanh,
     Log,
     Ln,
     Sqrt,
     Pi,
     E,
+    Ans,
 }
 
 pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
@@ -112,11 +122,21 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                     "sin" => tokens.push(Token::Sin),
                     "cos" => tokens.push(Token::Cos),
                     "tan" => tokens.push(Token::Tan),
+                    "asin" => tokens.push(Token::Asin),
+                    "acos" => tokens.push(Token::Acos),
+                    "atan" => tokens.push(Token::Atan),
+                    "sinh" => tokens.push(Token::Sinh),
+                    "cosh" => tokens.push(Token::Cosh),
+                    "tanh" => tokens.push(Token::Tanh),
+                    "asinh" => tokens.push(Token::Asinh),
+                    "acosh" => tokens.push(Token::Acosh),
+                    "atanh" => tokens.push(Token::Atanh),
                     "log" => tokens.push(Token::Log),
                     "ln" => tokens.push(Token::Ln),
                     "sqrt" => tokens.push(Token::Sqrt),
                     "pi" => tokens.push(Token::Pi),
                     "e" => tokens.push(Token::E),
+                    "ans" => tokens.push(Token::Ans),
                     _ => return Err(CalcError::InvalidExpression(format!("Unknown function or constant: {}", ident))),
                 }
             }
@@ -134,22 +154,43 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                 (Token::Number(_), Token::Sin) |
                 (Token::Number(_), Token::Cos) |
                 (Token::Number(_), Token::Tan) |
+                (Token::Number(_), Token::Asin) |
+                (Token::Number(_), Token::Acos) |
+                (Token::Number(_), Token::Atan) |
+                (Token::Number(_), Token::Sinh) |
+                (Token::Number(_), Token::Cosh) |
+                (Token::Number(_), Token::Tanh) |
+                (Token::Number(_), Token::Asinh) |
+                (Token::Number(_), Token::Acosh) |
+                (Token::Number(_), Token::Atanh) |
                 (Token::Number(_), Token::Log) |
                 (Token::Number(_), Token::Ln) |
                 (Token::Number(_), Token::Sqrt) |
+                (Token::Number(_), Token::Ans) |
                 (Token::Number(_), Token::LParen) |
                 (Token::Pi, Token::Number(_)) |
                 (Token::E, Token::Number(_)) |
+                (Token::Ans, Token::Number(_)) |
                 (Token::RParen, Token::LParen) |
                 (Token::RParen, Token::Number(_)) |
                 (Token::RParen, Token::Sin) |
                 (Token::RParen, Token::Cos) |
                 (Token::RParen, Token::Tan) |
+                (Token::RParen, Token::Asin) |
+                (Token::RParen, Token::Acos) |
+                (Token::RParen, Token::Atan) |
+                (Token::RParen, Token::Sinh) |
+                (Token::RParen, Token::Cosh) |
+                (Token::RParen, Token::Tanh) |
+                (Token::RParen, Token::Asinh) |
+                (Token::RParen, Token::Acosh) |
+                (Token::RParen, Token::Atanh) |
                 (Token::RParen, Token::Log) |
                 (Token::RParen, Token::Ln) |
                 (Token::RParen, Token::Sqrt) |
                 (Token::RParen, Token::Pi) |
-                (Token::RParen, Token::E) => true,
+                (Token::RParen, Token::E) |
+                (Token::RParen, Token::Ans) => true,
                 _ => false,
             };
             if insert {
@@ -177,9 +218,19 @@ pub enum Expr {
     Sin(Box<Expr>),
     Cos(Box<Expr>),
     Tan(Box<Expr>),
+    Asin(Box<Expr>),
+    Acos(Box<Expr>),
+    Atan(Box<Expr>),
+    Sinh(Box<Expr>),
+    Cosh(Box<Expr>),
+    Tanh(Box<Expr>),
+    Asinh(Box<Expr>),
+    Acosh(Box<Expr>),
+    Atanh(Box<Expr>),
     Log(Box<Expr>),
     Ln(Box<Expr>),
     Sqrt(Box<Expr>),
+    Ans,
 }
 
 pub struct Parser<'a> {
@@ -333,6 +384,42 @@ impl<'a> Parser<'a> {
                 let expr = self.parse_primary_arg()?;
                 Ok(Expr::Tan(Box::new(expr)))
             }
+            Token::Asin => {
+                let expr = self.parse_primary_arg()?;
+                Ok(Expr::Asin(Box::new(expr)))
+            }
+            Token::Acos => {
+                let expr = self.parse_primary_arg()?;
+                Ok(Expr::Acos(Box::new(expr)))
+            }
+            Token::Atan => {
+                let expr = self.parse_primary_arg()?;
+                Ok(Expr::Atan(Box::new(expr)))
+            }
+            Token::Sinh => {
+                let expr = self.parse_primary_arg()?;
+                Ok(Expr::Sinh(Box::new(expr)))
+            }
+            Token::Cosh => {
+                let expr = self.parse_primary_arg()?;
+                Ok(Expr::Cosh(Box::new(expr)))
+            }
+            Token::Tanh => {
+                let expr = self.parse_primary_arg()?;
+                Ok(Expr::Tanh(Box::new(expr)))
+            }
+            Token::Asinh => {
+                let expr = self.parse_primary_arg()?;
+                Ok(Expr::Asinh(Box::new(expr)))
+            }
+            Token::Acosh => {
+                let expr = self.parse_primary_arg()?;
+                Ok(Expr::Acosh(Box::new(expr)))
+            }
+            Token::Atanh => {
+                let expr = self.parse_primary_arg()?;
+                Ok(Expr::Atanh(Box::new(expr)))
+            }
             Token::Log => {
                 let expr = self.parse_primary_arg()?;
                 Ok(Expr::Log(Box::new(expr)))
@@ -345,6 +432,7 @@ impl<'a> Parser<'a> {
                 let expr = self.parse_primary_arg()?;
                 Ok(Expr::Sqrt(Box::new(expr)))
             }
+            Token::Ans => Ok(Expr::Ans),
             _ => Err(CalcError::InvalidExpression(format!("Unexpected token: {:?}", token))),
         }
     }

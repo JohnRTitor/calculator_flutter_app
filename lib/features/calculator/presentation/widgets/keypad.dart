@@ -61,11 +61,36 @@ class Keypad extends ConsumerWidget {
               flex: 1,
               child: Row(
                 children: [
-                  _buildBtn(ref, 'sin', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('sin(')),
-                  _buildBtn(ref, 'cos', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('cos(')),
-                  _buildBtn(ref, 'tan', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('tan(')),
-                  _buildBtn(ref, 'π', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('π')),
-                  _buildBtn(ref, 'e', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('e')),
+                  _buildBtn(ref, state.isDegreeMode ? 'Deg' : 'Rad', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).toggleDegreeMode()),
+                  _buildBtn(ref, 'Inv', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).toggleInvMode(), isActive: state.isInvMode),
+                  _buildBtn(ref, 'hyp', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).toggleHypMode(), isActive: state.isHypMode),
+                  _buildBtn(ref, 'Ans', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('Ans')),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Row(
+                children: [
+                  _buildBtn(
+                    ref,
+                    state.isInvMode ? (state.isHypMode ? 'asinh' : 'asin') : (state.isHypMode ? 'sinh' : 'sin'),
+                    ButtonType.scientific,
+                    () => ref.read(calculatorProvider.notifier).append(state.isInvMode ? (state.isHypMode ? 'asinh(' : 'asin(') : (state.isHypMode ? 'sinh(' : 'sin(')),
+                  ),
+                  _buildBtn(
+                    ref,
+                    state.isInvMode ? (state.isHypMode ? 'acosh' : 'acos') : (state.isHypMode ? 'cosh' : 'cos'),
+                    ButtonType.scientific,
+                    () => ref.read(calculatorProvider.notifier).append(state.isInvMode ? (state.isHypMode ? 'acosh(' : 'acos(') : (state.isHypMode ? 'cosh(' : 'cos(')),
+                  ),
+                  _buildBtn(
+                    ref,
+                    state.isInvMode ? (state.isHypMode ? 'atanh' : 'atan') : (state.isHypMode ? 'tanh' : 'tan'),
+                    ButtonType.scientific,
+                    () => ref.read(calculatorProvider.notifier).append(state.isInvMode ? (state.isHypMode ? 'atanh(' : 'atan(') : (state.isHypMode ? 'tanh(' : 'tan(')),
+                  ),
+                  _buildBtn(ref, 'EXP', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('E')),
                 ],
               ),
             ),
@@ -77,6 +102,15 @@ class Keypad extends ConsumerWidget {
                   _buildBtn(ref, 'ln', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('ln(')),
                   _buildBtn(ref, '√', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('sqrt('), tooltip: 'Square Root'),
                   _buildBtn(ref, '^', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('^'), tooltip: 'Power'),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Row(
+                children: [
+                  _buildBtn(ref, 'π', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('π')),
+                  _buildBtn(ref, 'e', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('e')),
                   _buildBtn(ref, '!', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('!'), tooltip: 'Factorial'),
                   _buildBtn(ref, '%', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('%'), tooltip: 'Modulo'),
                 ],
@@ -145,11 +179,12 @@ class Keypad extends ConsumerWidget {
     );
   }
 
-  Widget _buildBtn(WidgetRef ref, String text, ButtonType type, VoidCallback onPressed, {String? tooltip}) {
+  Widget _buildBtn(WidgetRef ref, String text, ButtonType type, VoidCallback onPressed, {String? tooltip, bool isActive = false}) {
     Widget btn = CalculatorButton(
       text: text,
       type: type,
       onPressed: onPressed,
+      isActive: isActive,
     );
     if (tooltip != null) {
       btn = Tooltip(

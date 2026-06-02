@@ -11,11 +11,16 @@ A modern, production-quality Android calculator application built with a **Flutt
 
 ## Development
 
-This project was built using `flutter_rust_bridge`. 
+This project was built using `flutter_rust_bridge` and `riverpod`. 
 
 To run the application locally:
 ```bash
 flutter run
+```
+
+If you modify the Rust core (`rust/src/`), you **must** regenerate the Dart FFI bindings before running the app. You can do this by running:
+```bash
+dart run build_runner build -d
 ```
 
 To cross-compile the release Android APK:

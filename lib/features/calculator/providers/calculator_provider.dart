@@ -55,13 +55,25 @@ class Calculator extends _$Calculator {
     state = state.copyWith(isMemoryMode: !state.isMemoryMode);
   }
 
+  void toggleDegreeMode() {
+    state = state.copyWith(isDegreeMode: !state.isDegreeMode);
+  }
+
+  void toggleInvMode() {
+    state = state.copyWith(isInvMode: !state.isInvMode);
+  }
+
+  void toggleHypMode() {
+    state = state.copyWith(isHypMode: !state.isHypMode);
+  }
+
   void _updatePreview() {
     if (state.expression.isEmpty) {
       state = state.copyWith(preview: '');
       return;
     }
     try {
-      final res = rust.evaluate(expression: state.expression);
+      final res = rust.evaluate(expression: state.expression, isDegree: state.isDegreeMode, ansValue: state.ansValue);
       state = state.copyWith(preview: res.formatted, clearError: true);
     } catch (e) {
       state = state.copyWith(preview: '', clearError: true);
@@ -71,8 +83,8 @@ class Calculator extends _$Calculator {
   Future<bool> evaluate() async {
     if (state.expression.isEmpty) return false;
     try {
-      final res = rust.evaluate(expression: state.expression);
-      state = state.copyWith(result: res.formatted, showResult: true, clearError: true);
+      final res = rust.evaluate(expression: state.expression, isDegree: state.isDegreeMode, ansValue: state.ansValue);
+      state = state.copyWith(result: res.formatted, showResult: true, clearError: true, ansValue: res.value);
       
       // Save history
       rust.historyAdd(expression: state.expression, result: res.formatted);
@@ -91,7 +103,7 @@ class Calculator extends _$Calculator {
   double? _getCurrentValue() {
     if (state.expression.isEmpty) return null;
     try {
-      return rust.evaluate(expression: state.expression).value;
+      return rust.evaluate(expression: state.expression, isDegree: state.isDegreeMode, ansValue: state.ansValue).value;
     } catch (_) {
       return null;
     }

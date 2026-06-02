@@ -7,8 +7,15 @@ import '../frb_generated.dart';
 import '../history.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-CalcResult evaluate({required String expression}) =>
-    RustLib.instance.api.crateApiCalculatorEvaluate(expression: expression);
+CalcResult evaluate({
+  required String expression,
+  required bool isDegree,
+  required double ansValue,
+}) => RustLib.instance.api.crateApiCalculatorEvaluate(
+  expression: expression,
+  isDegree: isDegree,
+  ansValue: ansValue,
+);
 
 String formatResult({required double value, required int maxPrecision}) =>
     RustLib.instance.api.crateApiCalculatorFormatResult(

@@ -4,10 +4,14 @@ mod tests {
     use crate::evaluator;
 
     fn eval(expr: &str) -> f64 {
+        eval_with_state(expr, false, 0.0)
+    }
+
+    fn eval_with_state(expr: &str, is_degree: bool, ans_value: f64) -> f64 {
         let tokens = parser::tokenize(expr).unwrap();
         let mut p = parser::Parser::new(&tokens);
         let ast = p.parse().unwrap();
-        evaluator::evaluate_expr(&ast).unwrap()
+        evaluator::evaluate_expr(&ast, is_degree, ans_value).unwrap()
     }
 
     #[test]
@@ -44,5 +48,26 @@ mod tests {
     fn test_exponential_notation() {
         assert_eq!(eval("1e3"), 1000.0);
         assert_eq!(eval("2.5e-2"), 0.025);
+    }
+
+    #[test]
+    fn test_trig_modes() {
+        assert!((eval_with_state("sin(90)", true, 0.0) - 1.0).abs() < 1e-10);
+        assert!((eval_with_state("sin(π/2)", false, 0.0) - 1.0).abs() < 1e-10);
+        assert!((eval_with_state("asin(1)", true, 0.0) - 90.0).abs() < 1e-10);
+        assert!((eval_with_state("asin(1)", false, 0.0) - std::f64::consts::PI / 2.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_hyperbolic() {
+        assert_eq!(eval("sinh(0)"), 0.0);
+        assert_eq!(eval("cosh(0)"), 1.0);
+        assert_eq!(eval("tanh(0)"), 0.0);
+    }
+
+    #[test]
+    fn test_ans() {
+        assert_eq!(eval_with_state("5+ans", false, 10.0), 15.0);
+        assert_eq!(eval_with_state("ans*2", false, 21.0), 42.0);
     }
 }

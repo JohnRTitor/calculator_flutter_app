@@ -7,6 +7,7 @@ class CalculatorButton extends StatelessWidget {
   final VoidCallback onPressed;
   final ButtonType type;
   final Widget? icon;
+  final bool isActive;
 
   const CalculatorButton({
     super.key,
@@ -14,6 +15,7 @@ class CalculatorButton extends StatelessWidget {
     required this.onPressed,
     this.type = ButtonType.number,
     this.icon,
+    this.isActive = false,
   });
 
   @override
@@ -46,6 +48,11 @@ class CalculatorButton extends StatelessWidget {
         backgroundColor = colorScheme.surfaceContainerLowest;
         foregroundColor = colorScheme.onSurface;
         break;
+    }
+
+    if (isActive) {
+      backgroundColor = colorScheme.tertiaryContainer;
+      foregroundColor = colorScheme.onTertiaryContainer;
     }
 
     return Padding(

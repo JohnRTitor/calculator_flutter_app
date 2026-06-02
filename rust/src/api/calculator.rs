@@ -1,4 +1,4 @@
-use crate::{error::CalcError, evaluator, history, memory, parser};
+use crate::{evaluator, history, memory, parser};
 use flutter_rust_bridge::frb;
 
 #[frb]
@@ -8,7 +8,7 @@ pub struct CalcResult {
 }
 
 #[frb(sync)]
-pub fn evaluate(expression: String) -> Result<CalcResult, String> {
+pub fn evaluate(expression: String, is_degree: bool, ans_value: f64) -> Result<CalcResult, String> {
     if expression.trim().is_empty() {
         return Ok(CalcResult { value: 0.0, formatted: "0".to_string() });
     }
@@ -16,7 +16,7 @@ pub fn evaluate(expression: String) -> Result<CalcResult, String> {
     let tokens = parser::tokenize(&expression).map_err(|e| e.to_string())?;
     let mut p = parser::Parser::new(&tokens);
     let ast = p.parse().map_err(|e| e.to_string())?;
-    let val = evaluator::evaluate_expr(&ast).map_err(|e| e.to_string())?;
+    let val = evaluator::evaluate_expr(&ast, is_degree, ans_value).map_err(|e| e.to_string())?;
     
     // Check for NaN or Inf
     if val.is_nan() || val.is_infinite() {
