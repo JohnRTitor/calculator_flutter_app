@@ -57,7 +57,7 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<f64
         }
         Expr::Asin(e) => {
             let val = evaluate_expr(e, is_degree, ans_value)?;
-            if val < -1.0 || val > 1.0 {
+            if !(-1.0..=1.0).contains(&val) {
                 return Err(CalcError::DomainError("Asin is only defined for domain [-1, 1]".to_string()));
             }
             let res = val.asin();
@@ -65,7 +65,7 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<f64
         }
         Expr::Acos(e) => {
             let val = evaluate_expr(e, is_degree, ans_value)?;
-            if val < -1.0 || val > 1.0 {
+            if !(-1.0..=1.0).contains(&val) {
                 return Err(CalcError::DomainError("Acos is only defined for domain [-1, 1]".to_string()));
             }
             let res = val.acos();

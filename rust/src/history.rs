@@ -32,11 +32,10 @@ pub fn clear() {
 }
 
 pub fn delete(index: usize) {
-    if let Ok(mut history) = HISTORY.lock() {
-        if index < history.len() {
+    if let Ok(mut history) = HISTORY.lock()
+        && index < history.len() {
             history.remove(index);
         }
-    }
 }
 
 pub fn save(path: &str) -> Result<(), CalcError> {

@@ -78,11 +78,10 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                                 is_exp = true;
                             } else if nc2 == '+' || nc2 == '-' || nc2 == '−' {
                                 peek_chars.next();
-                                if let Some(&nc3) = peek_chars.peek() {
-                                    if nc3.is_ascii_digit() {
+                                if let Some(&nc3) = peek_chars.peek()
+                                    && nc3.is_ascii_digit() {
                                         is_exp = true;
                                     }
-                                }
                             }
                         }
                         
@@ -90,12 +89,11 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                             num_str.push(nc);
                             has_e = true;
                             chars.next();
-                            if let Some(&sign) = chars.peek() {
-                                if sign == '+' || sign == '-' || sign == '−' {
+                            if let Some(&sign) = chars.peek()
+                                && (sign == '+' || sign == '-' || sign == '−') {
                                     num_str.push(if sign == '−' { '-' } else { sign });
                                     chars.next();
                                 }
-                            }
                         } else {
                             break;
                         }
@@ -148,7 +146,7 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
     let mut i = 0;
     while i < tokens.len() {
         if i + 1 < tokens.len() {
-            let insert = match (&tokens[i], &tokens[i + 1]) {
+            let insert = matches!((&tokens[i], &tokens[i + 1]),
                 (Token::Number(_), Token::Pi) |
                 (Token::Number(_), Token::E) |
                 (Token::Number(_), Token::Sin) |
@@ -190,9 +188,8 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                 (Token::RParen, Token::Sqrt) |
                 (Token::RParen, Token::Pi) |
                 (Token::RParen, Token::E) |
-                (Token::RParen, Token::Ans) => true,
-                _ => false,
-            };
+                (Token::RParen, Token::Ans)
+            );
             if insert {
                 tokens.insert(i + 1, Token::Multiply);
                 i += 1; // skip the newly inserted token
