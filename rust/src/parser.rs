@@ -1,0 +1,360 @@
+use crate::error::CalcError;
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Token {
+    Number(f64),
+    Plus,
+    Minus,
+    Multiply,
+    Divide,
+    Modulo,
+    Power,
+    Factorial,
+    LParen,
+    RParen,
+    Sin,
+    Cos,
+    Tan,
+    Log,
+    Ln,
+    Sqrt,
+    Pi,
+    E,
+}
+
+pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
+    let mut tokens = Vec::new();
+    let mut chars = input.chars().peekable();
+
+    while let Some(&c) = chars.peek() {
+        match c {
+            ' ' | '\t' | '\n' | '\r' => {
+                chars.next();
+            }
+            '+' => { tokens.push(Token::Plus); chars.next(); }
+            '-' | '−' => { tokens.push(Token::Minus); chars.next(); }
+            '*' | '×' => { tokens.push(Token::Multiply); chars.next(); }
+            '/' | '÷' => { tokens.push(Token::Divide); chars.next(); }
+            '%' => { tokens.push(Token::Modulo); chars.next(); }
+            '^' => { tokens.push(Token::Power); chars.next(); }
+            '!' => { tokens.push(Token::Factorial); chars.next(); }
+            '(' => { tokens.push(Token::LParen); chars.next(); }
+            ')' => { tokens.push(Token::RParen); chars.next(); }
+            'π' => { tokens.push(Token::Pi); chars.next(); }
+            'e' if tokens.is_empty() || matches!(tokens.last().unwrap(), Token::Plus | Token::Minus | Token::Multiply | Token::Divide | Token::Modulo | Token::Power | Token::LParen) => {
+                // simple 'e' constant vs exponential notation (handled in number parsing)
+                tokens.push(Token::E);
+                chars.next();
+            }
+            '0'..='9' | '.' => {
+                let mut num_str = String::new();
+                let mut has_dot = false;
+                let mut has_e = false;
+                
+                while let Some(&nc) = chars.peek() {
+                    if nc.is_ascii_digit() {
+                        num_str.push(nc);
+                        chars.next();
+                    } else if nc == '.' && !has_dot {
+                        num_str.push(nc);
+                        has_dot = true;
+                        chars.next();
+                    } else if (nc == 'e' || nc == 'E') && !has_e {
+                        let mut is_exp = false;
+                        let mut peek_chars = chars.clone();
+                        peek_chars.next(); // skip 'e'
+                        if let Some(&nc2) = peek_chars.peek() {
+                            if nc2.is_ascii_digit() {
+                                is_exp = true;
+                            } else if nc2 == '+' || nc2 == '-' || nc2 == '−' {
+                                peek_chars.next();
+                                if let Some(&nc3) = peek_chars.peek() {
+                                    if nc3.is_ascii_digit() {
+                                        is_exp = true;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if is_exp {
+                            num_str.push(nc);
+                            has_e = true;
+                            chars.next();
+                            if let Some(&sign) = chars.peek() {
+                                if sign == '+' || sign == '-' || sign == '−' {
+                                    num_str.push(if sign == '−' { '-' } else { sign });
+                                    chars.next();
+                                }
+                            }
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+                
+                let num = num_str.parse::<f64>().map_err(|_| CalcError::InvalidExpression(format!("Invalid number: {}", num_str)))?;
+                tokens.push(Token::Number(num));
+            }
+            c if c.is_alphabetic() => {
+                let mut ident = String::new();
+                while let Some(&nc) = chars.peek() {
+                    if nc.is_alphabetic() {
+                        ident.push(nc);
+                        chars.next();
+                    } else {
+                        break;
+                    }
+                }
+                
+                match ident.to_lowercase().as_str() {
+                    "sin" => tokens.push(Token::Sin),
+                    "cos" => tokens.push(Token::Cos),
+                    "tan" => tokens.push(Token::Tan),
+                    "log" => tokens.push(Token::Log),
+                    "ln" => tokens.push(Token::Ln),
+                    "sqrt" => tokens.push(Token::Sqrt),
+                    "pi" => tokens.push(Token::Pi),
+                    "e" => tokens.push(Token::E),
+                    _ => return Err(CalcError::InvalidExpression(format!("Unknown function or constant: {}", ident))),
+                }
+            }
+            _ => return Err(CalcError::InvalidExpression(format!("Unknown character: {}", c))),
+        }
+    }
+
+    // Insert implicit multiplications
+    let mut i = 0;
+    while i < tokens.len() {
+        if i + 1 < tokens.len() {
+            let insert = match (&tokens[i], &tokens[i + 1]) {
+                (Token::Number(_), Token::Pi) |
+                (Token::Number(_), Token::E) |
+                (Token::Number(_), Token::Sin) |
+                (Token::Number(_), Token::Cos) |
+                (Token::Number(_), Token::Tan) |
+                (Token::Number(_), Token::Log) |
+                (Token::Number(_), Token::Ln) |
+                (Token::Number(_), Token::Sqrt) |
+                (Token::Number(_), Token::LParen) |
+                (Token::Pi, Token::Number(_)) |
+                (Token::E, Token::Number(_)) |
+                (Token::RParen, Token::LParen) |
+                (Token::RParen, Token::Number(_)) |
+                (Token::RParen, Token::Sin) |
+                (Token::RParen, Token::Cos) |
+                (Token::RParen, Token::Tan) |
+                (Token::RParen, Token::Log) |
+                (Token::RParen, Token::Ln) |
+                (Token::RParen, Token::Sqrt) |
+                (Token::RParen, Token::Pi) |
+                (Token::RParen, Token::E) => true,
+                _ => false,
+            };
+            if insert {
+                tokens.insert(i + 1, Token::Multiply);
+                i += 1; // skip the newly inserted token
+            }
+        }
+        i += 1;
+    }
+
+    Ok(tokens)
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Expr {
+    Number(f64),
+    Add(Box<Expr>, Box<Expr>),
+    Subtract(Box<Expr>, Box<Expr>),
+    Multiply(Box<Expr>, Box<Expr>),
+    Divide(Box<Expr>, Box<Expr>),
+    Modulo(Box<Expr>, Box<Expr>),
+    Power(Box<Expr>, Box<Expr>),
+    Negate(Box<Expr>),
+    Factorial(Box<Expr>),
+    Sin(Box<Expr>),
+    Cos(Box<Expr>),
+    Tan(Box<Expr>),
+    Log(Box<Expr>),
+    Ln(Box<Expr>),
+    Sqrt(Box<Expr>),
+}
+
+pub struct Parser<'a> {
+    tokens: &'a [Token],
+    pos: usize,
+}
+
+impl<'a> Parser<'a> {
+    pub fn new(tokens: &'a [Token]) -> Self {
+        Parser { tokens, pos: 0 }
+    }
+
+    fn peek(&self) -> Option<&Token> {
+        self.tokens.get(self.pos)
+    }
+
+    fn consume(&mut self) -> Option<&Token> {
+        let token = self.tokens.get(self.pos);
+        self.pos += 1;
+        token
+    }
+
+    fn match_token(&mut self, token: &Token) -> bool {
+        if self.peek() == Some(token) {
+            self.pos += 1;
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn parse(&mut self) -> Result<Expr, CalcError> {
+        if self.tokens.is_empty() {
+            return Err(CalcError::InvalidExpression("Empty expression".to_string()));
+        }
+        let expr = self.parse_expression()?;
+        if self.pos < self.tokens.len() {
+            return Err(CalcError::InvalidExpression("Unexpected tokens at end of expression".to_string()));
+        }
+        Ok(expr)
+    }
+
+    fn parse_expression(&mut self) -> Result<Expr, CalcError> {
+        self.parse_term()
+    }
+
+    fn parse_term(&mut self) -> Result<Expr, CalcError> {
+        let mut left = self.parse_factor()?;
+
+        while let Some(op) = self.peek() {
+            match op {
+                Token::Plus => {
+                    self.consume();
+                    let right = self.parse_factor()?;
+                    left = Expr::Add(Box::new(left), Box::new(right));
+                }
+                Token::Minus => {
+                    self.consume();
+                    let right = self.parse_factor()?;
+                    left = Expr::Subtract(Box::new(left), Box::new(right));
+                }
+                _ => break,
+            }
+        }
+
+        Ok(left)
+    }
+
+    fn parse_factor(&mut self) -> Result<Expr, CalcError> {
+        let mut left = self.parse_power()?;
+
+        while let Some(op) = self.peek() {
+            match op {
+                Token::Multiply => {
+                    self.consume();
+                    let right = self.parse_power()?;
+                    left = Expr::Multiply(Box::new(left), Box::new(right));
+                }
+                Token::Divide => {
+                    self.consume();
+                    let right = self.parse_power()?;
+                    left = Expr::Divide(Box::new(left), Box::new(right));
+                }
+                Token::Modulo => {
+                    self.consume();
+                    let right = self.parse_power()?;
+                    left = Expr::Modulo(Box::new(left), Box::new(right));
+                }
+                _ => break,
+            }
+        }
+
+        Ok(left)
+    }
+
+    fn parse_power(&mut self) -> Result<Expr, CalcError> {
+        let left = self.parse_unary()?;
+
+        if self.match_token(&Token::Power) {
+            let right = self.parse_power()?; // Right-associative
+            return Ok(Expr::Power(Box::new(left), Box::new(right)));
+        }
+
+        Ok(left)
+    }
+
+    fn parse_unary(&mut self) -> Result<Expr, CalcError> {
+        if self.match_token(&Token::Plus) {
+            self.parse_unary()
+        } else if self.match_token(&Token::Minus) {
+            let expr = self.parse_unary()?;
+            Ok(Expr::Negate(Box::new(expr)))
+        } else {
+            self.parse_postfix()
+        }
+    }
+
+    fn parse_postfix(&mut self) -> Result<Expr, CalcError> {
+        let mut expr = self.parse_primary()?;
+
+        while self.match_token(&Token::Factorial) {
+            expr = Expr::Factorial(Box::new(expr));
+        }
+
+        Ok(expr)
+    }
+
+    fn parse_primary(&mut self) -> Result<Expr, CalcError> {
+        let token = self.consume().ok_or_else(|| CalcError::InvalidExpression("Unexpected end of input".to_string()))?.clone();
+
+        match token {
+            Token::Number(n) => Ok(Expr::Number(n)),
+            Token::Pi => Ok(Expr::Number(std::f64::consts::PI)),
+            Token::E => Ok(Expr::Number(std::f64::consts::E)),
+            Token::LParen => {
+                let expr = self.parse_expression()?;
+                if !self.match_token(&Token::RParen) {
+                    return Err(CalcError::InvalidExpression("Missing closing parenthesis".to_string()));
+                }
+                Ok(expr)
+            }
+            Token::Sin => {
+                let expr = self.parse_primary_arg()?;
+                Ok(Expr::Sin(Box::new(expr)))
+            }
+            Token::Cos => {
+                let expr = self.parse_primary_arg()?;
+                Ok(Expr::Cos(Box::new(expr)))
+            }
+            Token::Tan => {
+                let expr = self.parse_primary_arg()?;
+                Ok(Expr::Tan(Box::new(expr)))
+            }
+            Token::Log => {
+                let expr = self.parse_primary_arg()?;
+                Ok(Expr::Log(Box::new(expr)))
+            }
+            Token::Ln => {
+                let expr = self.parse_primary_arg()?;
+                Ok(Expr::Ln(Box::new(expr)))
+            }
+            Token::Sqrt => {
+                let expr = self.parse_primary_arg()?;
+                Ok(Expr::Sqrt(Box::new(expr)))
+            }
+            _ => Err(CalcError::InvalidExpression(format!("Unexpected token: {:?}", token))),
+        }
+    }
+    
+    fn parse_primary_arg(&mut self) -> Result<Expr, CalcError> {
+        // Allow things like `sin(x)` or `sin x`
+        if self.peek() == Some(&Token::LParen) {
+            self.parse_primary() // Handles the parenthesis block
+        } else {
+            self.parse_power() // Tighter binding for function arguments
+        }
+    }
+}

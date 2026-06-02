@@ -1,17 +1,24 @@
-# calculator_app
+# Flutter Rust Calculator
 
-A new Flutter project.
+A modern, production-quality Android calculator application built with a **Flutter** UI and a **Rust** calculation engine. 
 
-## Getting Started
+## Features
+- **Native Material Design 3 UI**: Uses `dynamic_color` for full Android 12+ Material You theming and edge-to-edge transparent system bars.
+- **Rust Core**: A fully custom-built recursive descent parser handles all mathematical evaluations efficiently on a background thread.
+- **Scientific Mode**: Easily switch between standard keypad and a full scientific interface (`sin`, `cos`, `tan`, `log`, `ln`, `sqrt`, `^`, `!`).
+- **History & Memory**: Persistent on-disk calculation history and full memory functionality (`MC`, `MR`, `M+`, `M-`, `MS`).
+- **Offline First**: Zero external runtime dependencies for mathematical evaluations.
 
-This project is a starting point for a Flutter application.
+## Development
 
-A few resources to get you started if this is your first Flutter project:
+This project was built using `flutter_rust_bridge`. 
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+To run the application locally:
+```bash
+flutter run
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+To cross-compile the release Android APK:
+```bash
+flutter build apk --release
+```
