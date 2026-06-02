@@ -22,22 +22,22 @@ class Calculator extends _$Calculator {
 
   void append(String text) {
     if (state.showResult) {
-      state = state.copyWith(expression: state.result + text, showResult: false, error: null, preview: '');
+      state = state.copyWith(expression: state.result + text, showResult: false, clearError: true, preview: '');
     } else {
-      state = state.copyWith(expression: state.expression + text, error: null);
+      state = state.copyWith(expression: state.expression + text, clearError: true);
     }
     _updatePreview();
   }
 
   void delete() {
     if (state.showResult) {
-      state = state.copyWith(showResult: false, error: null, preview: '');
+      state = state.copyWith(showResult: false, clearError: true, preview: '');
       return;
     }
     if (state.expression.isNotEmpty) {
       state = state.copyWith(
         expression: state.expression.substring(0, state.expression.length - 1),
-        error: null,
+        clearError: true,
       );
       _updatePreview();
     }
@@ -58,9 +58,9 @@ class Calculator extends _$Calculator {
     }
     try {
       final res = rust.evaluate(expression: state.expression);
-      state = state.copyWith(preview: res.formatted, error: null);
+      state = state.copyWith(preview: res.formatted, clearError: true);
     } catch (e) {
-      state = state.copyWith(preview: '', error: e.toString());
+      state = state.copyWith(preview: '', clearError: true);
     }
   }
 
@@ -68,7 +68,7 @@ class Calculator extends _$Calculator {
     if (state.expression.isEmpty) return;
     try {
       final res = rust.evaluate(expression: state.expression);
-      state = state.copyWith(result: res.formatted, showResult: true, error: null);
+      state = state.copyWith(result: res.formatted, showResult: true, clearError: true);
       
       // Save history
       rust.historyAdd(expression: state.expression, result: res.formatted);
@@ -77,7 +77,8 @@ class Calculator extends _$Calculator {
       await historyNotifier.saveHistoryToFile();
       historyNotifier.refresh();
     } catch (e) {
-      state = state.copyWith(error: e.toString());
+      final cleanError = e.toString().replaceAll('AnyhowException(', '').replaceAll(RegExp(r'\)$'), '');
+      state = state.copyWith(error: cleanError);
     }
   }
   

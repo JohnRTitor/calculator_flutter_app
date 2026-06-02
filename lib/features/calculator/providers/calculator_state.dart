@@ -25,6 +25,7 @@ class CalculatorState {
     bool? showResult,
     bool? hasMemory,
     String? error,
+    bool clearError = false,
   }) {
     return CalculatorState(
       expression: expression ?? this.expression,
@@ -33,7 +34,7 @@ class CalculatorState {
       isScientificMode: isScientificMode ?? this.isScientificMode,
       showResult: showResult ?? this.showResult,
       hasMemory: hasMemory ?? this.hasMemory,
-      error: error ?? this.error,
+      error: clearError ? null : (error ?? this.error),
     );
   }
 }
