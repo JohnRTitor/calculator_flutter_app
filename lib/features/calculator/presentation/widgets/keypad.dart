@@ -21,11 +21,11 @@ class Keypad extends ConsumerWidget {
               flex: 1,
               child: Row(
                 children: [
-                  _buildBtn(ref, 'MC', ButtonType.action, () => ref.read(calculatorProvider.notifier).memoryClear()),
-                  _buildBtn(ref, 'MR', ButtonType.action, () => ref.read(calculatorProvider.notifier).memoryRecall()),
-                  _buildBtn(ref, 'M+', ButtonType.action, () => ref.read(calculatorProvider.notifier).memoryAdd()),
-                  _buildBtn(ref, 'M-', ButtonType.action, () => ref.read(calculatorProvider.notifier).memorySubtract()),
-                  _buildBtn(ref, 'MS', ButtonType.action, () => ref.read(calculatorProvider.notifier).memoryStore()),
+                  _buildBtn(ref, 'MC', ButtonType.action, () => ref.read(calculatorProvider.notifier).memoryClear(), tooltip: 'Memory Clear'),
+                  _buildBtn(ref, 'MR', ButtonType.action, () => ref.read(calculatorProvider.notifier).memoryRecall(), tooltip: 'Memory Recall'),
+                  _buildBtn(ref, 'M+', ButtonType.action, () => ref.read(calculatorProvider.notifier).memoryAdd(), tooltip: 'Memory Add'),
+                  _buildBtn(ref, 'M-', ButtonType.action, () => ref.read(calculatorProvider.notifier).memorySubtract(), tooltip: 'Memory Subtract'),
+                  _buildBtn(ref, 'MS', ButtonType.action, () => ref.read(calculatorProvider.notifier).memoryStore(), tooltip: 'Memory Store'),
                 ],
               ),
             ),
@@ -49,9 +49,10 @@ class Keypad extends ConsumerWidget {
                 children: [
                   _buildBtn(ref, 'log', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('log(')),
                   _buildBtn(ref, 'ln', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('ln(')),
-                  _buildBtn(ref, '√', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('sqrt(')),
-                  _buildBtn(ref, '^', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('^')),
-                  _buildBtn(ref, '!', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('!')),
+                  _buildBtn(ref, '√', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('sqrt('), tooltip: 'Square Root'),
+                  _buildBtn(ref, '^', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('^'), tooltip: 'Power'),
+                  _buildBtn(ref, '!', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('!'), tooltip: 'Factorial'),
+                  _buildBtn(ref, '%', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('%'), tooltip: 'Modulo'),
                 ],
               ),
             )
@@ -62,10 +63,10 @@ class Keypad extends ConsumerWidget {
             flex: 1,
             child: Row(
               children: [
-                _buildBtn(ref, 'AC', ButtonType.clear, () => ref.read(calculatorProvider.notifier).clear()),
+                _buildBtn(ref, 'AC', ButtonType.clear, () => ref.read(calculatorProvider.notifier).clear(), tooltip: 'Clear Screen'),
                 _buildBtn(ref, '(', ButtonType.action, () => ref.read(calculatorProvider.notifier).append('(')),
                 _buildBtn(ref, ')', ButtonType.action, () => ref.read(calculatorProvider.notifier).append(')')),
-                _buildBtn(ref, '÷', ButtonType.operator, () => ref.read(calculatorProvider.notifier).append('÷')),
+                _buildBtn(ref, '÷', ButtonType.operator, () => ref.read(calculatorProvider.notifier).append('÷'), tooltip: 'Divide'),
               ],
             ),
           ),
@@ -108,8 +109,8 @@ class Keypad extends ConsumerWidget {
               children: [
                 _buildBtn(ref, '0', ButtonType.number, () => ref.read(calculatorProvider.notifier).append('0')),
                 _buildBtn(ref, '.', ButtonType.number, () => ref.read(calculatorProvider.notifier).append('.')),
-                _buildIconBtn(ref, const Icon(Icons.backspace_outlined), ButtonType.action, () => ref.read(calculatorProvider.notifier).delete()),
-                _buildBtn(ref, '=', ButtonType.equals, () => ref.read(calculatorProvider.notifier).evaluate()),
+                _buildIconBtn(ref, const Icon(Icons.backspace_outlined), ButtonType.action, () => ref.read(calculatorProvider.notifier).delete(), tooltip: 'Backspace'),
+                _buildBtn(ref, '=', ButtonType.equals, () => ref.read(calculatorProvider.notifier).evaluate(), tooltip: 'Calculate'),
               ],
             ),
           ),
@@ -118,24 +119,36 @@ class Keypad extends ConsumerWidget {
     );
   }
 
-  Widget _buildBtn(WidgetRef ref, String text, ButtonType type, VoidCallback onPressed) {
-    return Expanded(
-      child: CalculatorButton(
-        text: text,
-        type: type,
-        onPressed: onPressed,
-      ),
+  Widget _buildBtn(WidgetRef ref, String text, ButtonType type, VoidCallback onPressed, {String? tooltip}) {
+    Widget btn = CalculatorButton(
+      text: text,
+      type: type,
+      onPressed: onPressed,
     );
+    if (tooltip != null) {
+      btn = Tooltip(
+        message: tooltip,
+        waitDuration: const Duration(milliseconds: 400),
+        child: btn,
+      );
+    }
+    return Expanded(child: btn);
   }
 
-  Widget _buildIconBtn(WidgetRef ref, Widget icon, ButtonType type, VoidCallback onPressed) {
-    return Expanded(
-      child: CalculatorButton(
-        text: '',
-        icon: icon,
-        type: type,
-        onPressed: onPressed,
-      ),
+  Widget _buildIconBtn(WidgetRef ref, Widget icon, ButtonType type, VoidCallback onPressed, {String? tooltip}) {
+    Widget btn = CalculatorButton(
+      text: '',
+      icon: icon,
+      type: type,
+      onPressed: onPressed,
     );
+    if (tooltip != null) {
+      btn = Tooltip(
+        message: tooltip,
+        waitDuration: const Duration(milliseconds: 400),
+        child: btn,
+      );
+    }
+    return Expanded(child: btn);
   }
 }
