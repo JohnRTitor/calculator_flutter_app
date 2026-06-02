@@ -64,8 +64,8 @@ class Calculator extends _$Calculator {
     }
   }
 
-  Future<void> evaluate() async {
-    if (state.expression.isEmpty) return;
+  Future<bool> evaluate() async {
+    if (state.expression.isEmpty) return false;
     try {
       final res = rust.evaluate(expression: state.expression);
       state = state.copyWith(result: res.formatted, showResult: true, clearError: true);
@@ -76,48 +76,61 @@ class Calculator extends _$Calculator {
       final historyNotifier = ref.read(historyProvider.notifier);
       await historyNotifier.saveHistoryToFile();
       historyNotifier.refresh();
+      return true;
     } catch (e) {
       final cleanError = e.toString().replaceAll('AnyhowException(', '').replaceAll(RegExp(r'\)$'), '');
       state = state.copyWith(error: cleanError);
+      return false;
     }
   }
   
+  double? _getCurrentValue() {
+    if (state.expression.isEmpty) return null;
+    try {
+      return rust.evaluate(expression: state.expression).value;
+    } catch (_) {
+      return null;
+    }
+  }
+
   // Memory Operations
-  void memoryStore() {
-    if (state.showResult && state.result.isNotEmpty) {
-      final val = double.tryParse(state.result);
-      if (val != null) {
-        rust.memoryStore(value: val);
-        state = state.copyWith(hasMemory: true);
-      }
+  bool memoryStore() {
+    final val = _getCurrentValue();
+    if (val != null) {
+      rust.memoryStore(value: val);
+      state = state.copyWith(hasMemory: true);
+      return true;
     }
+    return false;
   }
   
-  void memoryRecall() {
+  bool memoryRecall() {
     final val = rust.memoryRecall();
     if (val != null) {
       append(rust.formatResult(value: val, maxPrecision: 10));
+      return true;
     }
+    return false;
   }
   
-  void memoryAdd() {
-    if (state.showResult && state.result.isNotEmpty) {
-      final val = double.tryParse(state.result);
-      if (val != null) {
-        rust.memoryAdd(value: val);
-        state = state.copyWith(hasMemory: true);
-      }
+  bool memoryAdd() {
+    final val = _getCurrentValue();
+    if (val != null) {
+      rust.memoryAdd(value: val);
+      state = state.copyWith(hasMemory: true);
+      return true;
     }
+    return false;
   }
   
-  void memorySubtract() {
-    if (state.showResult && state.result.isNotEmpty) {
-      final val = double.tryParse(state.result);
-      if (val != null) {
-        rust.memorySubtract(value: val);
-        state = state.copyWith(hasMemory: true);
-      }
+  bool memorySubtract() {
+    final val = _getCurrentValue();
+    if (val != null) {
+      rust.memorySubtract(value: val);
+      state = state.copyWith(hasMemory: true);
+      return true;
     }
+    return false;
   }
   
   void memoryClear() {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/features/calculator/providers/calculator_provider.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/widgets/calculator_button.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/widgets/animated_equals_button.dart';
 
 class Keypad extends ConsumerWidget {
   const Keypad({super.key});
@@ -21,11 +22,36 @@ class Keypad extends ConsumerWidget {
               flex: 1,
               child: Row(
                 children: [
-                  _buildBtn(ref, 'MC', ButtonType.action, () => ref.read(calculatorProvider.notifier).memoryClear(), tooltip: 'Memory Clear'),
-                  _buildBtn(ref, 'MR', ButtonType.action, () => ref.read(calculatorProvider.notifier).memoryRecall(), tooltip: 'Memory Recall'),
-                  _buildBtn(ref, 'M+', ButtonType.action, () => ref.read(calculatorProvider.notifier).memoryAdd(), tooltip: 'Memory Add'),
-                  _buildBtn(ref, 'M-', ButtonType.action, () => ref.read(calculatorProvider.notifier).memorySubtract(), tooltip: 'Memory Subtract'),
-                  _buildBtn(ref, 'MS', ButtonType.action, () => ref.read(calculatorProvider.notifier).memoryStore(), tooltip: 'Memory Store'),
+                  _buildBtn(ref, 'MC', ButtonType.action, () {
+                    ref.read(calculatorProvider.notifier).memoryClear();
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Memory Cleared'), duration: Duration(milliseconds: 1000)));
+                  }, tooltip: 'Memory Clear'),
+                  _buildBtn(ref, 'MR', ButtonType.action, () {
+                    if (!ref.read(calculatorProvider.notifier).memoryRecall()) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Memory is empty'), duration: Duration(milliseconds: 1000)));
+                    }
+                  }, tooltip: 'Memory Recall'),
+                  _buildBtn(ref, 'M+', ButtonType.action, () {
+                    if (ref.read(calculatorProvider.notifier).memoryAdd()) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Added to Memory'), duration: Duration(milliseconds: 1000)));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid input for memory'), duration: Duration(milliseconds: 1000)));
+                    }
+                  }, tooltip: 'Memory Add'),
+                  _buildBtn(ref, 'M-', ButtonType.action, () {
+                    if (ref.read(calculatorProvider.notifier).memorySubtract()) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Subtracted from Memory'), duration: Duration(milliseconds: 1000)));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid input for memory'), duration: Duration(milliseconds: 1000)));
+                    }
+                  }, tooltip: 'Memory Subtract'),
+                  _buildBtn(ref, 'MS', ButtonType.action, () {
+                    if (ref.read(calculatorProvider.notifier).memoryStore()) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Stored in Memory'), duration: Duration(milliseconds: 1000)));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid input for memory'), duration: Duration(milliseconds: 1000)));
+                    }
+                  }, tooltip: 'Memory Store'),
                 ],
               ),
             ),
@@ -110,7 +136,7 @@ class Keypad extends ConsumerWidget {
                 _buildBtn(ref, '0', ButtonType.number, () => ref.read(calculatorProvider.notifier).append('0')),
                 _buildBtn(ref, '.', ButtonType.number, () => ref.read(calculatorProvider.notifier).append('.')),
                 _buildIconBtn(ref, const Icon(Icons.backspace_outlined), ButtonType.action, () => ref.read(calculatorProvider.notifier).delete(), tooltip: 'Backspace'),
-                _buildBtn(ref, '=', ButtonType.equals, () => ref.read(calculatorProvider.notifier).evaluate(), tooltip: 'Calculate'),
+                AnimatedEqualsButton(onEvaluate: () => ref.read(calculatorProvider.notifier).evaluate()),
               ],
             ),
           ),
