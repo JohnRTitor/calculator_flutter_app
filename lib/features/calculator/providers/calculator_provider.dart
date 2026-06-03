@@ -228,11 +228,15 @@ class Calculator extends _$Calculator {
       );
       
       // Save history
-      rust.historyAdd(expression: state.expression, result: res.exactFraction ?? res.formatted);
-      // Wait to get valid path and save
-      final historyNotifier = ref.read(historyProvider.notifier);
-      await historyNotifier.saveHistoryToFile();
-      historyNotifier.refresh();
+      final newResult = res.exactFraction ?? res.formatted;
+      final history = rust.historyGetAll();
+      if (history.isEmpty || history.last.expression != state.expression || history.last.result != newResult) {
+        rust.historyAdd(expression: state.expression, result: newResult);
+        // Wait to get valid path and save
+        final historyNotifier = ref.read(historyProvider.notifier);
+        await historyNotifier.saveHistoryToFile();
+        historyNotifier.refresh();
+      }
       return true;
     } catch (e) {
       final cleanError = e.toString().replaceAll('AnyhowException(', '').replaceAll(RegExp(r'\)$'), '');
