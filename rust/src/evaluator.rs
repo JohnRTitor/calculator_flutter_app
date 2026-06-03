@@ -1,6 +1,19 @@
 use crate::error::CalcError;
 use crate::parser::Expr;
 
+fn normalize_trig(value: f64) -> f64 {
+    let epsilon = 1e-12;
+    if value.abs() < epsilon {
+        0.0
+    } else if (value - 1.0).abs() < epsilon {
+        1.0
+    } else if (value + 1.0).abs() < epsilon {
+        -1.0
+    } else {
+        value
+    }
+}
+
 pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<f64, CalcError> {
     match expr {
         Expr::Number(n) => Ok(*n),
@@ -45,15 +58,18 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<f64
         }
         Expr::Sin(e) => {
             let val = evaluate_expr(e, is_degree, ans_value)?;
-            Ok(if is_degree { val.to_radians().sin() } else { val.sin() })
+            let res = if is_degree { val.to_radians().sin() } else { val.sin() };
+            Ok(normalize_trig(res))
         }
         Expr::Cos(e) => {
             let val = evaluate_expr(e, is_degree, ans_value)?;
-            Ok(if is_degree { val.to_radians().cos() } else { val.cos() })
+            let res = if is_degree { val.to_radians().cos() } else { val.cos() };
+            Ok(normalize_trig(res))
         }
         Expr::Tan(e) => {
             let val = evaluate_expr(e, is_degree, ans_value)?;
-            Ok(if is_degree { val.to_radians().tan() } else { val.tan() })
+            let res = if is_degree { val.to_radians().tan() } else { val.tan() };
+            Ok(normalize_trig(res))
         }
         Expr::Asin(e) => {
             let val = evaluate_expr(e, is_degree, ans_value)?;
