@@ -49,7 +49,8 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<f64
         }
         Expr::Cos(e) => {
             let val = evaluate_expr(e, is_degree, ans_value)?;
-            Ok(if is_degree { val.to_radians().cos() } else { val.cos() })
+            let cos_val = if is_degree { val.to_radians().cos() } else { val.cos() };
+            Ok(if cos_val.abs() < 1e-12 { 0.0 } else { cos_val })
         }
         Expr::Tan(e) => {
             let val = evaluate_expr(e, is_degree, ans_value)?;

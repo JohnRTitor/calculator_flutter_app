@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod tests {
+    use crate::error::CalcError;
     use crate::parser;
     use crate::evaluator;
 
@@ -56,6 +57,15 @@ mod tests {
         assert!((eval_with_state("sin(π/2)", false, 0.0) - 1.0).abs() < 1e-10);
         assert!((eval_with_state("asin(1)", true, 0.0) - 90.0).abs() < 1e-10);
         assert!((eval_with_state("asin(1)", false, 0.0) - std::f64::consts::PI / 2.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_degree_cos_zero_division() {
+        let tokens = parser::tokenize("1/cos(90)").unwrap();
+        let mut p = parser::Parser::new(&tokens);
+        let ast = p.parse().unwrap();
+        let result = evaluator::evaluate_expr(&ast, true, 0.0);
+        assert!(matches!(result, Err(CalcError::DivisionByZero)));
     }
 
     #[test]
