@@ -24,11 +24,11 @@ class Calculator extends _$Calculator {
     if (!_isValidAppend(text)) return false;
 
     if (state.showResult) {
-      state = state.copyWith(tokens: [text], cursorIndex: 1, showResult: false, clearError: true, preview: '');
+      state = state.copyWith(tokens: [text], cursorIndex: 1, showResult: false, clearError: true, preview: '', clearExactResult: true);
     } else {
       final newTokens = List<String>.from(state.tokens);
       newTokens.insert(state.cursorIndex, text);
-      state = state.copyWith(tokens: newTokens, cursorIndex: state.cursorIndex + 1, clearError: true);
+      state = state.copyWith(tokens: newTokens, cursorIndex: state.cursorIndex + 1, clearError: true, clearExactResult: true);
     }
     _updatePreview();
     return true;
@@ -38,7 +38,7 @@ class Calculator extends _$Calculator {
     final tokens = state.showResult ? <String>[] : state.tokens;
     final cursorIndex = state.showResult ? 0 : state.cursorIndex;
 
-    final isOperator = ['+', '−', '×', '÷', '%', '^'].contains(text);
+    final isOperator = ['+', '−', '×', '÷', '%', '^', '/'].contains(text);
     final isMinus = text == '−';
 
     if (isOperator || text == '!') {
@@ -59,7 +59,7 @@ class Calculator extends _$Calculator {
 
     if (isOperator) {
       if (prevToken != null) {
-        final isPrevOperator = ['+', '−', '×', '÷', '%', '^'].contains(prevToken);
+        final isPrevOperator = ['+', '−', '×', '÷', '%', '^', '/'].contains(prevToken);
         final isPrevOpenParen = prevToken.endsWith('(');
 
         if (isPrevOpenParen) {
@@ -72,7 +72,7 @@ class Calculator extends _$Calculator {
           if (isMinus && prevToken == '−') {
             if (cursorIndex > 1) {
               final prevPrevToken = tokens[cursorIndex - 2];
-              if (['+', '−', '×', '÷', '%', '^'].contains(prevPrevToken)) {
+              if (['+', '−', '×', '÷', '%', '^', '/'].contains(prevPrevToken)) {
                 return false;
               }
             }
@@ -123,7 +123,7 @@ class Calculator extends _$Calculator {
         return false;
       }
 
-      if (prevToken != null && ['+', '−', '×', '÷', '%', '^'].contains(prevToken)) {
+      if (prevToken != null && ['+', '−', '×', '÷', '%', '^', '/'].contains(prevToken)) {
         return false;
       }
     }
@@ -133,7 +133,7 @@ class Calculator extends _$Calculator {
 
   void delete() {
     if (state.showResult) {
-      state = state.copyWith(showResult: false, clearError: true, preview: '');
+      state = state.copyWith(showResult: false, clearError: true, preview: '', clearExactResult: true);
       return;
     }
     if (state.tokens.isNotEmpty && state.cursorIndex > 0) {
@@ -195,16 +195,23 @@ class Calculator extends _$Calculator {
     if (state.expression.isEmpty) return false;
     
     final lastToken = state.tokens.last;
-    if (['+', '−', '×', '÷', '%', '^'].contains(lastToken)) {
+    if (['+', '−', '×', '÷', '%', '^', '/'].contains(lastToken)) {
       return false;
     }
     
     try {
       final res = rust.evaluate(expression: state.expression, isDegree: state.isDegreeMode, ansValue: state.ansValue);
-      state = state.copyWith(result: res.formatted, showResult: true, clearError: true, ansValue: res.value);
+      state = state.copyWith(
+        result: res.formatted, 
+        showResult: true, 
+        clearError: true, 
+        ansValue: res.value,
+        exactResult: res.exactFraction,
+        displayAsFraction: res.exactFraction != null,
+      );
       
       // Save history
-      rust.historyAdd(expression: state.expression, result: res.formatted);
+      rust.historyAdd(expression: state.expression, result: res.exactFraction ?? res.formatted);
       // Wait to get valid path and save
       final historyNotifier = ref.read(historyProvider.notifier);
       await historyNotifier.saveHistoryToFile();
@@ -214,6 +221,12 @@ class Calculator extends _$Calculator {
       final cleanError = e.toString().replaceAll('AnyhowException(', '').replaceAll(RegExp(r'\)$'), '');
       state = state.copyWith(error: cleanError);
       return false;
+    }
+  }
+
+  void toggleDisplayFormat() {
+    if (state.exactResult != null) {
+      state = state.copyWith(displayAsFraction: !state.displayAsFraction);
     }
   }
   

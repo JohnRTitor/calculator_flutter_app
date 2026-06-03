@@ -483,9 +483,11 @@ impl SseDecode for crate::api::calculator::CalcResult {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_value = <f64>::sse_decode(deserializer);
         let mut var_formatted = <String>::sse_decode(deserializer);
+        let mut var_exactFraction = <Option<String>>::sse_decode(deserializer);
         return crate::api::calculator::CalcResult {
             value: var_value,
             formatted: var_formatted,
+            exact_fraction: var_exactFraction,
         };
     }
 }
@@ -530,6 +532,17 @@ impl SseDecode for Vec<u8> {
             ans_.push(<u8>::sse_decode(deserializer));
         }
         return ans_;
+    }
+}
+
+impl SseDecode for Option<String> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<String>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
     }
 }
 
@@ -623,6 +636,7 @@ impl flutter_rust_bridge::IntoDart for crate::api::calculator::CalcResult {
         [
             self.value.into_into_dart().into_dart(),
             self.formatted.into_into_dart().into_dart(),
+            self.exact_fraction.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -676,6 +690,7 @@ impl SseEncode for crate::api::calculator::CalcResult {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <f64>::sse_encode(self.value, serializer);
         <String>::sse_encode(self.formatted, serializer);
+        <Option<String>>::sse_encode(self.exact_fraction, serializer);
     }
 }
 
@@ -710,6 +725,16 @@ impl SseEncode for Vec<u8> {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
             <u8>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<String> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <String>::sse_encode(value, serializer);
         }
     }
 }

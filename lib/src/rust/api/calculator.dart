@@ -58,11 +58,17 @@ Future<void> historyLoad({required String path}) =>
 class CalcResult {
   final double value;
   final String formatted;
+  final String? exactFraction;
 
-  const CalcResult({required this.value, required this.formatted});
+  const CalcResult({
+    required this.value,
+    required this.formatted,
+    this.exactFraction,
+  });
 
   @override
-  int get hashCode => value.hashCode ^ formatted.hashCode;
+  int get hashCode =>
+      value.hashCode ^ formatted.hashCode ^ exactFraction.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -70,5 +76,6 @@ class CalcResult {
       other is CalcResult &&
           runtimeType == other.runtimeType &&
           value == other.value &&
-          formatted == other.formatted;
+          formatted == other.formatted &&
+          exactFraction == other.exactFraction;
 }

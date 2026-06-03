@@ -12,6 +12,8 @@ class CalculatorState {
   final bool showResult;
   final bool hasMemory;
   final String? error;
+  final String? exactResult;
+  final bool displayAsFraction;
 
   String get expression => tokens.join('');
 
@@ -29,6 +31,8 @@ class CalculatorState {
     this.showResult = false,
     this.hasMemory = false,
     this.error,
+    this.exactResult,
+    this.displayAsFraction = true,
   });
 
   CalculatorState copyWith({
@@ -46,6 +50,9 @@ class CalculatorState {
     bool? hasMemory,
     String? error,
     bool clearError = false,
+    String? exactResult,
+    bool? displayAsFraction,
+    bool clearExactResult = false,
   }) {
     return CalculatorState(
       tokens: tokens ?? this.tokens,
@@ -61,6 +68,8 @@ class CalculatorState {
       showResult: showResult ?? this.showResult,
       hasMemory: hasMemory ?? this.hasMemory,
       error: clearError ? null : (error ?? this.error),
+      exactResult: clearExactResult ? null : (exactResult ?? this.exactResult),
+      displayAsFraction: displayAsFraction ?? this.displayAsFraction,
     );
   }
 }

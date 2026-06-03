@@ -5,27 +5,52 @@ use flutter_rust_bridge::frb;
 pub struct CalcResult {
     pub value: f64,
     pub formatted: String,
+    pub exact_fraction: Option<String>,
 }
 
 #[frb(sync)]
 pub fn evaluate(expression: String, is_degree: bool, ans_value: f64) -> Result<CalcResult, String> {
     if expression.trim().is_empty() {
-        return Ok(CalcResult { value: 0.0, formatted: "0".to_string() });
+        return Ok(CalcResult { value: 0.0, formatted: "0".to_string(), exact_fraction: None });
     }
 
     let tokens = parser::tokenize(&expression).map_err(|e| e.to_string())?;
     let mut p = parser::Parser::new(&tokens);
     let ast = p.parse().map_err(|e| e.to_string())?;
-    let val = evaluator::evaluate_expr(&ast, is_degree, ans_value).map_err(|e| e.to_string())?;
+    let calc_val = evaluator::evaluate_expr(&ast, is_degree, ans_value).map_err(|e| e.to_string())?;
     
+    let val = calc_val.to_float();
     // Check for NaN or Inf
     if val.is_nan() || val.is_infinite() {
         return Err("Result is undefined or too large".to_string());
     }
 
+    let mut exact_fraction = None;
+    match calc_val {
+        crate::rational::CalcValue::Rational(r) => {
+            if r.den != 1 {
+                exact_fraction = Some(format!("{}/{}", r.num, r.den));
+            }
+        }
+        crate::rational::CalcValue::PiRational(r) => {
+            if r.num == 0 {
+                exact_fraction = Some("0".to_string());
+            } else {
+                let num_str = if r.num == 1 { "π".to_string() } else if r.num == -1 { "-π".to_string() } else { format!("{}π", r.num) };
+                if r.den == 1 {
+                    exact_fraction = Some(num_str);
+                } else {
+                    exact_fraction = Some(format!("{}/{}", num_str, r.den));
+                }
+            }
+        }
+        _ => {}
+    }
+
     Ok(CalcResult {
         value: val,
         formatted: format_result(val, 10),
+        exact_fraction,
     })
 }
 

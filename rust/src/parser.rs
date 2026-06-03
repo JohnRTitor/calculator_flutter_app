@@ -204,6 +204,8 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Expr {
     Number(f64),
+    Pi,
+    E,
     Add(Box<Expr>, Box<Expr>),
     Subtract(Box<Expr>, Box<Expr>),
     Multiply(Box<Expr>, Box<Expr>),
@@ -360,8 +362,8 @@ impl<'a> Parser<'a> {
 
         match token {
             Token::Number(n) => Ok(Expr::Number(n)),
-            Token::Pi => Ok(Expr::Number(std::f64::consts::PI)),
-            Token::E => Ok(Expr::Number(std::f64::consts::E)),
+            Token::Pi => Ok(Expr::Pi),
+            Token::E => Ok(Expr::E),
             Token::LParen => {
                 let expr = self.parse_expression()?;
                 if !self.match_token(&Token::RParen) {

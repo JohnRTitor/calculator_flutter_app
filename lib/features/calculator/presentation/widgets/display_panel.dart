@@ -52,7 +52,7 @@ class DisplayPanel extends ConsumerWidget {
                 scrollDirection: Axis.horizontal,
                 reverse: true,
                 child: Text(
-                  state.result.isEmpty ? '0' : state.result,
+                  state.displayAsFraction && state.exactResult != null ? state.exactResult! : (state.result.isEmpty ? '0' : state.result),
                   style: theme.textTheme.displayLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.onSurface,

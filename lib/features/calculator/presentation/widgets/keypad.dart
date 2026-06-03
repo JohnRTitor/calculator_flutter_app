@@ -132,6 +132,17 @@ class Keypad extends ConsumerWidget {
             flex: 1,
             child: Row(
               children: [
+                _buildBtn(ref, 'a/b', ButtonType.action, () => ref.read(calculatorProvider.notifier).append('/'), tooltip: 'Fraction'),
+                _buildBtn(ref, 'S↔D', ButtonType.action, () { ref.read(calculatorProvider.notifier).toggleDisplayFormat(); return true; }, isActive: state.exactResult != null, tooltip: 'Decimal/Fraction Toggle'),
+                Expanded(child: const SizedBox()),
+                Expanded(child: const SizedBox()),
+              ],
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Row(
+              children: [
                 _buildBtn(ref, 'AC', ButtonType.clear, () { ref.read(calculatorProvider.notifier).clear(); return true; }, tooltip: 'Clear Screen'),
                 _buildBtn(ref, '(', ButtonType.action, () => ref.read(calculatorProvider.notifier).append('(')),
                 _buildBtn(ref, ')', ButtonType.action, () => ref.read(calculatorProvider.notifier).append(')')),
