@@ -25,31 +25,40 @@ class Keypad extends ConsumerWidget {
                   _buildBtn(ref, 'MC', ButtonType.action, () {
                     ref.read(calculatorProvider.notifier).memoryClear();
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Memory Cleared'), duration: Duration(milliseconds: 1000)));
+                    return true;
                   }, tooltip: 'Memory Clear'),
                   _buildBtn(ref, 'MR', ButtonType.action, () {
                     if (!ref.read(calculatorProvider.notifier).memoryRecall()) {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Memory is empty'), duration: Duration(milliseconds: 1000)));
+                      return false;
                     }
+                    return true;
                   }, tooltip: 'Memory Recall'),
                   _buildBtn(ref, 'M+', ButtonType.action, () {
                     if (ref.read(calculatorProvider.notifier).memoryAdd()) {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Added to Memory'), duration: Duration(milliseconds: 1000)));
+                      return true;
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid input for memory'), duration: Duration(milliseconds: 1000)));
+                      return false;
                     }
                   }, tooltip: 'Memory Add'),
                   _buildBtn(ref, 'M-', ButtonType.action, () {
                     if (ref.read(calculatorProvider.notifier).memorySubtract()) {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Subtracted from Memory'), duration: Duration(milliseconds: 1000)));
+                      return true;
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid input for memory'), duration: Duration(milliseconds: 1000)));
+                      return false;
                     }
                   }, tooltip: 'Memory Subtract'),
                   _buildBtn(ref, 'MS', ButtonType.action, () {
                     if (ref.read(calculatorProvider.notifier).memoryStore()) {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Stored in Memory'), duration: Duration(milliseconds: 1000)));
+                      return true;
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid input for memory'), duration: Duration(milliseconds: 1000)));
+                      return false;
                     }
                   }, tooltip: 'Memory Store'),
                 ],
@@ -61,9 +70,9 @@ class Keypad extends ConsumerWidget {
               flex: 1,
               child: Row(
                 children: [
-                  _buildBtn(ref, state.isDegreeMode ? 'Deg' : 'Rad', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).toggleDegreeMode()),
-                  _buildBtn(ref, 'Inv', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).toggleInvMode(), isActive: state.isInvMode),
-                  _buildBtn(ref, 'hyp', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).toggleHypMode(), isActive: state.isHypMode),
+                  _buildBtn(ref, state.isDegreeMode ? 'Deg' : 'Rad', ButtonType.scientific, () { ref.read(calculatorProvider.notifier).toggleDegreeMode(); return true; }),
+                  _buildBtn(ref, 'Inv', ButtonType.scientific, () { ref.read(calculatorProvider.notifier).toggleInvMode(); return true; }, isActive: state.isInvMode),
+                  _buildBtn(ref, 'hyp', ButtonType.scientific, () { ref.read(calculatorProvider.notifier).toggleHypMode(); return true; }, isActive: state.isHypMode),
                   _buildBtn(ref, 'Ans', ButtonType.scientific, () => ref.read(calculatorProvider.notifier).append('Ans')),
                 ],
               ),
@@ -123,7 +132,7 @@ class Keypad extends ConsumerWidget {
             flex: 1,
             child: Row(
               children: [
-                _buildBtn(ref, 'AC', ButtonType.clear, () => ref.read(calculatorProvider.notifier).clear(), tooltip: 'Clear Screen'),
+                _buildBtn(ref, 'AC', ButtonType.clear, () { ref.read(calculatorProvider.notifier).clear(); return true; }, tooltip: 'Clear Screen'),
                 _buildBtn(ref, '(', ButtonType.action, () => ref.read(calculatorProvider.notifier).append('(')),
                 _buildBtn(ref, ')', ButtonType.action, () => ref.read(calculatorProvider.notifier).append(')')),
                 _buildBtn(ref, '÷', ButtonType.operator, () => ref.read(calculatorProvider.notifier).append('÷'), tooltip: 'Divide'),
@@ -169,7 +178,7 @@ class Keypad extends ConsumerWidget {
               children: [
                 _buildBtn(ref, '0', ButtonType.number, () => ref.read(calculatorProvider.notifier).append('0')),
                 _buildBtn(ref, '.', ButtonType.number, () => ref.read(calculatorProvider.notifier).append('.')),
-                _buildIconBtn(ref, const Icon(Icons.backspace_outlined), ButtonType.action, () => ref.read(calculatorProvider.notifier).delete(), tooltip: 'Backspace'),
+                _buildIconBtn(ref, const Icon(Icons.backspace_outlined), ButtonType.action, () { ref.read(calculatorProvider.notifier).delete(); return true; }, tooltip: 'Backspace'),
                 AnimatedEqualsButton(onEvaluate: () => ref.read(calculatorProvider.notifier).evaluate()),
               ],
             ),
@@ -179,7 +188,7 @@ class Keypad extends ConsumerWidget {
     );
   }
 
-  Widget _buildBtn(WidgetRef ref, String text, ButtonType type, VoidCallback onPressed, {String? tooltip, bool isActive = false}) {
+  Widget _buildBtn(WidgetRef ref, String text, ButtonType type, bool Function() onPressed, {String? tooltip, bool isActive = false}) {
     Widget btn = CalculatorButton(
       text: text,
       type: type,
@@ -196,7 +205,7 @@ class Keypad extends ConsumerWidget {
     return Expanded(child: btn);
   }
 
-  Widget _buildIconBtn(WidgetRef ref, Widget icon, ButtonType type, VoidCallback onPressed, {String? tooltip}) {
+  Widget _buildIconBtn(WidgetRef ref, Widget icon, ButtonType type, bool Function() onPressed, {String? tooltip}) {
     Widget btn = CalculatorButton(
       text: '',
       icon: icon,

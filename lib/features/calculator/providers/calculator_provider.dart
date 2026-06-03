@@ -20,7 +20,9 @@ class Calculator extends _$Calculator {
     }
   }
 
-  void append(String text) {
+  bool append(String text) {
+    if (!_isValidAppend(text)) return false;
+
     if (state.showResult) {
       state = state.copyWith(tokens: [text], cursorIndex: 1, showResult: false, clearError: true, preview: '');
     } else {
@@ -29,6 +31,104 @@ class Calculator extends _$Calculator {
       state = state.copyWith(tokens: newTokens, cursorIndex: state.cursorIndex + 1, clearError: true);
     }
     _updatePreview();
+    return true;
+  }
+
+  bool _isValidAppend(String text) {
+    final tokens = state.showResult ? <String>[] : state.tokens;
+    final cursorIndex = state.showResult ? 0 : state.cursorIndex;
+
+    final isOperator = ['+', '−', '×', '÷', '%', '^'].contains(text);
+    final isMinus = text == '−';
+
+    if (isOperator || text == '!') {
+      if (cursorIndex == 0) {
+        if (!isMinus) return false;
+      }
+    }
+
+    String? prevToken;
+    if (cursorIndex > 0 && tokens.isNotEmpty) {
+      prevToken = tokens[cursorIndex - 1];
+    }
+
+    String? nextToken;
+    if (cursorIndex < tokens.length) {
+      nextToken = tokens[cursorIndex];
+    }
+
+    if (isOperator) {
+      if (prevToken != null) {
+        final isPrevOperator = ['+', '−', '×', '÷', '%', '^'].contains(prevToken);
+        final isPrevOpenParen = prevToken.endsWith('(');
+
+        if (isPrevOpenParen) {
+          if (!isMinus) return false;
+        }
+
+        if (isPrevOperator) {
+          if (!isMinus) return false;
+          // Prevent multiple minus like 8 --- 4
+          if (isMinus && prevToken == '−') {
+            if (cursorIndex > 1) {
+              final prevPrevToken = tokens[cursorIndex - 2];
+              if (['+', '−', '×', '÷', '%', '^'].contains(prevPrevToken)) {
+                return false;
+              }
+            }
+          }
+        }
+      }
+
+      if (nextToken != null && nextToken == ')') {
+        return false;
+      }
+    }
+
+    if (text == '.') {
+      int dots = 0;
+      for (int i = cursorIndex - 1; i >= 0; i--) {
+        final t = tokens[i];
+        if (t == '.') {
+          dots++;
+        } else if (RegExp(r'^[0-9]+$').hasMatch(t)) {
+          continue;
+        } else {
+          break;
+        }
+      }
+      for (int i = cursorIndex; i < tokens.length; i++) {
+        final t = tokens[i];
+        if (t == '.') {
+          dots++;
+        } else if (RegExp(r'^[0-9]+$').hasMatch(t)) {
+          continue;
+        } else {
+          break;
+        }
+      }
+      if (dots > 0) return false;
+    }
+
+    if (text == ')') {
+      int open = 0;
+      int close = 0;
+      for (int i = 0; i < cursorIndex; i++) {
+        if (tokens[i].endsWith('(')) open++;
+        if (tokens[i] == ')') close++;
+      }
+      if (close >= open) return false;
+
+      if (prevToken != null && prevToken.endsWith('(')) {
+        return false;
+      }
+
+      if (prevToken != null && ['+', '−', '×', '÷', '%', '^'].contains(prevToken)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   void delete() {
@@ -93,6 +193,12 @@ class Calculator extends _$Calculator {
 
   Future<bool> evaluate() async {
     if (state.expression.isEmpty) return false;
+    
+    final lastToken = state.tokens.last;
+    if (['+', '−', '×', '÷', '%', '^'].contains(lastToken)) {
+      return false;
+    }
+    
     try {
       final res = rust.evaluate(expression: state.expression, isDegree: state.isDegreeMode, ansValue: state.ansValue);
       state = state.copyWith(result: res.formatted, showResult: true, clearError: true, ansValue: res.value);

@@ -23,8 +23,8 @@ class CalculatorApp extends ConsumerWidget {
         flutterThemeMode = ThemeMode.dark;
         break;
       case AppThemeMode.system:
-      default:
         flutterThemeMode = ThemeMode.system;
+        break;
     }
 
     return DynamicColorBuilder(
