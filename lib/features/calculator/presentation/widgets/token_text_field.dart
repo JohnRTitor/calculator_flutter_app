@@ -98,8 +98,10 @@ class _TokenTextFieldState extends ConsumerState<TokenTextField> {
       showCursor: true,
       autofocus: true,
       textAlign: TextAlign.right,
-      style: theme.textTheme.headlineMedium?.copyWith(
+      style: theme.textTheme.headlineLarge?.copyWith(
         color: theme.colorScheme.onSurfaceVariant,
+        fontWeight: FontWeight.w400,
+        fontSize: 32,
       ),
       decoration: const InputDecoration(
         border: InputBorder.none,

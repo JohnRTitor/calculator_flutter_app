@@ -155,15 +155,24 @@ class Calculator extends _$Calculator {
   }
 
   void clear() {
-    state = CalculatorState(isScientificMode: state.isScientificMode, isMemoryMode: state.isMemoryMode, hasMemory: state.hasMemory);
+    state = CalculatorState(isScientificMode: state.isScientificMode, expandedPanel: state.expandedPanel, hasMemory: state.hasMemory);
   }
 
   void toggleScientificMode() {
-    state = state.copyWith(isScientificMode: !state.isScientificMode);
+    if (state.isScientificMode) {
+      // Collapse any open panel when turning off scientific mode
+      state = state.copyWith(isScientificMode: false, expandedPanel: ExpandedPanel.none);
+    } else {
+      state = state.copyWith(isScientificMode: true);
+    }
   }
 
-  void toggleMemoryMode() {
-    state = state.copyWith(isMemoryMode: !state.isMemoryMode);
+  void togglePanel(ExpandedPanel panel) {
+    if (state.expandedPanel == panel) {
+      state = state.copyWith(expandedPanel: ExpandedPanel.none);
+    } else {
+      state = state.copyWith(expandedPanel: panel);
+    }
   }
 
   void toggleDegreeMode() {
@@ -192,6 +201,14 @@ class Calculator extends _$Calculator {
   }
 
   Future<bool> evaluate() async {
+    if (state.showResult) {
+      if (state.exactResult != null) {
+        toggleDisplayFormat();
+        return true;
+      }
+      return false;
+    }
+
     if (state.expression.isEmpty) return false;
     
     final lastToken = state.tokens.last;

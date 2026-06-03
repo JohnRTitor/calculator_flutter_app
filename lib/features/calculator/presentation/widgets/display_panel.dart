@@ -11,16 +11,21 @@ class DisplayPanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(calculatorProvider);
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-      alignment: Alignment.bottomRight,
+      margin: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(24),
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          // Expression
-          const TokenTextField(),
+          // Expression input
+          const Expanded(child: Align(alignment: Alignment.bottomRight, child: TokenTextField())),
           const SizedBox(height: 8),
           
           // Error or Preview
@@ -28,14 +33,17 @@ class DisplayPanel extends ConsumerWidget {
             Text(
               state.error!,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.error,
+                color: colorScheme.error,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             )
           else if (!state.showResult && state.preview.isNotEmpty)
             Text(
               '= ${state.preview}',
               style: theme.textTheme.headlineSmall?.copyWith(
-                color: theme.colorScheme.primary,
+                color: colorScheme.primary.withValues(alpha: 0.7),
+                fontWeight: FontWeight.w400,
               ),
             ),
 
@@ -45,30 +53,31 @@ class DisplayPanel extends ConsumerWidget {
               onLongPress: () {
                 Clipboard.setData(ClipboardData(text: state.result));
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Result copied to clipboard')),
+                  SnackBar(
+                    content: const Text('Result copied'),
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    duration: const Duration(milliseconds: 1500),
+                  ),
                 );
               },
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 reverse: true,
                 child: Text(
-                  state.displayAsFraction && state.exactResult != null ? state.exactResult! : (state.result.isEmpty ? '0' : state.result),
+                  state.displayAsFraction && state.exactResult != null
+                      ? state.exactResult!
+                      : (state.result.isEmpty ? '0' : state.result),
                   style: theme.textTheme.displayLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface,
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onSurface,
+                    fontSize: 48,
                   ),
                 ),
               ),
             )
           else
-            // Placeholder to keep spacing stable when typing
-            Text(
-              ' ',
-              style: theme.textTheme.displayLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                fontSize: 10,
-              ),
-            ),
+            const SizedBox(height: 8),
         ],
       ),
     );

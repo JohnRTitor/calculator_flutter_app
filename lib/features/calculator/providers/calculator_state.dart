@@ -1,10 +1,12 @@
+enum ExpandedPanel { none, trig, log, memory }
+
 class CalculatorState {
   final List<String> tokens;
   final int cursorIndex;
   final String preview;
   final String result;
   final bool isScientificMode;
-  final bool isMemoryMode;
+  final ExpandedPanel expandedPanel;
   final bool isDegreeMode;
   final bool isInvMode;
   final bool isHypMode;
@@ -15,6 +17,9 @@ class CalculatorState {
   final String? exactResult;
   final bool displayAsFraction;
 
+  // Keep for backward compat with provider
+  bool get isMemoryMode => expandedPanel == ExpandedPanel.memory;
+
   String get expression => tokens.join('');
 
   const CalculatorState({
@@ -23,7 +28,7 @@ class CalculatorState {
     this.preview = '',
     this.result = '',
     this.isScientificMode = false,
-    this.isMemoryMode = false,
+    this.expandedPanel = ExpandedPanel.none,
     this.isDegreeMode = true,
     this.isInvMode = false,
     this.isHypMode = false,
@@ -41,7 +46,7 @@ class CalculatorState {
     String? preview,
     String? result,
     bool? isScientificMode,
-    bool? isMemoryMode,
+    ExpandedPanel? expandedPanel,
     bool? isDegreeMode,
     bool? isInvMode,
     bool? isHypMode,
@@ -60,7 +65,7 @@ class CalculatorState {
       preview: preview ?? this.preview,
       result: result ?? this.result,
       isScientificMode: isScientificMode ?? this.isScientificMode,
-      isMemoryMode: isMemoryMode ?? this.isMemoryMode,
+      expandedPanel: expandedPanel ?? this.expandedPanel,
       isDegreeMode: isDegreeMode ?? this.isDegreeMode,
       isInvMode: isInvMode ?? this.isInvMode,
       isHypMode: isHypMode ?? this.isHypMode,

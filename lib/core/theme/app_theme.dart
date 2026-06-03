@@ -31,10 +31,10 @@ class AppTheme {
     final ColorScheme amoledColorScheme = baseColorScheme.copyWith(
       surface: Colors.black,
       surfaceContainerLowest: Colors.black,
-      surfaceContainerLow: const Color(0xFF111111),
-      surfaceContainer: const Color(0xFF1E1E1E),
-      surfaceContainerHigh: const Color(0xFF2A2A2A),
-      surfaceContainerHighest: const Color(0xFF333333),
+      surfaceContainerLow: const Color(0xFF0A0A0A),
+      surfaceContainer: const Color(0xFF141414),
+      surfaceContainerHigh: const Color(0xFF1E1E1E),
+      surfaceContainerHighest: const Color(0xFF282828),
     );
 
     return _buildTheme(amoledColorScheme).copyWith(
@@ -58,9 +58,26 @@ class AppTheme {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(24),
           ),
           padding: EdgeInsets.zero,
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          padding: EdgeInsets.zero,
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
       ),
     );
