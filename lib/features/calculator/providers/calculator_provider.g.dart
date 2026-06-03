@@ -10,11 +10,11 @@ part of 'calculator_provider.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(Calculator)
-const calculatorProvider = CalculatorProvider._();
+final calculatorProvider = CalculatorProvider._();
 
 final class CalculatorProvider
     extends $NotifierProvider<Calculator, CalculatorState> {
-  const CalculatorProvider._()
+  CalculatorProvider._()
     : super(
         from: null,
         argument: null,
@@ -41,14 +41,13 @@ final class CalculatorProvider
   }
 }
 
-String _$calculatorHash() => r'a8e3b728f202cb0b2463e44a8d058d6ba3cc83b1';
+String _$calculatorHash() => r'7c54fd77e942f1b92364d6017fdb4f35042a608d';
 
 abstract class _$Calculator extends $Notifier<CalculatorState> {
   CalculatorState build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final created = build();
     final ref = this.ref as $Ref<CalculatorState, CalculatorState>;
     final element =
         ref.element
@@ -58,6 +57,6 @@ abstract class _$Calculator extends $Notifier<CalculatorState> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    element.handleCreate(ref, build);
   }
 }

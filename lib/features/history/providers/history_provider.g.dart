@@ -10,11 +10,11 @@ part of 'history_provider.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(History)
-const historyProvider = HistoryProvider._();
+final historyProvider = HistoryProvider._();
 
 final class HistoryProvider
     extends $AsyncNotifierProvider<History, List<HistoryEntry>> {
-  const HistoryProvider._()
+  HistoryProvider._()
     : super(
         from: null,
         argument: null,
@@ -40,7 +40,6 @@ abstract class _$History extends $AsyncNotifier<List<HistoryEntry>> {
   @$mustCallSuper
   @override
   void runBuild() {
-    final created = build();
     final ref =
         this.ref as $Ref<AsyncValue<List<HistoryEntry>>, List<HistoryEntry>>;
     final element =
@@ -51,6 +50,6 @@ abstract class _$History extends $AsyncNotifier<List<HistoryEntry>> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    element.handleCreate(ref, build);
   }
 }
