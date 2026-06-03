@@ -3,15 +3,27 @@ mod tests {
     use crate::parser;
     use crate::evaluator;
 
-    fn eval(expr: &str) -> f64 {
-        eval_with_state(expr, false, 0.0)
-    }
-
-    fn eval_with_state(expr: &str, is_degree: bool, ans_value: f64) -> f64 {
+    // Base evaluation function that returns the raw Result
+    fn evaluate_core(expr: &str, is_degree: bool, ans_value: f64) -> Result<crate::rational::CalcValue, crate::error::CalcError> {
         let tokens = parser::tokenize(expr).unwrap();
         let mut p = parser::Parser::new(&tokens);
         let ast = p.parse().unwrap();
-        evaluator::evaluate_expr(&ast, is_degree, ans_value).unwrap()
+        evaluator::evaluate_expr(&ast, is_degree, ans_value)
+    }
+
+    // Convenience: evaluates to f64 with default state (radians, ans = 0)
+    fn eval(expr: &str) -> f64 {
+        evaluate_core(expr, false, 0.0).unwrap().to_float()
+    }
+
+    // Convenience: evaluates to f64 with custom state
+    fn eval_with_state(expr: &str, is_degree: bool, ans_value: f64) -> f64 {
+        evaluate_core(expr, is_degree, ans_value).unwrap().to_float()
+    }
+
+    // Convenience: evaluates to Result (useful for testing expected errors)
+    fn eval_result(expr: &str, is_degree: bool) -> Result<crate::rational::CalcValue, crate::error::CalcError> {
+        evaluate_core(expr, is_degree, 0.0)
     }
 
     #[test]
@@ -69,5 +81,19 @@ mod tests {
     fn test_ans() {
         assert_eq!(eval_with_state("5+ans", false, 10.0), 15.0);
         assert_eq!(eval_with_state("ans*2", false, 21.0), 42.0);
+    }
+
+    #[test]
+    fn test_edge_cases() {
+        assert!(matches!(eval_result("1/0", false), Err(crate::error::CalcError::DivisionByZero)));
+        assert!(matches!(eval_result("1/cos(90)", true), Err(crate::error::CalcError::DivisionByZero)));
+        assert!(matches!(eval_result("tan(90)", true), Err(crate::error::CalcError::DomainError(_))));
+        assert!(matches!(eval_result("sqrt(-1)", false), Err(crate::error::CalcError::DomainError(_))));
+        assert!(matches!(eval_result("asin(2)", false), Err(crate::error::CalcError::DomainError(_))));
+        assert!(matches!(eval_result("0/0", false), Err(crate::error::CalcError::DivisionByZero)));
+
+        assert_eq!(eval_with_state("cos(90)", true, 0.0), 0.0);
+        assert_eq!(eval_with_state("sin(180)", true, 0.0), 0.0);
+        assert_eq!(eval_with_state("tan(180)", true, 0.0), 0.0);
     }
 }

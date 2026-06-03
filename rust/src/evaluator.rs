@@ -51,15 +51,24 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
         }
         Expr::Sin(e) => {
             let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
-            Ok(CalcValue::Float(if is_degree { val.to_radians().sin() } else { val.sin() }))
+            let mut res = if is_degree { val.to_radians().sin() } else { val.sin() };
+            if is_degree && val % 180.0 == 0.0 { res = 0.0; }
+            Ok(CalcValue::Float(res))
         }
         Expr::Cos(e) => {
             let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
-            Ok(CalcValue::Float(if is_degree { val.to_radians().cos() } else { val.cos() }))
+            let mut res = if is_degree { val.to_radians().cos() } else { val.cos() };
+            if is_degree && (val - 90.0) % 180.0 == 0.0 { res = 0.0; }
+            Ok(CalcValue::Float(res))
         }
         Expr::Tan(e) => {
             let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
-            Ok(CalcValue::Float(if is_degree { val.to_radians().tan() } else { val.tan() }))
+            if is_degree && (val - 90.0) % 180.0 == 0.0 {
+                return Err(CalcError::DomainError("Tangent undefined".to_string()));
+            }
+            let mut res = if is_degree { val.to_radians().tan() } else { val.tan() };
+            if is_degree && val % 180.0 == 0.0 { res = 0.0; }
+            Ok(CalcValue::Float(res))
         }
         Expr::Asin(e) => {
             let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
