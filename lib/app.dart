@@ -4,7 +4,7 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:calculator_flutter_app/core/theme/app_theme.dart';
 
 import 'package:calculator_flutter_app/features/settings/providers/theme_provider.dart';
-import 'package:calculator_flutter_app/features/calculator/presentation/screens/calculator_screen.dart';
+import 'package:calculator_flutter_app/features/home/presentation/screens/main_screen.dart';
 
 class CalculatorApp extends ConsumerWidget {
   const CalculatorApp({super.key});
@@ -36,7 +36,7 @@ class CalculatorApp extends ConsumerWidget {
             ? AppTheme.amoledTheme(darkDynamic) 
             : AppTheme.darkTheme(darkDynamic), 
           themeMode: flutterThemeMode,
-          home: const CalculatorScreen(),
+          home: const MainScreen(),
         );
       },
     );

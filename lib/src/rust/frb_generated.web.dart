@@ -7,6 +7,7 @@
 // ignore_for_file: argument_type_not_assignable
 
 import 'api/calculator.dart';
+import 'api/converter_api.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.dart';
@@ -25,19 +26,45 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String dco_decode_String(dynamic raw);
 
   @protected
+  BmiResult dco_decode_bmi_result(dynamic raw);
+
+  @protected
   bool dco_decode_bool(dynamic raw);
 
   @protected
   double dco_decode_box_autoadd_f_64(dynamic raw);
 
   @protected
+  FfiUnit dco_decode_box_autoadd_ffi_unit(dynamic raw);
+
+  @protected
   CalcResult dco_decode_calc_result(dynamic raw);
+
+  @protected
+  DiscountResult dco_decode_discount_result(dynamic raw);
 
   @protected
   double dco_decode_f_64(dynamic raw);
 
   @protected
+  FfiConverterCategory dco_decode_ffi_converter_category(dynamic raw);
+
+  @protected
+  FfiUnit dco_decode_ffi_unit(dynamic raw);
+
+  @protected
+  GstResult dco_decode_gst_result(dynamic raw);
+
+  @protected
   HistoryEntry dco_decode_history_entry(dynamic raw);
+
+  @protected
+  List<FfiConverterCategory> dco_decode_list_ffi_converter_category(
+    dynamic raw,
+  );
+
+  @protected
+  List<FfiUnit> dco_decode_list_ffi_unit(dynamic raw);
 
   @protected
   List<HistoryEntry> dco_decode_list_history_entry(dynamic raw);
@@ -67,19 +94,47 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String sse_decode_String(SseDeserializer deserializer);
 
   @protected
+  BmiResult sse_decode_bmi_result(SseDeserializer deserializer);
+
+  @protected
   bool sse_decode_bool(SseDeserializer deserializer);
 
   @protected
   double sse_decode_box_autoadd_f_64(SseDeserializer deserializer);
 
   @protected
+  FfiUnit sse_decode_box_autoadd_ffi_unit(SseDeserializer deserializer);
+
+  @protected
   CalcResult sse_decode_calc_result(SseDeserializer deserializer);
+
+  @protected
+  DiscountResult sse_decode_discount_result(SseDeserializer deserializer);
 
   @protected
   double sse_decode_f_64(SseDeserializer deserializer);
 
   @protected
+  FfiConverterCategory sse_decode_ffi_converter_category(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  FfiUnit sse_decode_ffi_unit(SseDeserializer deserializer);
+
+  @protected
+  GstResult sse_decode_gst_result(SseDeserializer deserializer);
+
+  @protected
   HistoryEntry sse_decode_history_entry(SseDeserializer deserializer);
+
+  @protected
+  List<FfiConverterCategory> sse_decode_list_ffi_converter_category(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<FfiUnit> sse_decode_list_ffi_unit(SseDeserializer deserializer);
 
   @protected
   List<HistoryEntry> sse_decode_list_history_entry(
@@ -114,19 +169,52 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_String(String self, SseSerializer serializer);
 
   @protected
+  void sse_encode_bmi_result(BmiResult self, SseSerializer serializer);
+
+  @protected
   void sse_encode_bool(bool self, SseSerializer serializer);
 
   @protected
   void sse_encode_box_autoadd_f_64(double self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_ffi_unit(FfiUnit self, SseSerializer serializer);
+
+  @protected
   void sse_encode_calc_result(CalcResult self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_discount_result(
+    DiscountResult self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_f_64(double self, SseSerializer serializer);
 
   @protected
+  void sse_encode_ffi_converter_category(
+    FfiConverterCategory self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_ffi_unit(FfiUnit self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_gst_result(GstResult self, SseSerializer serializer);
+
+  @protected
   void sse_encode_history_entry(HistoryEntry self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_list_ffi_converter_category(
+    List<FfiConverterCategory> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_ffi_unit(List<FfiUnit> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_history_entry(

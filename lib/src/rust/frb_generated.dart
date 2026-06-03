@@ -4,6 +4,7 @@
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
 import 'api/calculator.dart';
+import 'api/converter_api.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.dart';
@@ -65,7 +66,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => -1848056585;
+  int get rustContentHash => 1602414036;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -77,6 +78,34 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
+  BmiResult crateApiConverterApiCalculateBmi({
+    required double weightKg,
+    required double heightM,
+  });
+
+  DiscountResult crateApiConverterApiCalculateDiscount({
+    required double originalPrice,
+    required double discountPercentage,
+  });
+
+  GstResult crateApiConverterApiCalculateGst({
+    required double amount,
+    required double gstPercentage,
+    required bool addGst,
+  });
+
+  String? crateApiConverterApiConvertNumeral({
+    required String value,
+    required int fromBase,
+    required int toBase,
+  });
+
+  double crateApiConverterApiConvertStandard({
+    required double value,
+    required FfiUnit fromUnit,
+    required FfiUnit toUnit,
+  });
+
   CalcResult crateApiCalculatorEvaluate({
     required String expression,
     required bool isDegree,
@@ -87,6 +116,8 @@ abstract class RustLibApi extends BaseApi {
     required double value,
     required int maxPrecision,
   });
+
+  List<FfiConverterCategory> crateApiConverterApiGetConverterCategories();
 
   void crateApiCalculatorHistoryAdd({
     required String expression,
@@ -123,6 +154,162 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
+  BmiResult crateApiConverterApiCalculateBmi({
+    required double weightKg,
+    required double heightM,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_f_64(weightKg, serializer);
+          sse_encode_f_64(heightM, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 1)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_bmi_result,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiConverterApiCalculateBmiConstMeta,
+        argValues: [weightKg, heightM],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiConverterApiCalculateBmiConstMeta =>
+      const TaskConstMeta(
+        debugName: "calculate_bmi",
+        argNames: ["weightKg", "heightM"],
+      );
+
+  @override
+  DiscountResult crateApiConverterApiCalculateDiscount({
+    required double originalPrice,
+    required double discountPercentage,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_f_64(originalPrice, serializer);
+          sse_encode_f_64(discountPercentage, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 2)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_discount_result,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiConverterApiCalculateDiscountConstMeta,
+        argValues: [originalPrice, discountPercentage],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiConverterApiCalculateDiscountConstMeta =>
+      const TaskConstMeta(
+        debugName: "calculate_discount",
+        argNames: ["originalPrice", "discountPercentage"],
+      );
+
+  @override
+  GstResult crateApiConverterApiCalculateGst({
+    required double amount,
+    required double gstPercentage,
+    required bool addGst,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_f_64(amount, serializer);
+          sse_encode_f_64(gstPercentage, serializer);
+          sse_encode_bool(addGst, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 3)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_gst_result,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiConverterApiCalculateGstConstMeta,
+        argValues: [amount, gstPercentage, addGst],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiConverterApiCalculateGstConstMeta =>
+      const TaskConstMeta(
+        debugName: "calculate_gst",
+        argNames: ["amount", "gstPercentage", "addGst"],
+      );
+
+  @override
+  String? crateApiConverterApiConvertNumeral({
+    required String value,
+    required int fromBase,
+    required int toBase,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(value, serializer);
+          sse_encode_u_32(fromBase, serializer);
+          sse_encode_u_32(toBase, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 4)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_opt_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiConverterApiConvertNumeralConstMeta,
+        argValues: [value, fromBase, toBase],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiConverterApiConvertNumeralConstMeta =>
+      const TaskConstMeta(
+        debugName: "convert_numeral",
+        argNames: ["value", "fromBase", "toBase"],
+      );
+
+  @override
+  double crateApiConverterApiConvertStandard({
+    required double value,
+    required FfiUnit fromUnit,
+    required FfiUnit toUnit,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_f_64(value, serializer);
+          sse_encode_box_autoadd_ffi_unit(fromUnit, serializer);
+          sse_encode_box_autoadd_ffi_unit(toUnit, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 5)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_f_64,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiConverterApiConvertStandardConstMeta,
+        argValues: [value, fromUnit, toUnit],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiConverterApiConvertStandardConstMeta =>
+      const TaskConstMeta(
+        debugName: "convert_standard",
+        argNames: ["value", "fromUnit", "toUnit"],
+      );
+
+  @override
   CalcResult crateApiCalculatorEvaluate({
     required String expression,
     required bool isDegree,
@@ -135,7 +322,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_String(expression, serializer);
           sse_encode_bool(isDegree, serializer);
           sse_encode_f_64(ansValue, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 1)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_calc_result,
@@ -164,7 +351,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_f_64(value, serializer);
           sse_encode_u_32(maxPrecision, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 2)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 7)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -184,6 +371,28 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  List<FfiConverterCategory> crateApiConverterApiGetConverterCategories() {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 8)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_ffi_converter_category,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiConverterApiGetConverterCategoriesConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiConverterApiGetConverterCategoriesConstMeta =>
+      const TaskConstMeta(debugName: "get_converter_categories", argNames: []);
+
+  @override
   void crateApiCalculatorHistoryAdd({
     required String expression,
     required String result,
@@ -194,7 +403,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(expression, serializer);
           sse_encode_String(result, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 3)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 9)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
@@ -219,7 +428,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 4)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 10)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
@@ -242,7 +451,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_usize(index, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 5)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 11)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
@@ -264,7 +473,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 12)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_list_history_entry,
@@ -290,7 +499,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 7,
+            funcId: 13,
             port: port_,
           );
         },
@@ -318,7 +527,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 8,
+            funcId: 14,
             port: port_,
           );
         },
@@ -343,7 +552,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_f_64(value, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 9)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 15)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
@@ -365,7 +574,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 10)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 16)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
@@ -387,7 +596,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 11)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 17)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_opt_box_autoadd_f_64,
@@ -410,7 +619,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_f_64(value, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 12)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 18)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
@@ -433,7 +642,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_f_64(value, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 13)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 19)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
@@ -456,6 +665,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  BmiResult dco_decode_bmi_result(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return BmiResult(
+      bmi: dco_decode_f_64(arr[0]),
+      category: dco_decode_String(arr[1]),
+    );
+  }
+
+  @protected
   bool dco_decode_bool(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as bool;
@@ -465,6 +686,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   double dco_decode_box_autoadd_f_64(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as double;
+  }
+
+  @protected
+  FfiUnit dco_decode_box_autoadd_ffi_unit(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_ffi_unit(raw);
   }
 
   @protected
@@ -481,9 +708,63 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  DiscountResult dco_decode_discount_result(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return DiscountResult(
+      amountSaved: dco_decode_f_64(arr[0]),
+      finalPrice: dco_decode_f_64(arr[1]),
+    );
+  }
+
+  @protected
   double dco_decode_f_64(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as double;
+  }
+
+  @protected
+  FfiConverterCategory dco_decode_ffi_converter_category(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    return FfiConverterCategory(
+      id: dco_decode_String(arr[0]),
+      name: dco_decode_String(arr[1]),
+      iconName: dco_decode_String(arr[2]),
+      units: dco_decode_list_ffi_unit(arr[3]),
+    );
+  }
+
+  @protected
+  FfiUnit dco_decode_ffi_unit(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return FfiUnit(
+      id: dco_decode_String(arr[0]),
+      name: dco_decode_String(arr[1]),
+      symbol: dco_decode_String(arr[2]),
+      multiplier: dco_decode_f_64(arr[3]),
+      offset: dco_decode_f_64(arr[4]),
+    );
+  }
+
+  @protected
+  GstResult dco_decode_gst_result(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    return GstResult(
+      gstAmount: dco_decode_f_64(arr[0]),
+      totalAmount: dco_decode_f_64(arr[1]),
+      originalAmount: dco_decode_f_64(arr[2]),
+    );
   }
 
   @protected
@@ -496,6 +777,22 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       expression: dco_decode_String(arr[0]),
       result: dco_decode_String(arr[1]),
     );
+  }
+
+  @protected
+  List<FfiConverterCategory> dco_decode_list_ffi_converter_category(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>)
+        .map(dco_decode_ffi_converter_category)
+        .toList();
+  }
+
+  @protected
+  List<FfiUnit> dco_decode_list_ffi_unit(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_ffi_unit).toList();
   }
 
   @protected
@@ -554,6 +851,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  BmiResult sse_decode_bmi_result(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_bmi = sse_decode_f_64(deserializer);
+    var var_category = sse_decode_String(deserializer);
+    return BmiResult(bmi: var_bmi, category: var_category);
+  }
+
+  @protected
   bool sse_decode_bool(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getUint8() != 0;
@@ -563,6 +868,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   double sse_decode_box_autoadd_f_64(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_f_64(deserializer));
+  }
+
+  @protected
+  FfiUnit sse_decode_box_autoadd_ffi_unit(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_ffi_unit(deserializer));
   }
 
   @protected
@@ -579,9 +890,67 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  DiscountResult sse_decode_discount_result(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_amountSaved = sse_decode_f_64(deserializer);
+    var var_finalPrice = sse_decode_f_64(deserializer);
+    return DiscountResult(
+      amountSaved: var_amountSaved,
+      finalPrice: var_finalPrice,
+    );
+  }
+
+  @protected
   double sse_decode_f_64(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getFloat64();
+  }
+
+  @protected
+  FfiConverterCategory sse_decode_ffi_converter_category(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_id = sse_decode_String(deserializer);
+    var var_name = sse_decode_String(deserializer);
+    var var_iconName = sse_decode_String(deserializer);
+    var var_units = sse_decode_list_ffi_unit(deserializer);
+    return FfiConverterCategory(
+      id: var_id,
+      name: var_name,
+      iconName: var_iconName,
+      units: var_units,
+    );
+  }
+
+  @protected
+  FfiUnit sse_decode_ffi_unit(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_id = sse_decode_String(deserializer);
+    var var_name = sse_decode_String(deserializer);
+    var var_symbol = sse_decode_String(deserializer);
+    var var_multiplier = sse_decode_f_64(deserializer);
+    var var_offset = sse_decode_f_64(deserializer);
+    return FfiUnit(
+      id: var_id,
+      name: var_name,
+      symbol: var_symbol,
+      multiplier: var_multiplier,
+      offset: var_offset,
+    );
+  }
+
+  @protected
+  GstResult sse_decode_gst_result(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_gstAmount = sse_decode_f_64(deserializer);
+    var var_totalAmount = sse_decode_f_64(deserializer);
+    var var_originalAmount = sse_decode_f_64(deserializer);
+    return GstResult(
+      gstAmount: var_gstAmount,
+      totalAmount: var_totalAmount,
+      originalAmount: var_originalAmount,
+    );
   }
 
   @protected
@@ -590,6 +959,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_expression = sse_decode_String(deserializer);
     var var_result = sse_decode_String(deserializer);
     return HistoryEntry(expression: var_expression, result: var_result);
+  }
+
+  @protected
+  List<FfiConverterCategory> sse_decode_list_ffi_converter_category(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <FfiConverterCategory>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_ffi_converter_category(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
+  List<FfiUnit> sse_decode_list_ffi_unit(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <FfiUnit>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_ffi_unit(deserializer));
+    }
+    return ans_;
   }
 
   @protected
@@ -671,6 +1066,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_bmi_result(BmiResult self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_f_64(self.bmi, serializer);
+    sse_encode_String(self.category, serializer);
+  }
+
+  @protected
   void sse_encode_bool(bool self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putUint8(self ? 1 : 0);
@@ -683,11 +1085,27 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_ffi_unit(FfiUnit self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_ffi_unit(self, serializer);
+  }
+
+  @protected
   void sse_encode_calc_result(CalcResult self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_f_64(self.value, serializer);
     sse_encode_String(self.formatted, serializer);
     sse_encode_opt_String(self.exactFraction, serializer);
+  }
+
+  @protected
+  void sse_encode_discount_result(
+    DiscountResult self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_f_64(self.amountSaved, serializer);
+    sse_encode_f_64(self.finalPrice, serializer);
   }
 
   @protected
@@ -697,10 +1115,61 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_ffi_converter_category(
+    FfiConverterCategory self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.id, serializer);
+    sse_encode_String(self.name, serializer);
+    sse_encode_String(self.iconName, serializer);
+    sse_encode_list_ffi_unit(self.units, serializer);
+  }
+
+  @protected
+  void sse_encode_ffi_unit(FfiUnit self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.id, serializer);
+    sse_encode_String(self.name, serializer);
+    sse_encode_String(self.symbol, serializer);
+    sse_encode_f_64(self.multiplier, serializer);
+    sse_encode_f_64(self.offset, serializer);
+  }
+
+  @protected
+  void sse_encode_gst_result(GstResult self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_f_64(self.gstAmount, serializer);
+    sse_encode_f_64(self.totalAmount, serializer);
+    sse_encode_f_64(self.originalAmount, serializer);
+  }
+
+  @protected
   void sse_encode_history_entry(HistoryEntry self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.expression, serializer);
     sse_encode_String(self.result, serializer);
+  }
+
+  @protected
+  void sse_encode_list_ffi_converter_category(
+    List<FfiConverterCategory> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_ffi_converter_category(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_list_ffi_unit(List<FfiUnit> self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_ffi_unit(item, serializer);
+    }
   }
 
   @protected
