@@ -1,5 +1,5 @@
+use crate::unit_converter::converter;
 use flutter_rust_bridge::frb;
-use crate::converter;
 
 #[frb]
 #[derive(Debug, Clone)]
@@ -28,7 +28,8 @@ pub fn get_converter_categories() -> Vec<FfiConverterCategory> {
             id: c.id,
             name: c.name,
             icon_name: c.icon_name,
-            units: c.units
+            units: c
+                .units
                 .into_iter()
                 .map(|u| FfiUnit {
                     id: u.id,
@@ -69,7 +70,8 @@ pub struct DiscountResult {
 
 #[frb(sync)]
 pub fn calculate_discount(original_price: f64, discount_percentage: f64) -> DiscountResult {
-    let (_, final_price, amount_saved) = converter::calculate_discount(original_price, discount_percentage);
+    let (_, final_price, amount_saved) =
+        converter::calculate_discount(original_price, discount_percentage);
     DiscountResult {
         amount_saved,
         final_price,
@@ -85,7 +87,8 @@ pub struct GstResult {
 
 #[frb(sync)]
 pub fn calculate_gst(amount: f64, gst_percentage: f64, add_gst: bool) -> GstResult {
-    let (gst_amount, total_amount, original_amount, _) = converter::calculate_gst(amount, gst_percentage, add_gst);
+    let (gst_amount, total_amount, original_amount, _) =
+        converter::calculate_gst(amount, gst_percentage, add_gst);
     GstResult {
         gst_amount,
         total_amount,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:calculator_flutter_app/src/rust/api/converter_api.dart';
+import 'package:calculator_flutter_app/src/rust/api/converter.dart';
 import 'package:calculator_flutter_app/features/converter/providers/converter_provider.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/screens/converter_detail_screen.dart';
 

@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 #[derive(Debug, Clone)]
 pub struct Unit {
     pub id: String,
@@ -109,7 +107,13 @@ fn get_volume_category() -> ConverterCategory {
             Unit::new("gal_us", "Gallon (US)", "gal", 3.785411784, 0.0),
             Unit::new("qt_us", "Quart (US)", "qt", 0.946352946, 0.0),
             Unit::new("pt_us", "Pint (US)", "pt", 0.473176473, 0.0),
-            Unit::new("fl_oz_us", "Fluid Ounce (US)", "fl oz", 0.0295735295625, 0.0),
+            Unit::new(
+                "fl_oz_us",
+                "Fluid Ounce (US)",
+                "fl oz",
+                0.0295735295625,
+                0.0,
+            ),
         ],
     }
 }
@@ -172,12 +176,24 @@ fn get_data_category() -> ConverterCategory {
             Unit::new("mb", "Megabyte (Decimal)", "MB", 1_000_000.0, 0.0),
             Unit::new("gb", "Gigabyte (Decimal)", "GB", 1_000_000_000.0, 0.0),
             Unit::new("tb", "Terabyte (Decimal)", "TB", 1_000_000_000_000.0, 0.0),
-            Unit::new("pb", "Petabyte (Decimal)", "PB", 1_000_000_000_000_000.0, 0.0),
+            Unit::new(
+                "pb",
+                "Petabyte (Decimal)",
+                "PB",
+                1_000_000_000_000_000.0,
+                0.0,
+            ),
             Unit::new("kib", "Kibibyte (Binary)", "KiB", 1024.0, 0.0),
             Unit::new("mib", "Mebibyte (Binary)", "MiB", 1_048_576.0, 0.0),
             Unit::new("gib", "Gibibyte (Binary)", "GiB", 1_073_741_824.0, 0.0),
             Unit::new("tib", "Tebibyte (Binary)", "TiB", 1_099_511_627_776.0, 0.0),
-            Unit::new("pib", "Pebibyte (Binary)", "PiB", 1_125_899_906_842_624.0, 0.0),
+            Unit::new(
+                "pib",
+                "Pebibyte (Binary)",
+                "PiB",
+                1_125_899_906_842_624.0,
+                0.0,
+            ),
         ],
     }
 }
@@ -226,7 +242,7 @@ pub fn calculate_bmi(weight_kg: f64, height_m: f64) -> (f64, String) {
         return (0.0, "Invalid".to_string());
     }
     let bmi = weight_kg / (height_m * height_m);
-    
+
     let category = if bmi < 18.5 {
         "Underweight"
     } else if bmi >= 18.5 && bmi < 25.0 {

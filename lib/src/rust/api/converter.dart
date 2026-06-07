@@ -9,13 +9,13 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `fmt`, `fmt`
 
 List<FfiConverterCategory> getConverterCategories() =>
-    RustLib.instance.api.crateApiConverterApiGetConverterCategories();
+    RustLib.instance.api.crateApiConverterGetConverterCategories();
 
 double convertStandard({
   required double value,
   required FfiUnit fromUnit,
   required FfiUnit toUnit,
-}) => RustLib.instance.api.crateApiConverterApiConvertStandard(
+}) => RustLib.instance.api.crateApiConverterConvertStandard(
   value: value,
   fromUnit: fromUnit,
   toUnit: toUnit,
@@ -24,7 +24,7 @@ double convertStandard({
 DiscountResult calculateDiscount({
   required double originalPrice,
   required double discountPercentage,
-}) => RustLib.instance.api.crateApiConverterApiCalculateDiscount(
+}) => RustLib.instance.api.crateApiConverterCalculateDiscount(
   originalPrice: originalPrice,
   discountPercentage: discountPercentage,
 );
@@ -33,14 +33,14 @@ GstResult calculateGst({
   required double amount,
   required double gstPercentage,
   required bool addGst,
-}) => RustLib.instance.api.crateApiConverterApiCalculateGst(
+}) => RustLib.instance.api.crateApiConverterCalculateGst(
   amount: amount,
   gstPercentage: gstPercentage,
   addGst: addGst,
 );
 
 BmiResult calculateBmi({required double weightKg, required double heightM}) =>
-    RustLib.instance.api.crateApiConverterApiCalculateBmi(
+    RustLib.instance.api.crateApiConverterCalculateBmi(
       weightKg: weightKg,
       heightM: heightM,
     );
@@ -49,7 +49,7 @@ String? convertNumeral({
   required String value,
   required int fromBase,
   required int toBase,
-}) => RustLib.instance.api.crateApiConverterApiConvertNumeral(
+}) => RustLib.instance.api.crateApiConverterConvertNumeral(
   value: value,
   fromBase: fromBase,
   toBase: toBase,

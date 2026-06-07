@@ -50,7 +50,10 @@ impl CalcValue {
     pub fn add(self, other: CalcValue) -> CalcValue {
         match (self, other) {
             (CalcValue::Rational(r1), CalcValue::Rational(r2)) => {
-                let num = r1.num.checked_mul(r2.den).and_then(|n| n.checked_add(r2.num.checked_mul(r1.den)?));
+                let num = r1
+                    .num
+                    .checked_mul(r2.den)
+                    .and_then(|n| n.checked_add(r2.num.checked_mul(r1.den)?));
                 let den = r1.den.checked_mul(r2.den);
                 match (num, den) {
                     (Some(n), Some(d)) => CalcValue::Rational(Rational::new(n, d)),
@@ -58,7 +61,10 @@ impl CalcValue {
                 }
             }
             (CalcValue::PiRational(r1), CalcValue::PiRational(r2)) => {
-                let num = r1.num.checked_mul(r2.den).and_then(|n| n.checked_add(r2.num.checked_mul(r1.den)?));
+                let num = r1
+                    .num
+                    .checked_mul(r2.den)
+                    .and_then(|n| n.checked_add(r2.num.checked_mul(r1.den)?));
                 let den = r1.den.checked_mul(r2.den);
                 match (num, den) {
                     (Some(n), Some(d)) => CalcValue::PiRational(Rational::new(n, d)),
@@ -72,7 +78,10 @@ impl CalcValue {
     pub fn sub(self, other: CalcValue) -> CalcValue {
         match (self, other) {
             (CalcValue::Rational(r1), CalcValue::Rational(r2)) => {
-                let num = r1.num.checked_mul(r2.den).and_then(|n| n.checked_sub(r2.num.checked_mul(r1.den)?));
+                let num = r1
+                    .num
+                    .checked_mul(r2.den)
+                    .and_then(|n| n.checked_sub(r2.num.checked_mul(r1.den)?));
                 let den = r1.den.checked_mul(r2.den);
                 match (num, den) {
                     (Some(n), Some(d)) => CalcValue::Rational(Rational::new(n, d)),
@@ -80,7 +89,10 @@ impl CalcValue {
                 }
             }
             (CalcValue::PiRational(r1), CalcValue::PiRational(r2)) => {
-                let num = r1.num.checked_mul(r2.den).and_then(|n| n.checked_sub(r2.num.checked_mul(r1.den)?));
+                let num = r1
+                    .num
+                    .checked_mul(r2.den)
+                    .and_then(|n| n.checked_sub(r2.num.checked_mul(r1.den)?));
                 let den = r1.den.checked_mul(r2.den);
                 match (num, den) {
                     (Some(n), Some(d)) => CalcValue::PiRational(Rational::new(n, d)),
@@ -101,7 +113,8 @@ impl CalcValue {
                     _ => CalcValue::Float(self.to_float() * other.to_float()),
                 }
             }
-            (CalcValue::Rational(r1), CalcValue::PiRational(r2)) | (CalcValue::PiRational(r2), CalcValue::Rational(r1)) => {
+            (CalcValue::Rational(r1), CalcValue::PiRational(r2))
+            | (CalcValue::PiRational(r2), CalcValue::Rational(r1)) => {
                 let num = r1.num.checked_mul(r2.num);
                 let den = r1.den.checked_mul(r2.den);
                 match (num, den) {

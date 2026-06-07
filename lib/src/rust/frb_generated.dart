@@ -4,13 +4,13 @@
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
 import 'api/calculator.dart';
-import 'api/converter_api.dart';
+import 'api/converter.dart';
+import 'calculator/history.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.dart';
 import 'frb_generated.io.dart'
     if (dart.library.js_interop) 'frb_generated.web.dart';
-import 'history.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 /// Main entrypoint of the Rust API
@@ -66,7 +66,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => 1602414036;
+  int get rustContentHash => 1465447929;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -78,29 +78,29 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
-  BmiResult crateApiConverterApiCalculateBmi({
+  BmiResult crateApiConverterCalculateBmi({
     required double weightKg,
     required double heightM,
   });
 
-  DiscountResult crateApiConverterApiCalculateDiscount({
+  DiscountResult crateApiConverterCalculateDiscount({
     required double originalPrice,
     required double discountPercentage,
   });
 
-  GstResult crateApiConverterApiCalculateGst({
+  GstResult crateApiConverterCalculateGst({
     required double amount,
     required double gstPercentage,
     required bool addGst,
   });
 
-  String? crateApiConverterApiConvertNumeral({
+  String? crateApiConverterConvertNumeral({
     required String value,
     required int fromBase,
     required int toBase,
   });
 
-  double crateApiConverterApiConvertStandard({
+  double crateApiConverterConvertStandard({
     required double value,
     required FfiUnit fromUnit,
     required FfiUnit toUnit,
@@ -117,7 +117,7 @@ abstract class RustLibApi extends BaseApi {
     required int maxPrecision,
   });
 
-  List<FfiConverterCategory> crateApiConverterApiGetConverterCategories();
+  List<FfiConverterCategory> crateApiConverterGetConverterCategories();
 
   void crateApiCalculatorHistoryAdd({
     required String expression,
@@ -154,7 +154,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
-  BmiResult crateApiConverterApiCalculateBmi({
+  BmiResult crateApiConverterCalculateBmi({
     required double weightKg,
     required double heightM,
   }) {
@@ -170,21 +170,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_bmi_result,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiConverterApiCalculateBmiConstMeta,
+        constMeta: kCrateApiConverterCalculateBmiConstMeta,
         argValues: [weightKg, heightM],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiConverterApiCalculateBmiConstMeta =>
+  TaskConstMeta get kCrateApiConverterCalculateBmiConstMeta =>
       const TaskConstMeta(
         debugName: "calculate_bmi",
         argNames: ["weightKg", "heightM"],
       );
 
   @override
-  DiscountResult crateApiConverterApiCalculateDiscount({
+  DiscountResult crateApiConverterCalculateDiscount({
     required double originalPrice,
     required double discountPercentage,
   }) {
@@ -200,21 +200,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_discount_result,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiConverterApiCalculateDiscountConstMeta,
+        constMeta: kCrateApiConverterCalculateDiscountConstMeta,
         argValues: [originalPrice, discountPercentage],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiConverterApiCalculateDiscountConstMeta =>
+  TaskConstMeta get kCrateApiConverterCalculateDiscountConstMeta =>
       const TaskConstMeta(
         debugName: "calculate_discount",
         argNames: ["originalPrice", "discountPercentage"],
       );
 
   @override
-  GstResult crateApiConverterApiCalculateGst({
+  GstResult crateApiConverterCalculateGst({
     required double amount,
     required double gstPercentage,
     required bool addGst,
@@ -232,21 +232,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_gst_result,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiConverterApiCalculateGstConstMeta,
+        constMeta: kCrateApiConverterCalculateGstConstMeta,
         argValues: [amount, gstPercentage, addGst],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiConverterApiCalculateGstConstMeta =>
+  TaskConstMeta get kCrateApiConverterCalculateGstConstMeta =>
       const TaskConstMeta(
         debugName: "calculate_gst",
         argNames: ["amount", "gstPercentage", "addGst"],
       );
 
   @override
-  String? crateApiConverterApiConvertNumeral({
+  String? crateApiConverterConvertNumeral({
     required String value,
     required int fromBase,
     required int toBase,
@@ -264,21 +264,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_opt_String,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiConverterApiConvertNumeralConstMeta,
+        constMeta: kCrateApiConverterConvertNumeralConstMeta,
         argValues: [value, fromBase, toBase],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiConverterApiConvertNumeralConstMeta =>
+  TaskConstMeta get kCrateApiConverterConvertNumeralConstMeta =>
       const TaskConstMeta(
         debugName: "convert_numeral",
         argNames: ["value", "fromBase", "toBase"],
       );
 
   @override
-  double crateApiConverterApiConvertStandard({
+  double crateApiConverterConvertStandard({
     required double value,
     required FfiUnit fromUnit,
     required FfiUnit toUnit,
@@ -296,14 +296,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_f_64,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiConverterApiConvertStandardConstMeta,
+        constMeta: kCrateApiConverterConvertStandardConstMeta,
         argValues: [value, fromUnit, toUnit],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiConverterApiConvertStandardConstMeta =>
+  TaskConstMeta get kCrateApiConverterConvertStandardConstMeta =>
       const TaskConstMeta(
         debugName: "convert_standard",
         argNames: ["value", "fromUnit", "toUnit"],
@@ -371,7 +371,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  List<FfiConverterCategory> crateApiConverterApiGetConverterCategories() {
+  List<FfiConverterCategory> crateApiConverterGetConverterCategories() {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
@@ -382,14 +382,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_list_ffi_converter_category,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiConverterApiGetConverterCategoriesConstMeta,
+        constMeta: kCrateApiConverterGetConverterCategoriesConstMeta,
         argValues: [],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiConverterApiGetConverterCategoriesConstMeta =>
+  TaskConstMeta get kCrateApiConverterGetConverterCategoriesConstMeta =>
       const TaskConstMeta(debugName: "get_converter_categories", argNames: []);
 
   @override

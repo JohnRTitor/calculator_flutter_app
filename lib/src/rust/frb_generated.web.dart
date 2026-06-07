@@ -7,11 +7,11 @@
 // ignore_for_file: argument_type_not_assignable
 
 import 'api/calculator.dart';
-import 'api/converter_api.dart';
+import 'api/converter.dart';
+import 'calculator/history.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.dart';
-import 'history.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_web.dart';
 
 abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {

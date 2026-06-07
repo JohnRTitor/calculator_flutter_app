@@ -1,4 +1,4 @@
-use crate::error::CalcError;
+use crate::calculator::error::CalcError;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Token {
@@ -41,17 +41,58 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
             ' ' | '\t' | '\n' | '\r' => {
                 chars.next();
             }
-            '+' => { tokens.push(Token::Plus); chars.next(); }
-            '-' | '−' => { tokens.push(Token::Minus); chars.next(); }
-            '*' | '×' => { tokens.push(Token::Multiply); chars.next(); }
-            '/' | '÷' => { tokens.push(Token::Divide); chars.next(); }
-            '%' => { tokens.push(Token::Modulo); chars.next(); }
-            '^' => { tokens.push(Token::Power); chars.next(); }
-            '!' => { tokens.push(Token::Factorial); chars.next(); }
-            '(' => { tokens.push(Token::LParen); chars.next(); }
-            ')' => { tokens.push(Token::RParen); chars.next(); }
-            'π' => { tokens.push(Token::Pi); chars.next(); }
-            'e' if tokens.is_empty() || matches!(tokens.last().unwrap(), Token::Plus | Token::Minus | Token::Multiply | Token::Divide | Token::Modulo | Token::Power | Token::LParen) => {
+            '+' => {
+                tokens.push(Token::Plus);
+                chars.next();
+            }
+            '-' | '−' => {
+                tokens.push(Token::Minus);
+                chars.next();
+            }
+            '*' | '×' => {
+                tokens.push(Token::Multiply);
+                chars.next();
+            }
+            '/' | '÷' => {
+                tokens.push(Token::Divide);
+                chars.next();
+            }
+            '%' => {
+                tokens.push(Token::Modulo);
+                chars.next();
+            }
+            '^' => {
+                tokens.push(Token::Power);
+                chars.next();
+            }
+            '!' => {
+                tokens.push(Token::Factorial);
+                chars.next();
+            }
+            '(' => {
+                tokens.push(Token::LParen);
+                chars.next();
+            }
+            ')' => {
+                tokens.push(Token::RParen);
+                chars.next();
+            }
+            'π' => {
+                tokens.push(Token::Pi);
+                chars.next();
+            }
+            'e' if tokens.is_empty()
+                || matches!(
+                    tokens.last().unwrap(),
+                    Token::Plus
+                        | Token::Minus
+                        | Token::Multiply
+                        | Token::Divide
+                        | Token::Modulo
+                        | Token::Power
+                        | Token::LParen
+                ) =>
+            {
                 // simple 'e' constant vs exponential notation (handled in number parsing)
                 tokens.push(Token::E);
                 chars.next();
@@ -60,7 +101,7 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                 let mut num_str = String::new();
                 let mut has_dot = false;
                 let mut has_e = false;
-                
+
                 while let Some(&nc) = chars.peek() {
                     if nc.is_ascii_digit() {
                         num_str.push(nc);
@@ -79,21 +120,23 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                             } else if nc2 == '+' || nc2 == '-' || nc2 == '−' {
                                 peek_chars.next();
                                 if let Some(&nc3) = peek_chars.peek()
-                                    && nc3.is_ascii_digit() {
-                                        is_exp = true;
-                                    }
+                                    && nc3.is_ascii_digit()
+                                {
+                                    is_exp = true;
+                                }
                             }
                         }
-                        
+
                         if is_exp {
                             num_str.push(nc);
                             has_e = true;
                             chars.next();
                             if let Some(&sign) = chars.peek()
-                                && (sign == '+' || sign == '-' || sign == '−') {
-                                    num_str.push(if sign == '−' { '-' } else { sign });
-                                    chars.next();
-                                }
+                                && (sign == '+' || sign == '-' || sign == '−')
+                            {
+                                num_str.push(if sign == '−' { '-' } else { sign });
+                                chars.next();
+                            }
                         } else {
                             break;
                         }
@@ -101,8 +144,10 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                         break;
                     }
                 }
-                
-                let num = num_str.parse::<f64>().map_err(|_| CalcError::InvalidExpression(format!("Invalid number: {}", num_str)))?;
+
+                let num = num_str.parse::<f64>().map_err(|_| {
+                    CalcError::InvalidExpression(format!("Invalid number: {}", num_str))
+                })?;
                 tokens.push(Token::Number(num));
             }
             c if c.is_alphabetic() => {
@@ -115,7 +160,7 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                         break;
                     }
                 }
-                
+
                 match ident.to_lowercase().as_str() {
                     "sin" => tokens.push(Token::Sin),
                     "cos" => tokens.push(Token::Cos),
@@ -135,10 +180,20 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                     "pi" => tokens.push(Token::Pi),
                     "e" => tokens.push(Token::E),
                     "ans" => tokens.push(Token::Ans),
-                    _ => return Err(CalcError::InvalidExpression(format!("Unknown function or constant: {}", ident))),
+                    _ => {
+                        return Err(CalcError::InvalidExpression(format!(
+                            "Unknown function or constant: {}",
+                            ident
+                        )));
+                    }
                 }
             }
-            _ => return Err(CalcError::InvalidExpression(format!("Unknown character: {}", c))),
+            _ => {
+                return Err(CalcError::InvalidExpression(format!(
+                    "Unknown character: {}",
+                    c
+                )));
+            }
         }
     }
 
@@ -146,49 +201,50 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
     let mut i = 0;
     while i < tokens.len() {
         if i + 1 < tokens.len() {
-            let insert = matches!((&tokens[i], &tokens[i + 1]),
-                (Token::Number(_), Token::Pi) |
-                (Token::Number(_), Token::E) |
-                (Token::Number(_), Token::Sin) |
-                (Token::Number(_), Token::Cos) |
-                (Token::Number(_), Token::Tan) |
-                (Token::Number(_), Token::Asin) |
-                (Token::Number(_), Token::Acos) |
-                (Token::Number(_), Token::Atan) |
-                (Token::Number(_), Token::Sinh) |
-                (Token::Number(_), Token::Cosh) |
-                (Token::Number(_), Token::Tanh) |
-                (Token::Number(_), Token::Asinh) |
-                (Token::Number(_), Token::Acosh) |
-                (Token::Number(_), Token::Atanh) |
-                (Token::Number(_), Token::Log) |
-                (Token::Number(_), Token::Ln) |
-                (Token::Number(_), Token::Sqrt) |
-                (Token::Number(_), Token::Ans) |
-                (Token::Number(_), Token::LParen) |
-                (Token::Pi, Token::Number(_)) |
-                (Token::E, Token::Number(_)) |
-                (Token::Ans, Token::Number(_)) |
-                (Token::RParen, Token::LParen) |
-                (Token::RParen, Token::Number(_)) |
-                (Token::RParen, Token::Sin) |
-                (Token::RParen, Token::Cos) |
-                (Token::RParen, Token::Tan) |
-                (Token::RParen, Token::Asin) |
-                (Token::RParen, Token::Acos) |
-                (Token::RParen, Token::Atan) |
-                (Token::RParen, Token::Sinh) |
-                (Token::RParen, Token::Cosh) |
-                (Token::RParen, Token::Tanh) |
-                (Token::RParen, Token::Asinh) |
-                (Token::RParen, Token::Acosh) |
-                (Token::RParen, Token::Atanh) |
-                (Token::RParen, Token::Log) |
-                (Token::RParen, Token::Ln) |
-                (Token::RParen, Token::Sqrt) |
-                (Token::RParen, Token::Pi) |
-                (Token::RParen, Token::E) |
-                (Token::RParen, Token::Ans)
+            let insert = matches!(
+                (&tokens[i], &tokens[i + 1]),
+                (Token::Number(_), Token::Pi)
+                    | (Token::Number(_), Token::E)
+                    | (Token::Number(_), Token::Sin)
+                    | (Token::Number(_), Token::Cos)
+                    | (Token::Number(_), Token::Tan)
+                    | (Token::Number(_), Token::Asin)
+                    | (Token::Number(_), Token::Acos)
+                    | (Token::Number(_), Token::Atan)
+                    | (Token::Number(_), Token::Sinh)
+                    | (Token::Number(_), Token::Cosh)
+                    | (Token::Number(_), Token::Tanh)
+                    | (Token::Number(_), Token::Asinh)
+                    | (Token::Number(_), Token::Acosh)
+                    | (Token::Number(_), Token::Atanh)
+                    | (Token::Number(_), Token::Log)
+                    | (Token::Number(_), Token::Ln)
+                    | (Token::Number(_), Token::Sqrt)
+                    | (Token::Number(_), Token::Ans)
+                    | (Token::Number(_), Token::LParen)
+                    | (Token::Pi, Token::Number(_))
+                    | (Token::E, Token::Number(_))
+                    | (Token::Ans, Token::Number(_))
+                    | (Token::RParen, Token::LParen)
+                    | (Token::RParen, Token::Number(_))
+                    | (Token::RParen, Token::Sin)
+                    | (Token::RParen, Token::Cos)
+                    | (Token::RParen, Token::Tan)
+                    | (Token::RParen, Token::Asin)
+                    | (Token::RParen, Token::Acos)
+                    | (Token::RParen, Token::Atan)
+                    | (Token::RParen, Token::Sinh)
+                    | (Token::RParen, Token::Cosh)
+                    | (Token::RParen, Token::Tanh)
+                    | (Token::RParen, Token::Asinh)
+                    | (Token::RParen, Token::Acosh)
+                    | (Token::RParen, Token::Atanh)
+                    | (Token::RParen, Token::Log)
+                    | (Token::RParen, Token::Ln)
+                    | (Token::RParen, Token::Sqrt)
+                    | (Token::RParen, Token::Pi)
+                    | (Token::RParen, Token::E)
+                    | (Token::RParen, Token::Ans)
             );
             if insert {
                 tokens.insert(i + 1, Token::Multiply);
@@ -267,7 +323,9 @@ impl<'a> Parser<'a> {
         }
         let expr = self.parse_expression()?;
         if self.pos < self.tokens.len() {
-            return Err(CalcError::InvalidExpression("Unexpected tokens at end of expression".to_string()));
+            return Err(CalcError::InvalidExpression(
+                "Unexpected tokens at end of expression".to_string(),
+            ));
         }
         Ok(expr)
     }
@@ -358,7 +416,10 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_primary(&mut self) -> Result<Expr, CalcError> {
-        let token = self.consume().ok_or_else(|| CalcError::InvalidExpression("Unexpected end of input".to_string()))?.clone();
+        let token = self
+            .consume()
+            .ok_or_else(|| CalcError::InvalidExpression("Unexpected end of input".to_string()))?
+            .clone();
 
         match token {
             Token::Number(n) => Ok(Expr::Number(n)),
@@ -367,7 +428,9 @@ impl<'a> Parser<'a> {
             Token::LParen => {
                 let expr = self.parse_expression()?;
                 if !self.match_token(&Token::RParen) {
-                    return Err(CalcError::InvalidExpression("Missing closing parenthesis".to_string()));
+                    return Err(CalcError::InvalidExpression(
+                        "Missing closing parenthesis".to_string(),
+                    ));
                 }
                 Ok(expr)
             }
@@ -432,10 +495,13 @@ impl<'a> Parser<'a> {
                 Ok(Expr::Sqrt(Box::new(expr)))
             }
             Token::Ans => Ok(Expr::Ans),
-            _ => Err(CalcError::InvalidExpression(format!("Unexpected token: {:?}", token))),
+            _ => Err(CalcError::InvalidExpression(format!(
+                "Unexpected token: {:?}",
+                token
+            ))),
         }
     }
-    
+
     fn parse_primary_arg(&mut self) -> Result<Expr, CalcError> {
         // Allow things like `sin(x)` or `sin x`
         if self.peek() == Some(&Token::LParen) {
