@@ -32,6 +32,14 @@ To cross-compile the release Android APK:
 flutter build apk --release
 ```
 
+### App Icons
+
+The custom app icons are generated using the `flutter_launcher_icons` package. If you want to modify the icon, edit the vector `assets/calculator_icon.svg`, rasterize it to a high-resolution PNG (`assets/calculator_icon.png`), and run the generation command:
+
+```bash
+flutter pub run flutter_launcher_icons
+```
+
 ## WebAssembly (WASM) Support
 
 To run the application on the web browser, you must compile the Rust backend to WebAssembly before starting the Flutter app:
