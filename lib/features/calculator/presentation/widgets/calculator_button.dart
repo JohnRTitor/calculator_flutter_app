@@ -36,12 +36,13 @@ class CalculatorButton extends StatefulWidget {
 
 class _CalculatorButtonState extends State<CalculatorButton>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+  late AnimationController _shakeController;
+  double _scale = 1.0;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    _shakeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
@@ -49,18 +50,26 @@ class _CalculatorButtonState extends State<CalculatorButton>
 
   @override
   void dispose() {
-    _controller.dispose();
+    _shakeController.dispose();
     super.dispose();
+  }
+
+  void _handlePressDown() {
+    setState(() => _scale = 0.94);
+  }
+
+  void _handlePressUp() {
+    setState(() => _scale = 1.0);
   }
 
   void _handlePress() {
     if (widget.onPressed == null) return;
-    if (_controller.isAnimating) return;
+    if (_shakeController.isAnimating) return;
 
     final success = widget.onPressed!();
     if (!success && mounted) {
       HapticFeedback.vibrate();
-      _controller.forward(from: 0.0);
+      _shakeController.forward(from: 0.0);
     }
   }
 
@@ -79,8 +88,16 @@ class _CalculatorButtonState extends State<CalculatorButton>
         );
 
     return Padding(
-          padding: const EdgeInsets.all(3.0),
-          child: SizedBox.expand(
+      padding: const EdgeInsets.all(3.0),
+      child: AnimatedScale(
+        scale: _scale,
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeOut,
+        child: SizedBox.expand(
+          child: GestureDetector(
+            onTapDown: (_) => _handlePressDown(),
+            onTapUp: (_) => _handlePressUp(),
+            onTapCancel: () => _handlePressUp(),
             child: FilledButton(
               onPressed: widget.onPressed == null ? null : _handlePress,
               style: FilledButton.styleFrom(
@@ -88,15 +105,16 @@ class _CalculatorButtonState extends State<CalculatorButton>
                 foregroundColor: foregroundColor,
                 padding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(28),
                 ),
                 elevation: 0,
               ),
               child: child,
             ),
           ),
-        )
-        .animate(controller: _controller, autoPlay: false)
+        ),
+      ),
+    ).animate(controller: _shakeController, autoPlay: false)
         .shakeX(hz: 4, amount: 4);
   }
 
@@ -114,13 +132,10 @@ class _CalculatorButtonState extends State<CalculatorButton>
 
     switch (widget.type) {
       case ButtonType.number:
-        // Subtle tinted surface — like the reference pinkish/lavender numbers
         return (cs.surfaceContainerLow, cs.onSurface, 26.0, FontWeight.w500);
       case ButtonType.operator:
-        // Bold accent — blue column in reference
         return (cs.primary, cs.onPrimary, 24.0, FontWeight.w600);
       case ButtonType.action:
-        // Grey surface buttons — ( ) % mod
         return (
           cs.surfaceContainerHigh,
           cs.onSurfaceVariant,
@@ -128,7 +143,6 @@ class _CalculatorButtonState extends State<CalculatorButton>
           FontWeight.w500,
         );
       case ButtonType.scientific:
-        // Scientific utility row — subtle grey
         return (
           cs.surfaceContainerHigh,
           cs.onSurfaceVariant,
@@ -136,10 +150,8 @@ class _CalculatorButtonState extends State<CalculatorButton>
           FontWeight.w500,
         );
       case ButtonType.clear:
-        // AC — red/error
         return (cs.errorContainer, cs.onErrorContainer, 20.0, FontWeight.w700);
       case ButtonType.backspace:
-        // ⌫ — warm accent (orange-ish via tertiary)
         return (
           cs.tertiaryContainer,
           cs.onTertiaryContainer,
@@ -147,7 +159,6 @@ class _CalculatorButtonState extends State<CalculatorButton>
           FontWeight.w500,
         );
       case ButtonType.equals:
-        // Full-width primary
         return (cs.primary, cs.onPrimary, 30.0, FontWeight.bold);
     }
   }

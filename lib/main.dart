@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/src/rust/frb_generated.dart';
+
 import 'package:calculator_flutter_app/app.dart';
 
 import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+  // Pre-warm liquid glass shaders to avoid first-render flash
+  await LiquidGlassWidgets.initialize();
+
   ExternalLibrary? externalLibrary;
   if (Platform.isLinux) {
     final executable = Platform.resolvedExecutable;

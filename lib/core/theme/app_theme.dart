@@ -3,6 +3,15 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static const fallbackSeedColor = Colors.deepPurple;
 
+  /// Standard button radius used across the app
+  static const double buttonRadius = 28.0;
+
+  /// Card radius for display panels and settings cards
+  static const double cardRadius = 24.0;
+
+  /// Chip radius for scientific mode toggles
+  static const double chipRadius = 20.0;
+
   static ThemeData lightTheme(ColorScheme? dynamicColorScheme) {
     final ColorScheme colorScheme = dynamicColorScheme ?? ColorScheme.fromSeed(
       seedColor: fallbackSeedColor,
@@ -50,7 +59,7 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(buttonRadius),
           ),
           padding: EdgeInsets.zero,
         ),
@@ -58,7 +67,7 @@ class AppTheme {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(buttonRadius),
           ),
           padding: EdgeInsets.zero,
           minimumSize: Size.zero,
@@ -78,6 +87,12 @@ class AppTheme {
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+      ),
+      cardTheme: CardThemeData(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(cardRadius),
         ),
       ),
     );

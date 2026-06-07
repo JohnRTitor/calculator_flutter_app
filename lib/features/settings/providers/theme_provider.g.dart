@@ -60,3 +60,55 @@ abstract class _$ThemeModeNotifier extends $Notifier<AppThemeMode> {
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(UiStyleNotifier)
+final uiStyleProvider = UiStyleNotifierProvider._();
+
+final class UiStyleNotifierProvider
+    extends $NotifierProvider<UiStyleNotifier, UiStyle> {
+  UiStyleNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'uiStyleProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$uiStyleNotifierHash();
+
+  @$internal
+  @override
+  UiStyleNotifier create() => UiStyleNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(UiStyle value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<UiStyle>(value),
+    );
+  }
+}
+
+String _$uiStyleNotifierHash() => r'ff00d79686925f720b2157b8e57f3413402d27d5';
+
+abstract class _$UiStyleNotifier extends $Notifier<UiStyle> {
+  UiStyle build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<UiStyle, UiStyle>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<UiStyle, UiStyle>,
+              UiStyle,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
