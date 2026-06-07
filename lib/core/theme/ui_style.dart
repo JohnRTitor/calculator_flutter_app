@@ -2,8 +2,8 @@
 ///
 /// Determines whether the app uses Material You or Liquid Glass design language.
 enum UiStyle {
-  /// Standard Material 3 / Material You design with dynamic color.
-  materialYou,
+  /// Standard Material 3 design.
+  material,
 
   /// Apple iOS 26-inspired Liquid Glass design with shader-based blur,
   /// dynamic lighting, and translucent surfaces.

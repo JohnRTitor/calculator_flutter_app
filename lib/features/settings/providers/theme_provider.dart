@@ -6,6 +6,14 @@ part 'theme_provider.g.dart';
 
 enum AppThemeMode { light, dark, amoled, system }
 
+enum AppColorOption {
+  defaultColor, // Green tinted
+  materialYou,  // Dynamic
+  blue,
+  purple,
+  orange,
+}
+
 @riverpod
 class ThemeModeNotifier extends _$ThemeModeNotifier {
   @override
@@ -28,11 +36,34 @@ class ThemeModeNotifier extends _$ThemeModeNotifier {
 }
 
 @riverpod
+class AppColorNotifier extends _$AppColorNotifier {
+  @override
+  AppColorOption build() {
+    _load();
+    return AppColorOption.defaultColor;
+  }
+
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    final idx = prefs.getInt('app_color_option') ?? 0;
+    if (idx >= 0 && idx < AppColorOption.values.length) {
+      state = AppColorOption.values[idx];
+    }
+  }
+
+  Future<void> setAppColorOption(AppColorOption option) async {
+    state = option;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('app_color_option', option.index);
+  }
+}
+
+@riverpod
 class UiStyleNotifier extends _$UiStyleNotifier {
   @override
   UiStyle build() {
     _load();
-    return UiStyle.materialYou;
+    return UiStyle.material;
   }
 
   Future<void> _load() async {

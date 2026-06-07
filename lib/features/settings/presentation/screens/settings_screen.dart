@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:calculator_flutter_app/core/theme/glass_utils.dart';
 import 'package:calculator_flutter_app/core/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/providers/theme_provider.dart';
@@ -18,12 +19,17 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
     final uiStyle = ref.watch(uiStyleProvider);
+    final colorOption = ref.watch(appColorProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    Widget body = ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      children: [
+    return DynamicColorBuilder(
+      builder: (lightDynamic, darkDynamic) {
+        final isDynamicColorSupported = lightDynamic != null;
+
+        Widget body = ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          children: [
         // ── Theme Section ──
         _SectionHeader(
           label: 'Theme',
@@ -55,14 +61,33 @@ class SettingsScreen extends ConsumerWidget {
 
         const SizedBox(height: 28),
 
-        // ── Visual Style Section ──
+        // ── Colors Section ──
+        _SectionHeader(
+          label: 'Colors',
+          colorScheme: colorScheme,
+          textTheme: theme.textTheme,
+        ),
+        const SizedBox(height: 8),
+        _ColorsSelector(
+          uiStyle: uiStyle,
+          colorScheme: colorScheme,
+          theme: theme,
+          selectedOption: colorOption,
+          isDynamicColorSupported: isDynamicColorSupported,
+          onColorOptionChanged: (option) =>
+              ref.read(appColorProvider.notifier).setAppColorOption(option),
+        ),
+
+        const SizedBox(height: 28),
+
+        // ── Style Section ──
         _SectionHeader(
           label: 'Visual Style',
           colorScheme: colorScheme,
           textTheme: theme.textTheme,
         ),
         const SizedBox(height: 8),
-        _VisualStyleSelector(
+        _StyleSelector(
           uiStyle: uiStyle,
           colorScheme: colorScheme,
           theme: theme,
@@ -86,6 +111,8 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: body,
+    );
+      },
     );
   }
 
@@ -289,14 +316,151 @@ class _ThemeCard extends StatelessWidget {
   }
 }
 
-// ── Visual Style Selector ──
-class _VisualStyleSelector extends StatelessWidget {
+// ── Colors Selector ──
+class _ColorsSelector extends StatelessWidget {
+  final UiStyle uiStyle;
+  final ColorScheme colorScheme;
+  final ThemeData theme;
+  final AppColorOption selectedOption;
+  final bool isDynamicColorSupported;
+  final ValueChanged<AppColorOption> onColorOptionChanged;
+
+  const _ColorsSelector({
+    required this.uiStyle,
+    required this.colorScheme,
+    required this.theme,
+    required this.selectedOption,
+    required this.isDynamicColorSupported,
+    required this.onColorOptionChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _StyleOptionCard(
+                label: 'Default',
+                icon: Icons.format_color_fill,
+                description: 'Green aesthetic',
+                isSelected: selectedOption == AppColorOption.defaultColor,
+                uiStyle: uiStyle,
+                colorScheme: colorScheme,
+                onTap: () => onColorOptionChanged(AppColorOption.defaultColor),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _StyleOptionCard(
+                label: 'Material You',
+                icon: Icons.auto_awesome,
+                description: isDynamicColorSupported ? 'Dynamic color' : 'Not available',
+                isSelected: selectedOption == AppColorOption.materialYou,
+                uiStyle: uiStyle,
+                colorScheme: colorScheme,
+                isDisabled: !isDynamicColorSupported,
+                onTap: isDynamicColorSupported
+                    ? () => onColorOptionChanged(AppColorOption.materialYou)
+                    : () {},
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Text(
+          'Other Colors',
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 8),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              _ColorSwatch(
+                color: Colors.blue,
+                isSelected: selectedOption == AppColorOption.blue,
+                onTap: () => onColorOptionChanged(AppColorOption.blue),
+              ),
+              const SizedBox(width: 12),
+              _ColorSwatch(
+                color: Colors.purple,
+                isSelected: selectedOption == AppColorOption.purple,
+                onTap: () => onColorOptionChanged(AppColorOption.purple),
+              ),
+              const SizedBox(width: 12),
+              _ColorSwatch(
+                color: Colors.orange,
+                isSelected: selectedOption == AppColorOption.orange,
+                onTap: () => onColorOptionChanged(AppColorOption.orange),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Color Swatch ──
+class _ColorSwatch extends StatelessWidget {
+  final Color color;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _ColorSwatch({
+    required this.color,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: isSelected ? Theme.of(context).colorScheme.primary : Colors.transparent,
+            width: isSelected ? 3 : 0,
+          ),
+          boxShadow: [
+            if (isSelected)
+              BoxShadow(
+                color: color.withValues(alpha: 0.4),
+                blurRadius: 8,
+                spreadRadius: 2,
+              ),
+          ],
+        ),
+        child: isSelected
+            ? Icon(
+                Icons.check,
+                color: color.computeLuminance() > 0.5 ? Colors.black : Colors.white,
+              )
+            : null,
+      ),
+    );
+  }
+}
+
+// ── Style Selector ──
+class _StyleSelector extends StatelessWidget {
   final UiStyle uiStyle;
   final ColorScheme colorScheme;
   final ThemeData theme;
   final ValueChanged<UiStyle> onStyleChanged;
 
-  const _VisualStyleSelector({
+  const _StyleSelector({
     required this.uiStyle,
     required this.colorScheme,
     required this.theme,
@@ -309,13 +473,13 @@ class _VisualStyleSelector extends StatelessWidget {
       children: [
         Expanded(
           child: _StyleOptionCard(
-            label: 'Material You',
-            icon: Icons.palette_outlined,
-            description: 'Dynamic color',
-            isSelected: uiStyle == UiStyle.materialYou,
+            label: 'Material',
+            icon: Icons.layers_outlined,
+            description: 'Standard design',
+            isSelected: uiStyle == UiStyle.material,
             uiStyle: uiStyle,
             colorScheme: colorScheme,
-            onTap: () => onStyleChanged(UiStyle.materialYou),
+            onTap: () => onStyleChanged(UiStyle.material),
           ),
         ),
         const SizedBox(width: 12),
@@ -343,6 +507,7 @@ class _StyleOptionCard extends StatelessWidget {
   final bool isSelected;
   final UiStyle uiStyle;
   final ColorScheme colorScheme;
+  final bool isDisabled;
   final VoidCallback onTap;
 
   const _StyleOptionCard({
@@ -352,15 +517,26 @@ class _StyleOptionCard extends StatelessWidget {
     required this.isSelected,
     required this.uiStyle,
     required this.colorScheme,
+    this.isDisabled = false,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    Widget card;
     if (uiStyle == UiStyle.liquidGlass) {
-      return _buildGlassVariant(context);
+      card = _buildGlassVariant(context);
+    } else {
+      card = _buildMaterialVariant();
     }
-    return _buildMaterialVariant();
+
+    if (isDisabled) {
+      return Opacity(
+        opacity: 0.5,
+        child: card,
+      );
+    }
+    return card;
   }
 
   Widget _buildMaterialVariant() {

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:calculator_flutter_app/core/theme/ui_style.dart';
+import 'package:calculator_flutter_app/features/settings/providers/theme_provider.dart';
 
 class AppTheme {
-  static const fallbackSeedColor = Colors.deepPurple;
+  static const fallbackSeedColor = Colors.teal; // green-tinted aesthetic
 
   /// Standard button radius used across the app
   static const double buttonRadius = 28.0;
@@ -13,29 +14,48 @@ class AppTheme {
   /// Chip radius for scientific mode toggles
   static const double chipRadius = 20.0;
 
-  static ThemeData lightTheme(ColorScheme? dynamicColorScheme, UiStyle uiStyle) {
-    final ColorScheme colorScheme = dynamicColorScheme ?? ColorScheme.fromSeed(
-      seedColor: fallbackSeedColor,
-      brightness: Brightness.light,
+  static ColorScheme _resolveColorScheme(Brightness brightness, ColorScheme? dynamicColorScheme, AppColorOption colorOption) {
+    if (colorOption == AppColorOption.materialYou && dynamicColorScheme != null) {
+      return dynamicColorScheme;
+    }
+
+    Color seedColor;
+    switch (colorOption) {
+      case AppColorOption.blue:
+        seedColor = Colors.blue;
+        break;
+      case AppColorOption.purple:
+        seedColor = Colors.purple;
+        break;
+      case AppColorOption.orange:
+        seedColor = Colors.orange;
+        break;
+      case AppColorOption.defaultColor:
+      case AppColorOption.materialYou:
+        seedColor = fallbackSeedColor;
+        break;
+    }
+
+    return ColorScheme.fromSeed(
+      seedColor: seedColor,
+      brightness: brightness,
     );
+  }
+
+  static ThemeData lightTheme(ColorScheme? dynamicColorScheme, UiStyle uiStyle, AppColorOption colorOption) {
+    final ColorScheme colorScheme = _resolveColorScheme(Brightness.light, dynamicColorScheme, colorOption);
 
     return _buildTheme(colorScheme, uiStyle);
   }
 
-  static ThemeData darkTheme(ColorScheme? dynamicColorScheme, UiStyle uiStyle) {
-    final ColorScheme colorScheme = dynamicColorScheme ?? ColorScheme.fromSeed(
-      seedColor: fallbackSeedColor,
-      brightness: Brightness.dark,
-    );
+  static ThemeData darkTheme(ColorScheme? dynamicColorScheme, UiStyle uiStyle, AppColorOption colorOption) {
+    final ColorScheme colorScheme = _resolveColorScheme(Brightness.dark, dynamicColorScheme, colorOption);
 
     return _buildTheme(colorScheme, uiStyle);
   }
 
-  static ThemeData amoledTheme(ColorScheme? dynamicColorScheme, UiStyle uiStyle) {
-    final ColorScheme baseColorScheme = dynamicColorScheme ?? ColorScheme.fromSeed(
-      seedColor: fallbackSeedColor,
-      brightness: Brightness.dark,
-    );
+  static ThemeData amoledTheme(ColorScheme? dynamicColorScheme, UiStyle uiStyle, AppColorOption colorOption) {
+    final ColorScheme baseColorScheme = _resolveColorScheme(Brightness.dark, dynamicColorScheme, colorOption);
 
     // Override surface colors to pure black for AMOLED
     final ColorScheme amoledColorScheme = baseColorScheme.copyWith(

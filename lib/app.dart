@@ -15,6 +15,7 @@ class CalculatorApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
     final uiStyle = ref.watch(uiStyleProvider);
+    final colorOption = ref.watch(appColorProvider);
 
     ThemeMode flutterThemeMode;
     switch (themeMode) {
@@ -32,10 +33,10 @@ class CalculatorApp extends ConsumerWidget {
 
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-        final lightTheme = AppTheme.lightTheme(lightDynamic, uiStyle);
+        final lightTheme = AppTheme.lightTheme(lightDynamic, uiStyle, colorOption);
         final darkTheme = themeMode == AppThemeMode.amoled
-            ? AppTheme.amoledTheme(darkDynamic, uiStyle)
-            : AppTheme.darkTheme(darkDynamic, uiStyle);
+            ? AppTheme.amoledTheme(darkDynamic, uiStyle, colorOption)
+            : AppTheme.darkTheme(darkDynamic, uiStyle, colorOption);
 
         final materialApp = MaterialApp(
           title: 'Calculator',
