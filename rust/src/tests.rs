@@ -41,7 +41,7 @@ mod tests {
         assert_eq!(eval("10-3*2"), 4.0);
         assert_eq!(eval("(10-3)*2"), 14.0);
         assert_eq!(eval("10/2"), 5.0);
-        assert_eq!(eval("10%3"), 1.0);
+        assert_eq!(eval("10mod3"), 1.0);
         assert_eq!(eval("-5+2"), -3.0);
     }
 

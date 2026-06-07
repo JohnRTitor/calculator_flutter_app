@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+import 'package:calculator_flutter_app/core/theme/glass_utils.dart';
 import 'package:calculator_flutter_app/core/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/providers/theme_provider.dart';
 
@@ -25,7 +25,11 @@ class SettingsScreen extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       children: [
         // ── Theme Section ──
-        _SectionHeader(label: 'Theme', colorScheme: colorScheme, textTheme: theme.textTheme),
+        _SectionHeader(
+          label: 'Theme',
+          colorScheme: colorScheme,
+          textTheme: theme.textTheme,
+        ),
         const SizedBox(height: 8),
         GridView.count(
           crossAxisCount: 2,
@@ -43,7 +47,8 @@ class SettingsScreen extends ConsumerWidget {
               isSelected: isSelected,
               uiStyle: uiStyle,
               colorScheme: colorScheme,
-              onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(mode),
+              onTap: () =>
+                  ref.read(themeModeProvider.notifier).setThemeMode(mode),
             );
           }).toList(),
         ),
@@ -51,35 +56,32 @@ class SettingsScreen extends ConsumerWidget {
         const SizedBox(height: 28),
 
         // ── Visual Style Section ──
-        _SectionHeader(label: 'Visual Style', colorScheme: colorScheme, textTheme: theme.textTheme),
+        _SectionHeader(
+          label: 'Visual Style',
+          colorScheme: colorScheme,
+          textTheme: theme.textTheme,
+        ),
         const SizedBox(height: 8),
         _VisualStyleSelector(
           uiStyle: uiStyle,
           colorScheme: colorScheme,
           theme: theme,
-          onStyleChanged: (style) => ref.read(uiStyleProvider.notifier).setUiStyle(style),
+          onStyleChanged: (style) =>
+              ref.read(uiStyleProvider.notifier).setUiStyle(style),
         ),
 
         const SizedBox(height: 28),
 
         // ── About Section ──
-        _SectionHeader(label: 'About', colorScheme: colorScheme, textTheme: theme.textTheme),
+        _SectionHeader(
+          label: 'About',
+          colorScheme: colorScheme,
+          textTheme: theme.textTheme,
+        ),
         const SizedBox(height: 8),
         _buildAboutCard(theme, colorScheme, uiStyle),
       ],
     );
-
-    if (uiStyle == UiStyle.liquidGlass) {
-      final brightness = theme.brightness;
-      final themeMode2 = ref.watch(themeModeProvider);
-
-      return GlassScaffold(
-        background: _buildGlassBackground(colorScheme, brightness, themeMode2),
-        statusBarStyle: GlassStatusBarStyle.auto,
-        appBar: GlassAppBar(title: const Text('Settings')),
-        body: body,
-      );
-    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
@@ -87,47 +89,22 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildGlassBackground(ColorScheme colorScheme, Brightness brightness, AppThemeMode themeMode) {
-    final List<Color> gradientColors;
-    if (themeMode == AppThemeMode.amoled) {
-      gradientColors = [
-        Colors.black,
-        colorScheme.primaryContainer.withValues(alpha: 0.06),
-        Colors.black,
-      ];
-    } else if (brightness == Brightness.dark) {
-      gradientColors = [
-        colorScheme.surface,
-        colorScheme.primaryContainer.withValues(alpha: 0.15),
-        colorScheme.tertiaryContainer.withValues(alpha: 0.08),
-        colorScheme.surface,
-      ];
-    } else {
-      gradientColors = [
-        colorScheme.surface,
-        colorScheme.primaryContainer.withValues(alpha: 0.3),
-        colorScheme.tertiaryContainer.withValues(alpha: 0.2),
-        colorScheme.surface,
-      ];
-    }
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: gradientColors,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAboutCard(ThemeData theme, ColorScheme colorScheme, UiStyle uiStyle) {
+  Widget _buildAboutCard(
+    ThemeData theme,
+    ColorScheme colorScheme,
+    UiStyle uiStyle,
+  ) {
     final content = Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Calculator', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+          Text(
+            'Calculator',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(height: 8),
           Text(
             'Flutter + Rust Native Calculator.\nBuilt for performance and elegance.',
@@ -148,9 +125,10 @@ class SettingsScreen extends ConsumerWidget {
     );
 
     if (uiStyle == UiStyle.liquidGlass) {
-      return GlassCard(
-        shape: const LiquidRoundedSuperellipse(borderRadius: 16),
-        useOwnLayer: true,
+      return SharedSurface(
+        uiStyle: uiStyle,
+        glassRole: GlassSurfaceRole.panel,
+        borderRadius: BorderRadius.circular(16),
         child: content,
       );
     }
@@ -213,7 +191,7 @@ class _ThemeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (uiStyle == UiStyle.liquidGlass) {
-      return _buildGlassCard();
+      return _buildGlassCard(context);
     }
     return _buildMaterialCard();
   }
@@ -257,42 +235,45 @@ class _ThemeCard extends StatelessWidget {
     );
   }
 
-  Widget _buildGlassCard() {
+  Widget _buildGlassCard(BuildContext context) {
     return AnimatedScale(
       scale: isSelected ? 1.0 : 0.97,
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeOut,
-      child: GlassContainer(
-        shape: const LiquidRoundedSuperellipse(borderRadius: 16),
-        useOwnLayer: true,
-        settings: LiquidGlassSettings(
-          thickness: isSelected ? 40 : 25,
-          glassColor: isSelected
-              ? colorScheme.primary.withValues(alpha: 0.2)
-              : colorScheme.surfaceContainerHigh.withValues(alpha: 0.1),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(16),
-            child: _buildCardContent(),
-          ),
+      child: SharedSurface(
+        uiStyle: uiStyle,
+        isInteractive: true,
+        isSelected: isSelected,
+        glassRole: isSelected
+            ? GlassSurfaceRole.primary
+            : GlassSurfaceRole.card,
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+          child: _buildCardContent(context),
         ),
       ),
     );
   }
 
-  Widget _buildCardContent() {
+  Widget _buildCardContent([BuildContext? context]) {
+    final bool useLightSelectedText =
+        context != null &&
+        uiStyle == UiStyle.liquidGlass &&
+        Theme.of(context).brightness == Brightness.light;
+    final selectedColor = useLightSelectedText
+        ? colorScheme.onPrimary
+        : colorScheme.onPrimaryContainer;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(
           icon,
           size: 20,
-          color: isSelected
-              ? colorScheme.onPrimaryContainer
-              : colorScheme.onSurfaceVariant,
+          color: isSelected ? selectedColor : colorScheme.onSurfaceVariant,
         ),
         const SizedBox(width: 8),
         Text(
@@ -300,9 +281,7 @@ class _ThemeCard extends StatelessWidget {
           style: TextStyle(
             fontSize: 15,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            color: isSelected
-                ? colorScheme.onPrimaryContainer
-                : colorScheme.onSurfaceVariant,
+            color: isSelected ? selectedColor : colorScheme.onSurfaceVariant,
           ),
         ),
       ],
@@ -379,7 +358,7 @@ class _StyleOptionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (uiStyle == UiStyle.liquidGlass) {
-      return _buildGlassVariant();
+      return _buildGlassVariant(context);
     }
     return _buildMaterialVariant();
   }
@@ -423,33 +402,38 @@ class _StyleOptionCard extends StatelessWidget {
     );
   }
 
-  Widget _buildGlassVariant() {
+  Widget _buildGlassVariant(BuildContext context) {
     return AnimatedScale(
       scale: isSelected ? 1.0 : 0.97,
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeOut,
-      child: GlassContainer(
-        shape: const LiquidRoundedSuperellipse(borderRadius: 16),
-        useOwnLayer: true,
-        settings: LiquidGlassSettings(
-          thickness: isSelected ? 40 : 25,
-          glassColor: isSelected
-              ? colorScheme.primary.withValues(alpha: 0.2)
-              : colorScheme.surfaceContainerHigh.withValues(alpha: 0.1),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(16),
-            child: _buildContent(),
-          ),
+      child: SharedSurface(
+        uiStyle: uiStyle,
+        isInteractive: true,
+        isSelected: isSelected,
+        glassRole: isSelected
+            ? GlassSurfaceRole.primary
+            : GlassSurfaceRole.card,
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+          child: _buildContent(context),
         ),
       ),
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent([BuildContext? context]) {
+    final bool useLightSelectedText =
+        context != null &&
+        uiStyle == UiStyle.liquidGlass &&
+        Theme.of(context).brightness == Brightness.light;
+    final selectedColor = useLightSelectedText
+        ? colorScheme.onPrimary
+        : colorScheme.onPrimaryContainer;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       child: Column(
@@ -458,9 +442,7 @@ class _StyleOptionCard extends StatelessWidget {
           Icon(
             icon,
             size: 28,
-            color: isSelected
-                ? colorScheme.onPrimaryContainer
-                : colorScheme.onSurfaceVariant,
+            color: isSelected ? selectedColor : colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 8),
           Text(
@@ -468,9 +450,7 @@ class _StyleOptionCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-              color: isSelected
-                  ? colorScheme.onPrimaryContainer
-                  : colorScheme.onSurfaceVariant,
+              color: isSelected ? selectedColor : colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 2),
@@ -478,9 +458,7 @@ class _StyleOptionCard extends StatelessWidget {
             description,
             style: TextStyle(
               fontSize: 11,
-              color: (isSelected
-                      ? colorScheme.onPrimaryContainer
-                      : colorScheme.onSurfaceVariant)
+              color: (isSelected ? selectedColor : colorScheme.onSurfaceVariant)
                   .withValues(alpha: 0.7),
             ),
           ),

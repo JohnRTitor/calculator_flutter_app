@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+
 import 'package:calculator_flutter_app/core/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/calculator/providers/calculator_provider.dart';
 import 'package:calculator_flutter_app/features/calculator/providers/calculator_state.dart';
@@ -64,7 +64,8 @@ class Keypad extends ConsumerWidget {
                   _btn(ref, ')', ButtonType.action,
                     () => ref.read(calculatorProvider.notifier).append(')'), uiStyle: uiStyle),
                   _btn(ref, '%', ButtonType.action,
-                    () => ref.read(calculatorProvider.notifier).append('%'), uiStyle: uiStyle),
+                    () => ref.read(calculatorProvider.notifier).append('%'),
+                    tooltip: 'Percentage', uiStyle: uiStyle),
                   _btn(ref, '/', ButtonType.action,
                     () => ref.read(calculatorProvider.notifier).append('/'),
                     tooltip: 'Fraction', uiStyle: uiStyle),
@@ -130,9 +131,9 @@ class Keypad extends ConsumerWidget {
                     () => ref.read(calculatorProvider.notifier).append('0'), uiStyle: uiStyle),
                   _btn(ref, '.', ButtonType.number,
                     () => ref.read(calculatorProvider.notifier).append('.'), uiStyle: uiStyle),
-                  _btn(ref, 'mod', ButtonType.operator,
-                    () => ref.read(calculatorProvider.notifier).append('%'),
-                    tooltip: 'Modulo', uiStyle: uiStyle),
+                  _btn(ref, 'MOD', ButtonType.scientific,
+                    () => ref.read(calculatorProvider.notifier).append('mod'),
+                    tooltip: 'Remainder after division', uiStyle: uiStyle),
                   _btn(ref, '+', ButtonType.operator,
                     () => ref.read(calculatorProvider.notifier).append('+'), uiStyle: uiStyle),
                 ],
@@ -417,15 +418,38 @@ class _DropdownChipRow extends StatelessWidget {
     required bool isExpanded,
   }) {
     if (uiStyle == UiStyle.liquidGlass) {
-      return GlassChip(
-        label: label,
-        labelStyle: TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-          color: fgColor,
+      // Lightweight frosted chip — no shader
+      return Material(
+        color: bgColor.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(20),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: fgColor,
+                  ),
+                ),
+                const SizedBox(width: 2),
+                AnimatedRotation(
+                  duration: const Duration(milliseconds: 200),
+                  turns: isExpanded ? 0.5 : 0.0,
+                  child: Icon(Icons.expand_more, size: 18, color: fgColor),
+                ),
+              ],
+            ),
+          ),
         ),
-        selected: isExpanded,
-        onTap: onTap,
       );
     }
 

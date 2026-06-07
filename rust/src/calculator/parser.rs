@@ -8,6 +8,7 @@ pub enum Token {
     Multiply,
     Divide,
     Modulo,
+    Percentage,
     Power,
     Factorial,
     LParen,
@@ -58,7 +59,7 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                 chars.next();
             }
             '%' => {
-                tokens.push(Token::Modulo);
+                tokens.push(Token::Percentage);
                 chars.next();
             }
             '^' => {
@@ -162,6 +163,7 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                 }
 
                 match ident.to_lowercase().as_str() {
+                    "mod" => tokens.push(Token::Modulo),
                     "sin" => tokens.push(Token::Sin),
                     "cos" => tokens.push(Token::Cos),
                     "tan" => tokens.push(Token::Tan),
@@ -242,9 +244,28 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                     | (Token::RParen, Token::Log)
                     | (Token::RParen, Token::Ln)
                     | (Token::RParen, Token::Sqrt)
-                    | (Token::RParen, Token::Pi)
                     | (Token::RParen, Token::E)
                     | (Token::RParen, Token::Ans)
+                    | (Token::Percentage, Token::Number(_))
+                    | (Token::Percentage, Token::LParen)
+                    | (Token::Percentage, Token::Sin)
+                    | (Token::Percentage, Token::Cos)
+                    | (Token::Percentage, Token::Tan)
+                    | (Token::Percentage, Token::Asin)
+                    | (Token::Percentage, Token::Acos)
+                    | (Token::Percentage, Token::Atan)
+                    | (Token::Percentage, Token::Sinh)
+                    | (Token::Percentage, Token::Cosh)
+                    | (Token::Percentage, Token::Tanh)
+                    | (Token::Percentage, Token::Asinh)
+                    | (Token::Percentage, Token::Acosh)
+                    | (Token::Percentage, Token::Atanh)
+                    | (Token::Percentage, Token::Log)
+                    | (Token::Percentage, Token::Ln)
+                    | (Token::Percentage, Token::Sqrt)
+                    | (Token::Percentage, Token::Pi)
+                    | (Token::Percentage, Token::E)
+                    | (Token::Percentage, Token::Ans)
             );
             if insert {
                 tokens.insert(i + 1, Token::Multiply);
@@ -270,6 +291,7 @@ pub enum Expr {
     Power(Box<Expr>, Box<Expr>),
     Negate(Box<Expr>),
     Factorial(Box<Expr>),
+    Percentage(Box<Expr>),
     Sin(Box<Expr>),
     Cos(Box<Expr>),
     Tan(Box<Expr>),
@@ -408,8 +430,14 @@ impl<'a> Parser<'a> {
     fn parse_postfix(&mut self) -> Result<Expr, CalcError> {
         let mut expr = self.parse_primary()?;
 
-        while self.match_token(&Token::Factorial) {
-            expr = Expr::Factorial(Box::new(expr));
+        loop {
+            if self.match_token(&Token::Factorial) {
+                expr = Expr::Factorial(Box::new(expr));
+            } else if self.match_token(&Token::Percentage) {
+                expr = Expr::Percentage(Box::new(expr));
+            } else {
+                break;
+            }
         }
 
         Ok(expr)

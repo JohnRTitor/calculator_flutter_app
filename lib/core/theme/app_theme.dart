@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:calculator_flutter_app/core/theme/ui_style.dart';
 
 class AppTheme {
   static const fallbackSeedColor = Colors.deepPurple;
@@ -12,25 +13,25 @@ class AppTheme {
   /// Chip radius for scientific mode toggles
   static const double chipRadius = 20.0;
 
-  static ThemeData lightTheme(ColorScheme? dynamicColorScheme) {
+  static ThemeData lightTheme(ColorScheme? dynamicColorScheme, UiStyle uiStyle) {
     final ColorScheme colorScheme = dynamicColorScheme ?? ColorScheme.fromSeed(
       seedColor: fallbackSeedColor,
       brightness: Brightness.light,
     );
 
-    return _buildTheme(colorScheme);
+    return _buildTheme(colorScheme, uiStyle);
   }
 
-  static ThemeData darkTheme(ColorScheme? dynamicColorScheme) {
+  static ThemeData darkTheme(ColorScheme? dynamicColorScheme, UiStyle uiStyle) {
     final ColorScheme colorScheme = dynamicColorScheme ?? ColorScheme.fromSeed(
       seedColor: fallbackSeedColor,
       brightness: Brightness.dark,
     );
 
-    return _buildTheme(colorScheme);
+    return _buildTheme(colorScheme, uiStyle);
   }
 
-  static ThemeData amoledTheme(ColorScheme? dynamicColorScheme) {
+  static ThemeData amoledTheme(ColorScheme? dynamicColorScheme, UiStyle uiStyle) {
     final ColorScheme baseColorScheme = dynamicColorScheme ?? ColorScheme.fromSeed(
       seedColor: fallbackSeedColor,
       brightness: Brightness.dark,
@@ -46,16 +47,21 @@ class AppTheme {
       surfaceContainerHighest: const Color(0xFF282828),
     );
 
-    return _buildTheme(amoledColorScheme).copyWith(
-      scaffoldBackgroundColor: Colors.black,
+    return _buildTheme(amoledColorScheme, uiStyle).copyWith(
+      scaffoldBackgroundColor: uiStyle == UiStyle.liquidGlass ? Colors.transparent : Colors.black,
     );
   }
 
-  static ThemeData _buildTheme(ColorScheme colorScheme) {
+  static ThemeData _buildTheme(ColorScheme colorScheme, UiStyle uiStyle) {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: colorScheme.surface,
+      scaffoldBackgroundColor: uiStyle == UiStyle.liquidGlass ? Colors.transparent : colorScheme.surface,
+      appBarTheme: AppBarTheme(
+        backgroundColor: uiStyle == UiStyle.liquidGlass ? Colors.transparent : null,
+        elevation: 0,
+        scrolledUnderElevation: uiStyle == UiStyle.liquidGlass ? 0 : null,
+      ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(

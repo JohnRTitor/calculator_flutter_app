@@ -1,12 +1,10 @@
+import 'package:calculator_flutter_app/core/theme/glass_utils.dart';
+import 'package:calculator_flutter_app/core/theme/ui_style.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/widgets/calculator_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
-import 'package:calculator_flutter_app/features/calculator/presentation/widgets/calculator_button.dart';
 
-/// A Liquid Glass variant of the calculator button.
-///
-/// Uses [GlassButton] from liquid_glass_widgets for translucent,
-/// shader-based glass effects with dynamic lighting.
+/// A lightweight Liquid Glass variant of the calculator button.
 class LiquidGlassCalcButton extends StatefulWidget {
   final String text;
   final bool Function()? onPressed;
@@ -31,7 +29,7 @@ class _LiquidGlassCalcButtonState extends State<LiquidGlassCalcButton> {
   double _scale = 1.0;
 
   void _handlePressDown() {
-    setState(() => _scale = 0.94);
+    setState(() => _scale = 0.97);
   }
 
   void _handlePressUp() {
@@ -48,41 +46,43 @@ class _LiquidGlassCalcButtonState extends State<LiquidGlassCalcButton> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final (fgColor, fontSize, fontWeight) = _getGlassStyle(colorScheme);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final style = _resolveButtonStyle(colorScheme, theme.brightness);
 
-    final label = widget.icon ?? Text(
-      widget.text,
-      style: TextStyle(
-        fontSize: fontSize,
-        fontWeight: fontWeight,
-        color: fgColor,
-      ),
+    final label = IconTheme(
+      data: IconThemeData(color: style.foregroundColor),
+      child:
+          widget.icon ??
+          Text(
+            widget.text,
+            style: TextStyle(
+              fontSize: style.fontSize,
+              fontWeight: style.fontWeight,
+              color: style.foregroundColor,
+            ),
+          ),
     );
 
     return Padding(
       padding: const EdgeInsets.all(3.0),
       child: AnimatedScale(
         scale: _scale,
-        duration: const Duration(milliseconds: 150),
-        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 130),
+        curve: Curves.easeOutCubic,
         child: SizedBox.expand(
           child: GestureDetector(
             onTapDown: (_) => _handlePressDown(),
             onTapUp: (_) => _handlePressUp(),
-            onTapCancel: () => _handlePressUp(),
-            child: GlassContainer(
-              shape: const LiquidRoundedSuperellipse(borderRadius: 28),
-              useOwnLayer: true,
-              settings: _getGlassSettings(colorScheme),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: widget.onPressed == null ? null : _handlePress,
-                  borderRadius: BorderRadius.circular(28),
-                  child: Center(child: label),
-                ),
-              ),
+            onTapCancel: _handlePressUp,
+            child: SharedSurface(
+              uiStyle: UiStyle.liquidGlass,
+              onTap: widget.onPressed == null ? null : _handlePress,
+              isInteractive: true,
+              isSelected: widget.isActive,
+              glassRole: style.role,
+              borderRadius: BorderRadius.circular(28),
+              child: Center(child: label),
             ),
           ),
         ),
@@ -90,64 +90,78 @@ class _LiquidGlassCalcButtonState extends State<LiquidGlassCalcButton> {
     );
   }
 
-  LiquidGlassSettings _getGlassSettings(ColorScheme cs) {
-    Color tintColor;
-    double thickness;
-    
-    if (widget.isActive) {
-      tintColor = cs.tertiaryContainer.withValues(alpha: 0.15);
-      thickness = 20;
-    } else {
-      switch (widget.type) {
-        case ButtonType.number:
-          tintColor = cs.surfaceContainerLow.withValues(alpha: 0.08);
-          thickness = 10;
-        case ButtonType.operator:
-          tintColor = cs.primary.withValues(alpha: 0.15);
-          thickness = 15;
-        case ButtonType.action:
-        case ButtonType.scientific:
-          tintColor = cs.surfaceContainerHigh.withValues(alpha: 0.1);
-          thickness = 12;
-        case ButtonType.clear:
-          tintColor = cs.errorContainer.withValues(alpha: 0.15);
-          thickness = 15;
-        case ButtonType.backspace:
-          tintColor = cs.tertiaryContainer.withValues(alpha: 0.1);
-          thickness = 15;
-        case ButtonType.equals:
-          tintColor = cs.primary.withValues(alpha: 0.2);
-          thickness = 20;
-      }
-    }
-    
-    return LiquidGlassSettings(
-      thickness: thickness,
-      glassColor: tintColor,
-    );
-  }
+  _GlassButtonStyle _resolveButtonStyle(ColorScheme cs, Brightness brightness) {
+    final bool isDark = brightness == Brightness.dark;
 
-  (Color fg, double fontSize, FontWeight fontWeight) _getGlassStyle(
-    ColorScheme cs,
-  ) {
     if (widget.isActive) {
-      return (cs.onTertiaryContainer, 18.0, FontWeight.w600);
+      return _GlassButtonStyle(
+        role: GlassSurfaceRole.primary,
+        foregroundColor: isDark ? cs.onPrimaryContainer : cs.onPrimary,
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+      );
     }
 
     switch (widget.type) {
       case ButtonType.number:
-        return (cs.onSurface, 26.0, FontWeight.w500);
+        return _GlassButtonStyle(
+          role: GlassSurfaceRole.button,
+          foregroundColor: cs.onSurface,
+          fontSize: 26,
+          fontWeight: FontWeight.w500,
+        );
       case ButtonType.operator:
-        return (cs.primary, 24.0, FontWeight.w600);
+        return _GlassButtonStyle(
+          role: GlassSurfaceRole.primary,
+          foregroundColor: isDark ? cs.onPrimaryContainer : cs.onPrimary,
+          fontSize: widget.text == 'mod' ? 18 : 24,
+          fontWeight: FontWeight.w700,
+        );
       case ButtonType.action:
       case ButtonType.scientific:
-        return (cs.onSurfaceVariant, 20.0, FontWeight.w500);
+        return _GlassButtonStyle(
+          role: GlassSurfaceRole.accent,
+          foregroundColor: widget.isActive
+              ? cs.onTertiaryContainer
+              : cs.tertiary,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+        );
       case ButtonType.clear:
-        return (cs.error, 20.0, FontWeight.w700);
+        return _GlassButtonStyle(
+          role: GlassSurfaceRole.destructive,
+          foregroundColor: isDark ? cs.onErrorContainer : cs.error,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+        );
       case ButtonType.backspace:
-        return (cs.onTertiaryContainer, 20.0, FontWeight.w500);
+        return _GlassButtonStyle(
+          role: GlassSurfaceRole.accent,
+          foregroundColor: cs.tertiary,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+        );
       case ButtonType.equals:
-        return (cs.primary, 30.0, FontWeight.bold);
+        return _GlassButtonStyle(
+          role: GlassSurfaceRole.primary,
+          foregroundColor: isDark ? cs.onPrimaryContainer : cs.onPrimary,
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+        );
     }
   }
+}
+
+class _GlassButtonStyle {
+  final GlassSurfaceRole role;
+  final Color foregroundColor;
+  final double fontSize;
+  final FontWeight fontWeight;
+
+  const _GlassButtonStyle({
+    required this.role,
+    required this.foregroundColor,
+    required this.fontSize,
+    required this.fontWeight,
+  });
 }

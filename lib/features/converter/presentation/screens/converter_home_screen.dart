@@ -6,11 +6,13 @@ import 'package:calculator_flutter_app/features/converter/presentation/screens/c
 import 'package:calculator_flutter_app/features/settings/providers/theme_provider.dart';
 import 'package:calculator_flutter_app/core/theme/ui_style.dart';
 import 'package:calculator_flutter_app/core/theme/glass_utils.dart';
+
 class ConverterHomeScreen extends ConsumerStatefulWidget {
   const ConverterHomeScreen({super.key});
 
   @override
-  ConsumerState<ConverterHomeScreen> createState() => _ConverterHomeScreenState();
+  ConsumerState<ConverterHomeScreen> createState() =>
+      _ConverterHomeScreenState();
 }
 
 class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
@@ -33,16 +35,26 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
 
   IconData _getIcon(String iconName) {
     switch (iconName) {
-      case 'straighten': return Icons.straighten;
-      case 'texture': return Icons.texture;
-      case 'scale': return Icons.scale;
-      case 'water_drop': return Icons.water_drop;
-      case 'thermostat': return Icons.thermostat;
-      case 'speed': return Icons.speed;
-      case 'schedule': return Icons.schedule;
-      case 'storage': return Icons.storage;
-      case 'pin': return Icons.pin;
-      default: return Icons.category;
+      case 'straighten':
+        return Icons.straighten;
+      case 'texture':
+        return Icons.texture;
+      case 'scale':
+        return Icons.scale;
+      case 'water_drop':
+        return Icons.water_drop;
+      case 'thermostat':
+        return Icons.thermostat;
+      case 'speed':
+        return Icons.speed;
+      case 'schedule':
+        return Icons.schedule;
+      case 'storage':
+        return Icons.storage;
+      case 'pin':
+        return Icons.pin;
+      default:
+        return Icons.category;
     }
   }
 
@@ -57,11 +69,31 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
     // Add extra items to match user request (Discount, GST, BMI, Currency)
     // We'll create custom FfiConverterCategory objects for them since they are specialized
     final displayCategories = [
-      FfiConverterCategory(id: 'currency', name: 'Currency', iconName: 'currency_exchange', units: []),
+      FfiConverterCategory(
+        id: 'currency',
+        name: 'Currency',
+        iconName: 'currency_exchange',
+        units: [],
+      ),
       ...categories!,
-      FfiConverterCategory(id: 'discount', name: 'Discount', iconName: 'local_offer', units: []),
-      FfiConverterCategory(id: 'gst', name: 'GST', iconName: 'receipt_long', units: []),
-      FfiConverterCategory(id: 'bmi', name: 'BMI', iconName: 'monitor_weight', units: []),
+      FfiConverterCategory(
+        id: 'discount',
+        name: 'Discount',
+        iconName: 'local_offer',
+        units: [],
+      ),
+      FfiConverterCategory(
+        id: 'gst',
+        name: 'GST',
+        iconName: 'receipt_long',
+        units: [],
+      ),
+      FfiConverterCategory(
+        id: 'bmi',
+        name: 'BMI',
+        iconName: 'monitor_weight',
+        units: [],
+      ),
     ];
 
     return Scaffold(
@@ -88,25 +120,33 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
               ref.read(converterProvider.notifier).setCategory(cat);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const ConverterDetailScreen()),
+                MaterialPageRoute(
+                  builder: (_) => const ConverterDetailScreen(),
+                ),
               );
             },
             borderRadius: BorderRadius.circular(24.0),
-            glassThickness: 10,
             isInteractive: true,
+            glassRole: GlassSurfaceRole.card,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: uiStyle == UiStyle.liquidGlass ? 0.0 : 1.0),
+                    color: uiStyle == UiStyle.liquidGlass
+                        ? Theme.of(
+                            context,
+                          ).colorScheme.primaryContainer.withValues(alpha: 0.12)
+                        : Theme.of(context).colorScheme.surfaceContainerHighest,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     iconData,
                     size: 32,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: uiStyle == UiStyle.liquidGlass
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: 8.0),
@@ -114,9 +154,9 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
                   cat.name,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

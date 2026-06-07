@@ -60,6 +60,11 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
             }
             Ok(CalcValue::Float(result))
         }
+        Expr::Percentage(e) => {
+            let val = evaluate_expr(e, is_degree, ans_value)?;
+            val.div(CalcValue::Rational(Rational::new(100, 1)))
+                .map_err(|_| CalcError::DivisionByZero)
+        }
         Expr::Sin(e) => {
             let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
             let mut res = if is_degree {

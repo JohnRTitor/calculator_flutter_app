@@ -11,7 +11,7 @@ class ConverterKeypad extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uiStyle = ref.watch(uiStyleProvider);
-    
+
     return LayoutBuilder(
       builder: (context, constraints) {
         // Build a 5x4 grid
@@ -70,29 +70,33 @@ class ConverterKeypad extends ConsumerWidget {
     );
   }
 
-  Widget _buildButton(BuildContext context, WidgetRef ref, String label, UiStyle uiStyle, {bool isSpecial = false}) {
+  Widget _buildButton(
+    BuildContext context,
+    WidgetRef ref,
+    String label,
+    UiStyle uiStyle, {
+    bool isSpecial = false,
+  }) {
     final colorScheme = Theme.of(context).colorScheme;
-    
-    Color glassColor;
+    final GlassSurfaceRole role;
     if (isSpecial) {
-      if (label == '⌫') {
-        glassColor = colorScheme.errorContainer.withValues(alpha: 0.15);
-      } else {
-        glassColor = colorScheme.tertiaryContainer.withValues(alpha: 0.15);
-      }
+      role = label == '⌫'
+          ? GlassSurfaceRole.destructive
+          : GlassSurfaceRole.accent;
     } else {
-      glassColor = colorScheme.surfaceContainerHighest.withValues(alpha: 0.1);
+      role = GlassSurfaceRole.button;
     }
-    
+
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(4.0),
         child: SharedSurface(
           uiStyle: uiStyle,
           isInteractive: true,
-          glassThickness: 10,
-          glassColor: glassColor,
-          materialColor: isSpecial ? colorScheme.tertiaryContainer : colorScheme.surfaceContainerHighest,
+          glassRole: role,
+          materialColor: isSpecial
+              ? colorScheme.tertiaryContainer
+              : colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(24.0),
           onTap: () {
             final notifier = ref.read(converterProvider.notifier);
@@ -110,9 +114,17 @@ class ConverterKeypad extends ConsumerWidget {
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 24, 
+                fontSize: 24,
                 fontWeight: FontWeight.w400,
-                color: isSpecial ? colorScheme.onTertiaryContainer : colorScheme.onSurface,
+                color: label == '⌫'
+                    ? (uiStyle == UiStyle.liquidGlass
+                          ? colorScheme.error
+                          : colorScheme.onErrorContainer)
+                    : isSpecial
+                    ? (uiStyle == UiStyle.liquidGlass
+                          ? colorScheme.tertiary
+                          : colorScheme.onTertiaryContainer)
+                    : colorScheme.onSurface,
               ),
             ),
           ),

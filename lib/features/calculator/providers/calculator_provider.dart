@@ -38,7 +38,7 @@ class Calculator extends _$Calculator {
     final tokens = state.showResult ? <String>[] : state.tokens;
     final cursorIndex = state.showResult ? 0 : state.cursorIndex;
 
-    final isOperator = ['+', '−', '×', '÷', '%', '^', '/'].contains(text);
+    final isOperator = ['+', '−', '×', '÷', '%', 'mod', '^', '/'].contains(text);
     final isMinus = text == '−';
 
     if (isOperator || text == '!') {
@@ -59,7 +59,7 @@ class Calculator extends _$Calculator {
 
     if (isOperator) {
       if (prevToken != null) {
-        final isPrevOperator = ['+', '−', '×', '÷', '%', '^', '/'].contains(prevToken);
+        final isPrevOperator = ['+', '−', '×', '÷', '%', 'mod', '^', '/'].contains(prevToken);
         final isPrevOpenParen = prevToken.endsWith('(');
 
         if (isPrevOpenParen) {
@@ -72,7 +72,7 @@ class Calculator extends _$Calculator {
           if (isMinus && prevToken == '−') {
             if (cursorIndex > 1) {
               final prevPrevToken = tokens[cursorIndex - 2];
-              if (['+', '−', '×', '÷', '%', '^', '/'].contains(prevPrevToken)) {
+              if (['+', '−', '×', '÷', '%', 'mod', '^', '/'].contains(prevPrevToken)) {
                 return false;
               }
             }
@@ -123,7 +123,7 @@ class Calculator extends _$Calculator {
         return false;
       }
 
-      if (prevToken != null && ['+', '−', '×', '÷', '%', '^', '/'].contains(prevToken)) {
+      if (prevToken != null && ['+', '−', '×', '÷', '%', 'mod', '^', '/'].contains(prevToken)) {
         return false;
       }
     }
@@ -212,7 +212,7 @@ class Calculator extends _$Calculator {
     if (state.expression.isEmpty) return false;
     
     final lastToken = state.tokens.last;
-    if (['+', '−', '×', '÷', '%', '^', '/'].contains(lastToken)) {
+    if (['+', '−', '×', '÷', '%', 'mod', '^', '/'].contains(lastToken)) {
       return false;
     }
     

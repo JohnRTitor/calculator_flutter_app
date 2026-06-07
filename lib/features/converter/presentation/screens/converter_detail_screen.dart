@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/features/converter/providers/converter_provider.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:calculator_flutter_app/core/theme/ui_style.dart';
 import 'package:calculator_flutter_app/core/theme/glass_utils.dart';
 import 'package:calculator_flutter_app/features/settings/providers/theme_provider.dart';
@@ -20,8 +19,6 @@ class ConverterDetailScreen extends ConsumerWidget {
     if (category == null) return const Scaffold();
 
     final uiStyle = ref.watch(uiStyleProvider);
-    final themeMode = ref.watch(themeModeProvider);
-    final brightness = Theme.of(context).brightness;
     final colorScheme = Theme.of(context).colorScheme;
 
     Widget body = SafeArea(
@@ -31,7 +28,10 @@ class ConverterDetailScreen extends ConsumerWidget {
           Expanded(
             flex: 35,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 16.0,
+              ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -63,36 +63,12 @@ class ConverterDetailScreen extends ConsumerWidget {
               ),
             ),
           ),
-          
+
           // Keypad
-          const Expanded(
-            flex: 65,
-            child: ConverterKeypad(),
-          ),
+          const Expanded(flex: 65, child: ConverterKeypad()),
         ],
       ),
     );
-
-    if (uiStyle == UiStyle.liquidGlass) {
-      return GlassScaffold(
-        background: SharedGlassBackground(
-          themeMode: themeMode,
-          brightness: brightness,
-          colorScheme: colorScheme,
-        ),
-        appBar: GlassAppBar(
-          title: Text(category.name),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.swap_vert),
-              onPressed: () => notifier.swapUnits(),
-              tooltip: 'Swap units',
-            ),
-          ],
-        ),
-        body: body,
-      );
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -119,12 +95,26 @@ class ConverterDetailScreen extends ConsumerWidget {
     required ColorScheme colorScheme,
     required UiStyle uiStyle,
   }) {
+    final isGlass = uiStyle == UiStyle.liquidGlass;
+    final isLightGlass =
+        isGlass && Theme.of(context).brightness == Brightness.light;
+    final primaryTextColor = isLightGlass
+        ? colorScheme.onPrimary
+        : colorScheme.onPrimaryContainer;
+    final valueColor = isFrom && isGlass
+        ? primaryTextColor
+        : colorScheme.onSurface;
+    final secondaryTextColor = isFrom && isGlass
+        ? primaryTextColor.withValues(alpha: 0.72)
+        : colorScheme.onSurfaceVariant;
+
     return SharedSurface(
       uiStyle: uiStyle,
       padding: const EdgeInsets.all(16.0),
-      glassThickness: 12,
-      glassColor: isFrom ? colorScheme.primaryContainer.withValues(alpha: 0.1) : colorScheme.surfaceContainerHighest.withValues(alpha: 0.1),
-      materialColor: isFrom ? colorScheme.primaryContainer : colorScheme.surfaceContainerHighest,
+      glassRole: isFrom ? GlassSurfaceRole.primary : GlassSurfaceRole.panel,
+      materialColor: isFrom
+          ? colorScheme.primaryContainer
+          : colorScheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -135,17 +125,20 @@ class ConverterDetailScreen extends ConsumerWidget {
             },
             borderRadius: BorderRadius.circular(12.0),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8.0,
+                vertical: 4.0,
+              ),
               child: Row(
                 children: [
                   Text(
                     label,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: colorScheme.onSurface,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      color: valueColor,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                  const Icon(Icons.arrow_drop_down),
+                  Icon(Icons.arrow_drop_down, color: secondaryTextColor),
                 ],
               ),
             ),
@@ -160,16 +153,16 @@ class ConverterDetailScreen extends ConsumerWidget {
                   Text(
                     value,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: colorScheme.onSurface,
-                          fontWeight: isFrom ? FontWeight.w600 : FontWeight.w400,
-                        ),
+                      color: valueColor,
+                      fontWeight: isFrom ? FontWeight.w600 : FontWeight.w400,
+                    ),
                   ),
                   const SizedBox(width: 6),
                   Text(
                     symbol,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleLarge?.copyWith(color: secondaryTextColor),
                   ),
                 ],
               ),
