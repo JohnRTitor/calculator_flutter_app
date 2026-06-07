@@ -20,6 +20,8 @@ pub struct FfiConverterCategory {
     pub name: String,
     pub icon_name: String,
     pub units: Vec<FfiUnit>,
+    pub show_swap_units_toggler: bool,
+    pub show_result_section: bool,
 }
 
 /// Retrieves all available converter categories for the Flutter UI.
@@ -27,7 +29,8 @@ pub struct FfiConverterCategory {
 pub fn get_converter_categories() -> Vec<FfiConverterCategory> {
     converter::get_all_categories()
         .into_iter()
-        .map(|c| FfiConverterCategory {
+        .map(|c| {
+            FfiConverterCategory {
             id: c.id,
             name: c.name,
             icon_name: c.icon_name,
@@ -42,7 +45,9 @@ pub fn get_converter_categories() -> Vec<FfiConverterCategory> {
                     offset: u.offset,
                 })
                 .collect(),
-        })
+            show_swap_units_toggler: true,
+            show_result_section: true,
+        }})
         .collect()
 }
 

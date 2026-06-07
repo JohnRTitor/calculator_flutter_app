@@ -8,6 +8,8 @@ import 'package:calculator_flutter_app/features/settings/presentation/providers/
 import 'package:calculator_flutter_app/app/navigation/main_navigation_bar.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 
+import 'package:toastification/toastification.dart';
+
 /// The root widget of the Calculator application.
 ///
 /// It sets up the dynamic theming system, provides the global application state,
@@ -85,7 +87,9 @@ class CalculatorApp extends ConsumerWidget {
           },
         );
 
-        return materialApp;
+        return ToastificationWrapper(
+          child: materialApp,
+        );
       },
     );
   }

@@ -105,17 +105,26 @@ class FfiConverterCategory {
   final String name;
   final String iconName;
   final List<FfiUnit> units;
+  final bool showSwapUnitsToggler;
+  final bool showResultSection;
 
   const FfiConverterCategory({
     required this.id,
     required this.name,
     required this.iconName,
     required this.units,
+    required this.showSwapUnitsToggler,
+    required this.showResultSection,
   });
 
   @override
   int get hashCode =>
-      id.hashCode ^ name.hashCode ^ iconName.hashCode ^ units.hashCode;
+      id.hashCode ^
+      name.hashCode ^
+      iconName.hashCode ^
+      units.hashCode ^
+      showSwapUnitsToggler.hashCode ^
+      showResultSection.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -125,7 +134,9 @@ class FfiConverterCategory {
           id == other.id &&
           name == other.name &&
           iconName == other.iconName &&
-          units == other.units;
+          units == other.units &&
+          showSwapUnitsToggler == other.showSwapUnitsToggler &&
+          showResultSection == other.showResultSection;
 }
 
 /// FFI representation of a physical unit of measurement.

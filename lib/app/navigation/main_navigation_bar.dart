@@ -59,7 +59,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
             Expanded(
               child: TabBarView(
                 controller: _tabController,
-                children: const [CalculatorScreen(), ConverterHomeScreen()],
+                children: [const CalculatorScreen(), const ConverterHomeScreen()],
               ),
             ),
           ],

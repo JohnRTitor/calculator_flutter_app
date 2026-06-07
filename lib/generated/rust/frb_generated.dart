@@ -730,13 +730,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   FfiConverterCategory dco_decode_ffi_converter_category(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 4)
-      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
     return FfiConverterCategory(
       id: dco_decode_String(arr[0]),
       name: dco_decode_String(arr[1]),
       iconName: dco_decode_String(arr[2]),
       units: dco_decode_list_ffi_unit(arr[3]),
+      showSwapUnitsToggler: dco_decode_bool(arr[4]),
+      showResultSection: dco_decode_bool(arr[5]),
     );
   }
 
@@ -916,11 +918,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_name = sse_decode_String(deserializer);
     var var_iconName = sse_decode_String(deserializer);
     var var_units = sse_decode_list_ffi_unit(deserializer);
+    var var_showSwapUnitsToggler = sse_decode_bool(deserializer);
+    var var_showResultSection = sse_decode_bool(deserializer);
     return FfiConverterCategory(
       id: var_id,
       name: var_name,
       iconName: var_iconName,
       units: var_units,
+      showSwapUnitsToggler: var_showSwapUnitsToggler,
+      showResultSection: var_showResultSection,
     );
   }
 
@@ -1125,6 +1131,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_String(self.name, serializer);
     sse_encode_String(self.iconName, serializer);
     sse_encode_list_ffi_unit(self.units, serializer);
+    sse_encode_bool(self.showSwapUnitsToggler, serializer);
+    sse_encode_bool(self.showResultSection, serializer);
   }
 
   @protected

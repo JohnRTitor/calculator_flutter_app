@@ -70,6 +70,8 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
     }
 
     final uiStyle = ref.watch(uiStyleProvider);
+    // Explicitly depend on Theme to ensure the grid rebuilds when theme changes
+    final _ = Theme.of(context);
 
     // Add extra items to match user request (Discount, GST, BMI, Currency)
     // We'll create custom FfiConverterCategory objects for them since they are specialized
@@ -79,6 +81,8 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
         name: 'Currency',
         iconName: 'currency_exchange',
         units: [],
+        showSwapUnitsToggler: true,
+        showResultSection: true,
       ),
       ...categories!,
       FfiConverterCategory(
@@ -86,18 +90,24 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
         name: 'Discount',
         iconName: 'local_offer',
         units: [],
+        showSwapUnitsToggler: false,
+        showResultSection: true,
       ),
       FfiConverterCategory(
         id: 'gst',
         name: 'GST',
         iconName: 'receipt_long',
         units: [],
+        showSwapUnitsToggler: false,
+        showResultSection: true,
       ),
       FfiConverterCategory(
         id: 'bmi',
         name: 'BMI',
         iconName: 'monitor_weight',
         units: [],
+        showSwapUnitsToggler: false,
+        showResultSection: true,
       ),
     ];
 

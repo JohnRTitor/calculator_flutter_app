@@ -45,6 +45,7 @@ dependencies:
   path: ^1.9.1
   flutter_animate: ^4.5.2
   http: ^1.6.0
+  toastification: ^3.2.0
 
 dev_dependencies:
   flutter_test:

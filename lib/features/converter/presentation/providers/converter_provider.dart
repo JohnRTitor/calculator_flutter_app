@@ -4,6 +4,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:calculator_flutter_app/generated/rust/bridge/converter.dart';
 
+class ConverterResultData {
+  final String title;
+  final String primaryValue;
+  final String secondaryText;
+
+  const ConverterResultData({
+    required this.title,
+    required this.primaryValue,
+    required this.secondaryText,
+  });
+
+  bool get isEmpty => primaryValue.isEmpty;
+}
+
 // --- Currency API Service ---
 
 /// A service responsible for fetching and caching live currency exchange rates
@@ -84,6 +98,55 @@ class CurrencyService {
 
 final currencyServiceProvider = Provider((ref) => CurrencyService());
 
+// --- Static BMI Units ---
+final List<FfiUnit> bmiWeightUnits = [
+  const FfiUnit(
+    id: 'kg',
+    name: 'Weight',
+    symbol: 'Kilograms',
+    multiplier: 1.0,
+    offset: 0.0,
+  ),
+  const FfiUnit(
+    id: 'lb',
+    name: 'Weight',
+    symbol: 'Pounds',
+    multiplier: 0.453592,
+    offset: 0.0,
+  ),
+];
+
+final List<FfiUnit> bmiHeightUnits = [
+  const FfiUnit(
+    id: 'cm',
+    name: 'Height',
+    symbol: 'Centimeters',
+    multiplier: 1.0,
+    offset: 0.0,
+  ),
+  const FfiUnit(
+    id: 'm',
+    name: 'Height',
+    symbol: 'Meters',
+    multiplier: 100.0,
+    offset: 0.0,
+  ),
+  const FfiUnit(
+    id: 'ft',
+    name: 'Height',
+    symbol: 'Feet',
+    multiplier: 30.48,
+    offset: 0.0,
+  ),
+  const FfiUnit(
+    id: 'in',
+    name: 'Height',
+    symbol: 'Inches',
+    multiplier: 2.54,
+    offset: 0.0,
+  ),
+];
+
 // --- State Management ---
 
 /// Holds the state for the Unit Converter feature.
@@ -93,6 +156,7 @@ class ConverterState {
   final FfiUnit? toUnit;
   final String inputValue;
   final String resultValue;
+  final ConverterResultData? resultData;
   final Map<String, double> currencyRates;
   final bool isLoadingRates;
 
@@ -102,6 +166,10 @@ class ConverterState {
   final bool addGst;
   final String bmiHeight;
   final String bmiWeight;
+  final FfiUnit? bmiWeightUnit;
+  final FfiUnit? bmiHeightUnit;
+  final String
+  activeInput; // 'from', 'to', 'bmiWeight', 'bmiHeight', 'discountAmount', 'discountPercentage', 'gstAmount', 'gstPercentage'
 
   ConverterState({
     this.category,
@@ -109,6 +177,7 @@ class ConverterState {
     this.toUnit,
     this.inputValue = '',
     this.resultValue = '',
+    this.resultData,
     this.currencyRates = const {},
     this.isLoadingRates = false,
     this.discountPercentage = '',
@@ -116,6 +185,9 @@ class ConverterState {
     this.addGst = true,
     this.bmiHeight = '',
     this.bmiWeight = '',
+    this.bmiWeightUnit,
+    this.bmiHeightUnit,
+    this.activeInput = 'from',
   });
 
   ConverterState copyWith({
@@ -125,6 +197,8 @@ class ConverterState {
     bool clearUnits = false,
     String? inputValue,
     String? resultValue,
+    ConverterResultData? resultData,
+    bool clearResultData = false,
     Map<String, double>? currencyRates,
     bool? isLoadingRates,
     String? discountPercentage,
@@ -132,6 +206,9 @@ class ConverterState {
     bool? addGst,
     String? bmiHeight,
     String? bmiWeight,
+    FfiUnit? bmiWeightUnit,
+    FfiUnit? bmiHeightUnit,
+    String? activeInput,
   }) {
     return ConverterState(
       category: category ?? this.category,
@@ -139,6 +216,7 @@ class ConverterState {
       toUnit: clearUnits ? null : (toUnit ?? this.toUnit),
       inputValue: inputValue ?? this.inputValue,
       resultValue: resultValue ?? this.resultValue,
+      resultData: clearResultData ? null : (resultData ?? this.resultData),
       currencyRates: currencyRates ?? this.currencyRates,
       isLoadingRates: isLoadingRates ?? this.isLoadingRates,
       discountPercentage: discountPercentage ?? this.discountPercentage,
@@ -146,6 +224,9 @@ class ConverterState {
       addGst: addGst ?? this.addGst,
       bmiHeight: bmiHeight ?? this.bmiHeight,
       bmiWeight: bmiWeight ?? this.bmiWeight,
+      bmiWeightUnit: bmiWeightUnit ?? this.bmiWeightUnit,
+      bmiHeightUnit: bmiHeightUnit ?? this.bmiHeightUnit,
+      activeInput: activeInput ?? this.activeInput,
     );
   }
 }
@@ -175,18 +256,22 @@ class ConverterNotifier extends Notifier<ConverterState> {
     }
   }
 
-  Future<void> refreshCurrencyRates() async {
+  Future<bool> refreshCurrencyRates() async {
     state = state.copyWith(isLoadingRates: true);
     try {
-      final rates = await ref.read(currencyServiceProvider).fetchRates(forceRefresh: true);
+      final rates = await ref
+          .read(currencyServiceProvider)
+          .fetchRates(forceRefresh: true);
       state = state.copyWith(currencyRates: rates, isLoadingRates: false);
       if (state.category?.id == 'currency') {
         setCategory(state.category!);
       } else {
         _calculateResult();
       }
+      return true;
     } catch (e) {
       state = state.copyWith(isLoadingRates: false);
+      return false;
     }
   }
 
@@ -210,6 +295,8 @@ class ConverterNotifier extends Notifier<ConverterState> {
           name: 'Currency',
           iconName: 'currency_exchange',
           units: units,
+          showSwapUnitsToggler: true,
+          showResultSection: true,
         );
         state = state.copyWith(
           category: cat,
@@ -227,8 +314,31 @@ class ConverterNotifier extends Notifier<ConverterState> {
           inputValue: '',
           resultValue: '',
           clearUnits: true,
+          activeInput: 'from',
         );
       }
+    } else if (category.id == 'bmi') {
+      state = state.copyWith(
+        category: category,
+        clearUnits: true,
+        bmiWeightUnit: bmiWeightUnits.first,
+        bmiHeightUnit: bmiHeightUnits.first,
+        activeInput: 'bmiWeight',
+        inputValue: '',
+        resultValue: '',
+        bmiWeight: '',
+        bmiHeight: '',
+      );
+    } else if (category.id == 'discount' || category.id == 'gst') {
+      state = state.copyWith(
+        category: category,
+        clearUnits: true,
+        activeInput: category.id == 'discount' ? 'discountAmount' : 'gstAmount',
+        inputValue: '',
+        resultValue: '',
+        discountPercentage: '',
+        gstPercentage: '',
+      );
     } else {
       state = state.copyWith(
         category: category,
@@ -243,8 +353,10 @@ class ConverterNotifier extends Notifier<ConverterState> {
         bmiHeight: '',
         bmiWeight: '',
         clearUnits: category.units.isEmpty,
+        activeInput: 'from',
       );
     }
+    _calculateResult();
   }
 
   /// Sets the unit to convert from.
@@ -266,36 +378,114 @@ class ConverterNotifier extends Notifier<ConverterState> {
     _calculateResult();
   }
 
-  /// Appends a digit to the input value.
+  /// Appends a digit to the active input field.
   void onDigit(String digit) {
-    state = state.copyWith(inputValue: state.inputValue + digit);
+    final val = _getActiveValue();
+    _setActiveValue(val + digit);
+  }
+
+  /// Deletes the last character from the active input field.
+  void onDelete() {
+    final val = _getActiveValue();
+    if (val.isNotEmpty) {
+      _setActiveValue(val.substring(0, val.length - 1));
+    }
+  }
+
+  /// Clears all input and result values for the current category.
+  void onClear() {
+    if (state.category?.id == 'bmi') {
+      state = state.copyWith(bmiWeight: '', bmiHeight: '', resultValue: '');
+    } else if (state.category?.id == 'discount') {
+      state = state.copyWith(
+        inputValue: '',
+        discountPercentage: '',
+        resultValue: '',
+      );
+    } else if (state.category?.id == 'gst') {
+      state = state.copyWith(
+        inputValue: '',
+        gstPercentage: '',
+        resultValue: '',
+      );
+    } else {
+      state = state.copyWith(inputValue: '', resultValue: '');
+    }
     _calculateResult();
   }
 
-  /// Deletes the last character from the input value.
-  void onDelete() {
-    if (state.inputValue.isNotEmpty) {
-      state = state.copyWith(
-        inputValue: state.inputValue.substring(0, state.inputValue.length - 1),
-      );
-      _calculateResult();
-    }
-  }
-
-  /// Clears the input and result values.
-  void onClear() {
-    state = state.copyWith(inputValue: '', resultValue: '');
-  }
-
-  /// Appends a decimal point to the input value, if one doesn't already exist.
+  /// Appends a decimal point to the active input field.
   void onDot() {
-    if (!state.inputValue.contains('.')) {
-      if (state.inputValue.isEmpty) {
-        state = state.copyWith(inputValue: '0.');
+    final val = _getActiveValue();
+    if (!val.contains('.')) {
+      if (val.isEmpty) {
+        _setActiveValue('0.');
       } else {
-        state = state.copyWith(inputValue: '${state.inputValue}.');
+        _setActiveValue('$val.');
       }
     }
+  }
+
+  String _getActiveValue() {
+    switch (state.activeInput) {
+      case 'to':
+        return state.resultValue;
+      case 'bmiWeight':
+        return state.bmiWeight;
+      case 'bmiHeight':
+        return state.bmiHeight;
+      case 'discountAmount':
+        return state.inputValue;
+      case 'discountPercentage':
+        return state.discountPercentage;
+      case 'gstAmount':
+        return state.inputValue;
+      case 'gstPercentage':
+        return state.gstPercentage;
+      default:
+        return state.inputValue;
+    }
+  }
+
+  void _setActiveValue(String val) {
+    switch (state.activeInput) {
+      case 'to':
+        state = state.copyWith(resultValue: val);
+        break;
+      case 'bmiWeight':
+        state = state.copyWith(bmiWeight: val);
+        break;
+      case 'bmiHeight':
+        state = state.copyWith(bmiHeight: val);
+        break;
+      case 'discountPercentage':
+        state = state.copyWith(discountPercentage: val);
+        break;
+      case 'gstPercentage':
+        state = state.copyWith(gstPercentage: val);
+        break;
+      case 'discountAmount':
+      case 'gstAmount':
+      case 'from':
+      default:
+        state = state.copyWith(inputValue: val);
+        break;
+    }
+    _calculateResult();
+  }
+
+  void setActiveInput(String inputId) {
+    state = state.copyWith(activeInput: inputId);
+  }
+
+  void setBmiWeightUnit(FfiUnit unit) {
+    state = state.copyWith(bmiWeightUnit: unit);
+    _calculateResult();
+  }
+
+  void setBmiHeightUnit(FfiUnit unit) {
+    state = state.copyWith(bmiHeightUnit: unit);
+    _calculateResult();
   }
 
   // Setters for special fields
@@ -325,13 +515,10 @@ class ConverterNotifier extends Notifier<ConverterState> {
   }
 
   void _calculateResult() {
-    if (state.inputValue.isEmpty && state.category?.id != 'bmi') {
-      state = state.copyWith(resultValue: '');
-      return;
-    }
-
     final catId = state.category?.id;
     if (catId == null) return;
+    
+    final isEmptyInput = state.inputValue.isEmpty;
 
     if (catId == 'currency') {
       final from = state.fromUnit?.id;
@@ -340,57 +527,140 @@ class ConverterNotifier extends Notifier<ConverterState> {
           to != null &&
           state.currencyRates.containsKey(from) &&
           state.currencyRates.containsKey(to)) {
-        final val = double.tryParse(state.inputValue) ?? 0.0;
-        final fromRate = state.currencyRates[from]!;
-        final toRate = state.currencyRates[to]!;
-        final res = val * (toRate / fromRate);
-        state = state.copyWith(resultValue: _formatResult(res));
+        
+        final isReverse = state.activeInput == 'to';
+        final sourceValue = isReverse ? state.resultValue : state.inputValue;
+        final isEmpty = sourceValue.isEmpty;
+
+        if (isEmpty) {
+          state = state.copyWith(
+            inputValue: isReverse ? '' : state.inputValue,
+            resultValue: isReverse ? state.resultValue : '',
+            resultData: ConverterResultData(
+              title: isReverse ? 'Reverse Conversion Mode' : 'Result',
+              primaryValue: '0 $to',
+              secondaryText: '1 $from = ${_formatResult(state.currencyRates[to]! / state.currencyRates[from]!)} $to',
+            ),
+          );
+        } else {
+          final val = double.tryParse(sourceValue) ?? 0.0;
+          final fromRate = state.currencyRates[from]!;
+          final toRate = state.currencyRates[to]!;
+          
+          final res = isReverse ? val * (fromRate / toRate) : val * (toRate / fromRate);
+          final formattedRes = _formatResult(res);
+          
+          state = state.copyWith(
+            inputValue: isReverse ? formattedRes : state.inputValue,
+            resultValue: isReverse ? state.resultValue : formattedRes,
+            resultData: ConverterResultData(
+              title: isReverse ? 'Reverse Conversion Mode' : 'Result',
+              primaryValue: isReverse ? '${state.resultValue} $to' : '$formattedRes $to',
+              secondaryText:
+                  '1 $from = ${_formatResult(toRate / fromRate)} $to',
+            ),
+          );
+        }
+      } else {
+        state = state.copyWith(resultValue: '', clearResultData: true);
       }
       return;
     }
 
     if (catId == 'discount') {
-      final price = double.tryParse(state.inputValue) ?? 0.0;
-      final percent = double.tryParse(state.discountPercentage) ?? 0.0;
-      final res = calculateDiscount(
-        originalPrice: price,
-        discountPercentage: percent,
-      );
-      state = state.copyWith(
-        resultValue:
-            'Final: ${_formatResult(res.finalPrice)} (Saved: ${_formatResult(res.amountSaved)})',
-      );
+      if (isEmptyInput) {
+        state = state.copyWith(
+          resultValue: '',
+          resultData: const ConverterResultData(
+            title: 'Final Price',
+            primaryValue: '0',
+            secondaryText: 'Amount Saved: 0',
+          ),
+        );
+      } else {
+        final price = double.tryParse(state.inputValue) ?? 0.0;
+        final percent = double.tryParse(state.discountPercentage) ?? 0.0;
+        final res = calculateDiscount(
+          originalPrice: price,
+          discountPercentage: percent,
+        );
+        state = state.copyWith(
+          resultData: ConverterResultData(
+            title: 'Final Price',
+            primaryValue: _formatResult(res.finalPrice),
+            secondaryText: 'Amount Saved: ${_formatResult(res.amountSaved)}',
+          ),
+        );
+      }
       return;
     }
 
     if (catId == 'gst') {
-      final amt = double.tryParse(state.inputValue) ?? 0.0;
-      final percent = double.tryParse(state.gstPercentage) ?? 0.0;
-      final res = calculateGst(
-        amount: amt,
-        gstPercentage: percent,
-        addGst: state.addGst,
-      );
-      state = state.copyWith(
-        resultValue:
-            'Total: ${_formatResult(res.totalAmount)} (GST: ${_formatResult(res.gstAmount)})',
-      );
+      if (isEmptyInput) {
+        state = state.copyWith(
+          resultValue: '',
+          resultData: const ConverterResultData(
+            title: 'Total Amount',
+            primaryValue: '0',
+            secondaryText: 'GST: 0\nBase: 0',
+          ),
+        );
+      } else {
+        final amt = double.tryParse(state.inputValue) ?? 0.0;
+        final percent = double.tryParse(state.gstPercentage) ?? 0.0;
+        final res = calculateGst(
+          amount: amt,
+          gstPercentage: percent,
+          addGst: state.addGst,
+        );
+        state = state.copyWith(
+          resultData: ConverterResultData(
+            title: 'Total Amount',
+            primaryValue: _formatResult(res.totalAmount),
+            secondaryText:
+                'GST: ${_formatResult(res.gstAmount)}\nBase: ${_formatResult(res.originalAmount)}',
+          ),
+        );
+      }
       return;
     }
 
     if (catId == 'bmi') {
       final h = double.tryParse(state.bmiHeight) ?? 0.0;
       final w = double.tryParse(state.bmiWeight) ?? 0.0;
-      final res = calculateBmi(
-        weightKg: w,
-        heightM: h / 100.0,
-      ); // Assuming height input is in cm
+
+      if (h == 0 || w == 0) {
+        state = state.copyWith(
+          resultValue: '',
+          resultData: const ConverterResultData(
+            title: 'BMI',
+            primaryValue: '0',
+            secondaryText: 'Enter weight and height',
+          ),
+        );
+        return;
+      }
+
+      final hUnit = state.bmiHeightUnit;
+      final wUnit = state.bmiWeightUnit;
+
+      final weightKg = wUnit != null ? (w * wUnit.multiplier) : w;
+      final heightM = hUnit != null
+          ? (h * hUnit.multiplier) / 100.0
+          : h / 100.0;
+
+      final res = calculateBmi(weightKg: weightKg, heightM: heightM);
       if (res.bmi > 0) {
         state = state.copyWith(
-          resultValue: 'BMI: ${_formatResult(res.bmi)} - ${res.category}',
+          resultValue: _formatResult(res.bmi),
+          resultData: ConverterResultData(
+            title: 'BMI',
+            primaryValue: _formatResult(res.bmi),
+            secondaryText: res.category,
+          ),
         );
       } else {
-        state = state.copyWith(resultValue: '');
+        state = state.copyWith(resultValue: '', clearResultData: true);
       }
       return;
     }
@@ -400,12 +670,39 @@ class ConverterNotifier extends Notifier<ConverterState> {
       final fromBase = _getBaseFromUnit(state.fromUnit?.id);
       final toBase = _getBaseFromUnit(state.toUnit?.id);
       if (fromBase != null && toBase != null) {
-        final res = convertNumeral(
-          value: state.inputValue,
-          fromBase: fromBase,
-          toBase: toBase,
-        );
-        state = state.copyWith(resultValue: res ?? 'Invalid input');
+        final isReverse = state.activeInput == 'to';
+        final sourceValue = isReverse ? state.resultValue : state.inputValue;
+        final isEmpty = sourceValue.isEmpty;
+
+        if (isEmpty) {
+          state = state.copyWith(
+            inputValue: isReverse ? '' : state.inputValue,
+            resultValue: isReverse ? state.resultValue : '',
+            resultData: ConverterResultData(
+              title: isReverse ? 'Reverse Conversion Mode' : 'Result',
+              primaryValue: '0',
+              secondaryText: '= 0 (Base $fromBase)',
+            ),
+          );
+        } else {
+          final res = convertNumeral(
+            value: sourceValue,
+            fromBase: isReverse ? toBase : fromBase,
+            toBase: isReverse ? fromBase : toBase,
+          );
+          
+          state = state.copyWith(
+            inputValue: isReverse ? (res ?? 'Invalid input') : state.inputValue,
+            resultValue: isReverse ? state.resultValue : (res ?? 'Invalid input'),
+            resultData: ConverterResultData(
+              title: isReverse ? 'Reverse Conversion Mode' : 'Result',
+              primaryValue: isReverse ? state.resultValue : (res ?? 'Invalid input'),
+              secondaryText: res != null
+                  ? '= ${isReverse ? res : state.inputValue} (Base $fromBase)'
+                  : '',
+            ),
+          );
+        }
       }
       return;
     }
@@ -414,16 +711,49 @@ class ConverterNotifier extends Notifier<ConverterState> {
     final fromUnit = state.fromUnit;
     final toUnit = state.toUnit;
     if (fromUnit != null && toUnit != null) {
-      final val = double.tryParse(state.inputValue);
-      if (val != null) {
-        final res = convertStandard(
-          value: val,
-          fromUnit: fromUnit,
-          toUnit: toUnit,
+      final isReverse = state.activeInput == 'to';
+      final sourceValue = isReverse ? state.resultValue : state.inputValue;
+      final isEmpty = sourceValue.isEmpty;
+
+      if (isEmpty) {
+        state = state.copyWith(
+          inputValue: isReverse ? '' : state.inputValue,
+          resultValue: isReverse ? state.resultValue : '',
+          resultData: ConverterResultData(
+            title: isReverse ? 'Reverse Conversion Mode' : 'Result',
+            primaryValue: '0 ${toUnit.symbol}',
+            secondaryText: '= 0 ${fromUnit.symbol}',
+          ),
         );
-        state = state.copyWith(resultValue: _formatResult(res));
       } else {
-        state = state.copyWith(resultValue: '');
+        final val = double.tryParse(sourceValue);
+        if (val != null) {
+          final res = convertStandard(
+            value: val,
+            fromUnit: isReverse ? toUnit : fromUnit,
+            toUnit: isReverse ? fromUnit : toUnit,
+          );
+          final formattedRes = _formatResult(res);
+          state = state.copyWith(
+            inputValue: isReverse ? formattedRes : state.inputValue,
+            resultValue: isReverse ? state.resultValue : formattedRes,
+            resultData: ConverterResultData(
+              title: isReverse ? 'Reverse Conversion Mode' : 'Result',
+              primaryValue: isReverse ? '${state.resultValue} ${toUnit.symbol}' : '$formattedRes ${toUnit.symbol}',
+              secondaryText: '= ${_formatResult(isReverse ? res : val)} ${fromUnit.symbol}',
+            ),
+          );
+        } else {
+          state = state.copyWith(
+            inputValue: isReverse ? '' : state.inputValue,
+            resultValue: isReverse ? state.resultValue : '',
+            resultData: ConverterResultData(
+              title: isReverse ? 'Reverse Conversion Mode' : 'Result',
+              primaryValue: 'Invalid input',
+              secondaryText: '',
+            ),
+          );
+        }
       }
     }
   }

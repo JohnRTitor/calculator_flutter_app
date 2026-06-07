@@ -558,10 +558,10 @@ class _DropdownChipRow extends StatelessWidget {
               label: 'Sci',
               bgColor: isSci
                   ? colorScheme.secondaryContainer
-                  : colorScheme.inverseSurface,
+                  : colorScheme.surfaceContainerHigh,
               fgColor: isSci
                   ? colorScheme.onSecondaryContainer
-                  : colorScheme.onInverseSurface,
+                  : colorScheme.onSurfaceVariant,
               onTap: () =>
                   ref.read(calculatorProvider.notifier).toggleScientificMode(),
               isExpanded: isSci,

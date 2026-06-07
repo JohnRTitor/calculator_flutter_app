@@ -68,7 +68,7 @@ class _LiquidGlassCalcButtonState extends State<LiquidGlassCalcButton> {
     );
 
     return Padding(
-      padding: const EdgeInsets.all(3.0),
+      padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 6.0),
       child: AnimatedScale(
         scale: _scale,
         duration: const Duration(milliseconds: 130),

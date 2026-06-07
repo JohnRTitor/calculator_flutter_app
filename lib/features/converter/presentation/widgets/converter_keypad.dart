@@ -15,6 +15,8 @@ class ConverterKeypad extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uiStyle = ref.watch(uiStyleProvider);
+    // Explicitly depend on Theme to ensure the keypad rebuilds when theme changes
+    final _ = Theme.of(context);
 
     return LayoutBuilder(
       builder: (context, constraints) {
