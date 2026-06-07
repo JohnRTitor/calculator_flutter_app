@@ -7,6 +7,7 @@ import 'package:calculator_flutter_app/features/history/presentation/screens/his
 import 'package:calculator_flutter_app/features/settings/presentation/screens/settings_screen.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
+import 'package:calculator_flutter_app/app/navigation/route_transitions.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -103,7 +104,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
                 icon: const Icon(Icons.history, size: 22),
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const HistoryScreen()),
+                  FadePageRoute(page: const HistoryScreen()),
                 ),
                 tooltip: 'History',
                 color: glassCard.foregroundColor,
@@ -112,7 +113,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
               icon: const Icon(Icons.history, size: 22),
               onPressed: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const HistoryScreen()),
+                FadePageRoute(page: const HistoryScreen()),
               ),
               tooltip: 'History',
               color: colorScheme.onSurfaceVariant,
@@ -195,7 +196,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
                   if (value == 'settings') {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                      FadePageRoute(page: const SettingsScreen()),
                     );
                   }
                 },
@@ -214,7 +215,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
                 if (value == 'settings') {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                    FadePageRoute(page: const SettingsScreen()),
                   );
                 }
               },

@@ -6,6 +6,7 @@ import 'package:calculator_flutter_app/features/converter/presentation/screens/c
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
+import 'package:calculator_flutter_app/app/navigation/route_transitions.dart';
 
 class ConverterHomeScreen extends ConsumerStatefulWidget {
   const ConverterHomeScreen({super.key});
@@ -120,9 +121,7 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
               ref.read(converterProvider.notifier).setCategory(cat);
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const ConverterDetailScreen(),
-                ),
+                FadePageRoute(page: const ConverterDetailScreen()),
               );
             },
             borderRadius: BorderRadius.circular(24.0),
