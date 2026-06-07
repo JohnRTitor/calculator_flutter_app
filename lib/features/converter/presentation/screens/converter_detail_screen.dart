@@ -78,6 +78,20 @@ class ConverterDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(category.name),
         actions: [
+          if (category.id == 'currency')
+            IconButton(
+              icon: state.isLoadingRates
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.refresh),
+              onPressed: state.isLoadingRates
+                  ? null
+                  : () => notifier.refreshCurrencyRates(),
+              tooltip: 'Refresh rates',
+            ),
           IconButton(
             icon: const Icon(Icons.swap_vert),
             onPressed: () => notifier.swapUnits(),

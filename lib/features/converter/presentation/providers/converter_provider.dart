@@ -12,6 +12,18 @@ class CurrencyService {
   static const String _baseUrl = 'https://api.frankfurter.app/latest';
   static const String _cacheKey = 'currency_rates_cache';
 
+  static const Map<String, double> _fallbackRates = {
+    'USD': 1.0,
+    'EUR': 0.92,
+    'GBP': 0.79,
+    'JPY': 150.0,
+    'AUD': 1.52,
+    'CAD': 1.36,
+    'CHF': 0.90,
+    'CNY': 7.20,
+    'INR': 83.0,
+  };
+
   /// Fetches the latest currency exchange rates relative to USD.
   /// Uses a local cache if available and less than 12 hours old, unless `forceRefresh` is true.
   Future<Map<String, double>> fetchRates({bool forceRefresh = false}) async {
@@ -23,9 +35,9 @@ class CurrencyService {
         try {
           final data = jsonDecode(cachedStr) as Map<String, dynamic>;
           final timestamp = data['timestamp'] as int;
-          // Cache for 12 hours
+          // Cache for 24 hours (1 day)
           if (DateTime.now().millisecondsSinceEpoch - timestamp <
-              12 * 60 * 60 * 1000) {
+              24 * 60 * 60 * 1000) {
             return Map<String, double>.from(data['rates']);
           }
         } catch (e) {
@@ -65,7 +77,7 @@ class CurrencyService {
         final data = jsonDecode(cachedStr) as Map<String, dynamic>;
         return Map<String, double>.from(data['rates']);
       }
-      throw Exception('Offline and no cached rates available');
+      return _fallbackRates;
     }
   }
 }
@@ -110,6 +122,7 @@ class ConverterState {
     FfiConverterCategory? category,
     FfiUnit? fromUnit,
     FfiUnit? toUnit,
+    bool clearUnits = false,
     String? inputValue,
     String? resultValue,
     Map<String, double>? currencyRates,
@@ -122,8 +135,8 @@ class ConverterState {
   }) {
     return ConverterState(
       category: category ?? this.category,
-      fromUnit: fromUnit ?? this.fromUnit,
-      toUnit: toUnit ?? this.toUnit,
+      fromUnit: clearUnits ? null : (fromUnit ?? this.fromUnit),
+      toUnit: clearUnits ? null : (toUnit ?? this.toUnit),
       inputValue: inputValue ?? this.inputValue,
       resultValue: resultValue ?? this.resultValue,
       currencyRates: currencyRates ?? this.currencyRates,
@@ -152,13 +165,31 @@ class ConverterNotifier extends Notifier<ConverterState> {
     try {
       final rates = await ref.read(currencyServiceProvider).fetchRates();
       state = state.copyWith(currencyRates: rates, isLoadingRates: false);
-      _calculateResult();
+      if (state.category?.id == 'currency') {
+        setCategory(state.category!);
+      } else {
+        _calculateResult();
+      }
     } catch (e) {
       state = state.copyWith(isLoadingRates: false);
     }
   }
 
-  /// Sets the active converter category (e.g., Length, Mass, Currency).
+  Future<void> refreshCurrencyRates() async {
+    state = state.copyWith(isLoadingRates: true);
+    try {
+      final rates = await ref.read(currencyServiceProvider).fetchRates(forceRefresh: true);
+      state = state.copyWith(currencyRates: rates, isLoadingRates: false);
+      if (state.category?.id == 'currency') {
+        setCategory(state.category!);
+      } else {
+        _calculateResult();
+      }
+    } catch (e) {
+      state = state.copyWith(isLoadingRates: false);
+    }
+  }
+
   void setCategory(FfiConverterCategory category) {
     if (category.id == 'currency') {
       // Create virtual units for currency
@@ -188,12 +219,14 @@ class ConverterNotifier extends Notifier<ConverterState> {
               : (units.isNotEmpty ? units.first : null),
           inputValue: '',
           resultValue: '',
+          clearUnits: units.isEmpty,
         );
       } else {
         state = state.copyWith(
           category: category,
           inputValue: '',
           resultValue: '',
+          clearUnits: true,
         );
       }
     } else {
@@ -209,6 +242,7 @@ class ConverterNotifier extends Notifier<ConverterState> {
         gstPercentage: '',
         bmiHeight: '',
         bmiWeight: '',
+        clearUnits: category.units.isEmpty,
       );
     }
   }
