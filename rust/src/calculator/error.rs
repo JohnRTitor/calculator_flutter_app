@@ -1,5 +1,6 @@
 use std::fmt;
 
+/// Represents errors that can occur during mathematical evaluation or parsing.
 #[derive(Debug, Clone)]
 pub enum CalcError {
     InvalidExpression(String),

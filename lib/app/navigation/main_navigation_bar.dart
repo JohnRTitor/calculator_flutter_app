@@ -9,6 +9,10 @@ import 'package:calculator_flutter_app/features/settings/presentation/providers/
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/app/navigation/route_transitions.dart';
 
+/// The primary navigation scaffold of the application.
+///
+/// Contains a top tab bar to switch between the Calculator and Converter screens,
+/// and provides access to the History and Settings screens.
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
 
@@ -95,29 +99,31 @@ class _MainScreenState extends ConsumerState<MainScreen>
         child: Row(
           children: [
             // History Icon
-            isGlass ? SharedSurface(
-              uiStyle: uiStyle,
-              glassRole: GlassSurfaceRole.button,
-              frosted: true,
-              borderRadius: BorderRadius.circular(24),
-              child: IconButton(
-                icon: const Icon(Icons.history, size: 22),
-                onPressed: () => Navigator.push(
-                  context,
-                  FadePageRoute(page: const HistoryScreen()),
-                ),
-                tooltip: 'History',
-                color: glassCard.foregroundColor,
-              ),
-            ) : IconButton(
-              icon: const Icon(Icons.history, size: 22),
-              onPressed: () => Navigator.push(
-                context,
-                FadePageRoute(page: const HistoryScreen()),
-              ),
-              tooltip: 'History',
-              color: colorScheme.onSurfaceVariant,
-            ),
+            isGlass
+                ? SharedSurface(
+                    uiStyle: uiStyle,
+                    glassRole: GlassSurfaceRole.button,
+                    frosted: true,
+                    borderRadius: BorderRadius.circular(24),
+                    child: IconButton(
+                      icon: const Icon(Icons.history, size: 22),
+                      onPressed: () => Navigator.push(
+                        context,
+                        FadePageRoute(page: const HistoryScreen()),
+                      ),
+                      tooltip: 'History',
+                      color: glassCard.foregroundColor,
+                    ),
+                  )
+                : IconButton(
+                    icon: const Icon(Icons.history, size: 22),
+                    onPressed: () => Navigator.push(
+                      context,
+                      FadePageRoute(page: const HistoryScreen()),
+                    ),
+                    tooltip: 'History',
+                    color: colorScheme.onSurfaceVariant,
+                  ),
 
             const Spacer(),
 
@@ -150,9 +156,17 @@ class _MainScreenState extends ConsumerState<MainScreen>
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              Color.lerp(glassPrimary.fillColor, Colors.white, brightness == Brightness.light ? 0.2 : 0.1)!,
+                              Color.lerp(
+                                glassPrimary.fillColor,
+                                Colors.white,
+                                brightness == Brightness.light ? 0.2 : 0.1,
+                              )!,
                               glassPrimary.fillColor,
-                              Color.lerp(glassPrimary.fillColor, Colors.black, brightness == Brightness.light ? 0.05 : 0.15)!,
+                              Color.lerp(
+                                glassPrimary.fillColor,
+                                Colors.black,
+                                brightness == Brightness.light ? 0.05 : 0.15,
+                              )!,
                             ],
                             stops: const [0.0, 0.4, 1.0],
                           )
@@ -180,49 +194,57 @@ class _MainScreenState extends ConsumerState<MainScreen>
             const Spacer(),
 
             // More Menu
-            isGlass ? SharedSurface(
-              uiStyle: uiStyle,
-              glassRole: GlassSurfaceRole.button,
-              frosted: true,
-              borderRadius: BorderRadius.circular(24),
-              child: PopupMenuButton<String>(
-                icon: Icon(
-                  Icons.more_vert,
-                  size: 22,
-                  color: glassCard.foregroundColor,
-                ),
-                tooltip: 'More options',
-                onSelected: (value) {
-                  if (value == 'settings') {
-                    Navigator.push(
-                      context,
-                      FadePageRoute(page: const SettingsScreen()),
-                    );
-                  }
-                },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(value: 'settings', child: Text('Settings')),
-                ],
-              ),
-            ) : PopupMenuButton<String>(
-              icon: Icon(
-                Icons.more_vert,
-                size: 22,
-                color: colorScheme.onSurfaceVariant,
-              ),
-              tooltip: 'More options',
-              onSelected: (value) {
-                if (value == 'settings') {
-                  Navigator.push(
-                    context,
-                    FadePageRoute(page: const SettingsScreen()),
-                  );
-                }
-              },
-              itemBuilder: (context) => [
-                const PopupMenuItem(value: 'settings', child: Text('Settings')),
-              ],
-            ),
+            isGlass
+                ? SharedSurface(
+                    uiStyle: uiStyle,
+                    glassRole: GlassSurfaceRole.button,
+                    frosted: true,
+                    borderRadius: BorderRadius.circular(24),
+                    child: PopupMenuButton<String>(
+                      icon: Icon(
+                        Icons.more_vert,
+                        size: 22,
+                        color: glassCard.foregroundColor,
+                      ),
+                      tooltip: 'More options',
+                      onSelected: (value) {
+                        if (value == 'settings') {
+                          Navigator.push(
+                            context,
+                            FadePageRoute(page: const SettingsScreen()),
+                          );
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'settings',
+                          child: Text('Settings'),
+                        ),
+                      ],
+                    ),
+                  )
+                : PopupMenuButton<String>(
+                    icon: Icon(
+                      Icons.more_vert,
+                      size: 22,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    tooltip: 'More options',
+                    onSelected: (value) {
+                      if (value == 'settings') {
+                        Navigator.push(
+                          context,
+                          FadePageRoute(page: const SettingsScreen()),
+                        );
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'settings',
+                        child: Text('Settings'),
+                      ),
+                    ],
+                  ),
           ],
         ),
       ),

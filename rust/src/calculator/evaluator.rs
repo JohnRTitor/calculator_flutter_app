@@ -2,6 +2,15 @@ use crate::calculator::error::CalcError;
 use crate::calculator::parser::Expr;
 use crate::calculator::rational::{CalcValue, Rational};
 
+/// Evaluates an Abstract Syntax Tree (AST) expression and returns its computed value.
+///
+/// Handles rational arithmetic when possible for precision, and falls back to
+/// floating-point representation when necessary (e.g., for trigonometric functions).
+///
+/// # Arguments
+/// * `expr` - The mathematical expression (AST node) to evaluate.
+/// * `is_degree` - If true, trigonometric functions will interpret their inputs/outputs as degrees instead of radians.
+/// * `ans_value` - The result of the previous calculation, used when the `Ans` token is encountered.
 pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<CalcValue, CalcError> {
     match expr {
         Expr::Number(n) => {

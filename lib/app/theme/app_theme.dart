@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 
+/// Defines the core theme configurations and visual properties for the application.
 class AppTheme {
   static const fallbackSeedColor = Colors.teal; // green-tinted aesthetic
 
@@ -14,8 +15,13 @@ class AppTheme {
   /// Chip radius for scientific mode toggles
   static const double chipRadius = 20.0;
 
-  static ColorScheme _resolveColorScheme(Brightness brightness, ColorScheme? dynamicColorScheme, AppColorOption colorOption) {
-    if (colorOption == AppColorOption.materialYou && dynamicColorScheme != null) {
+  static ColorScheme _resolveColorScheme(
+    Brightness brightness,
+    ColorScheme? dynamicColorScheme,
+    AppColorOption colorOption,
+  ) {
+    if (colorOption == AppColorOption.materialYou &&
+        dynamicColorScheme != null) {
       return dynamicColorScheme;
     }
 
@@ -36,26 +42,50 @@ class AppTheme {
         break;
     }
 
-    return ColorScheme.fromSeed(
-      seedColor: seedColor,
-      brightness: brightness,
+    return ColorScheme.fromSeed(seedColor: seedColor, brightness: brightness);
+  }
+
+  /// Generates the standard light theme data.
+  static ThemeData lightTheme(
+    ColorScheme? dynamicColorScheme,
+    UiStyle uiStyle,
+    AppColorOption colorOption,
+  ) {
+    final ColorScheme colorScheme = _resolveColorScheme(
+      Brightness.light,
+      dynamicColorScheme,
+      colorOption,
     );
-  }
-
-  static ThemeData lightTheme(ColorScheme? dynamicColorScheme, UiStyle uiStyle, AppColorOption colorOption) {
-    final ColorScheme colorScheme = _resolveColorScheme(Brightness.light, dynamicColorScheme, colorOption);
 
     return _buildTheme(colorScheme, uiStyle);
   }
 
-  static ThemeData darkTheme(ColorScheme? dynamicColorScheme, UiStyle uiStyle, AppColorOption colorOption) {
-    final ColorScheme colorScheme = _resolveColorScheme(Brightness.dark, dynamicColorScheme, colorOption);
+  /// Generates the standard dark theme data.
+  static ThemeData darkTheme(
+    ColorScheme? dynamicColorScheme,
+    UiStyle uiStyle,
+    AppColorOption colorOption,
+  ) {
+    final ColorScheme colorScheme = _resolveColorScheme(
+      Brightness.dark,
+      dynamicColorScheme,
+      colorOption,
+    );
 
     return _buildTheme(colorScheme, uiStyle);
   }
 
-  static ThemeData amoledTheme(ColorScheme? dynamicColorScheme, UiStyle uiStyle, AppColorOption colorOption) {
-    final ColorScheme baseColorScheme = _resolveColorScheme(Brightness.dark, dynamicColorScheme, colorOption);
+  /// Generates a pitch-black theme data specifically optimized for AMOLED screens.
+  static ThemeData amoledTheme(
+    ColorScheme? dynamicColorScheme,
+    UiStyle uiStyle,
+    AppColorOption colorOption,
+  ) {
+    final ColorScheme baseColorScheme = _resolveColorScheme(
+      Brightness.dark,
+      dynamicColorScheme,
+      colorOption,
+    );
 
     // Override surface colors to pure black for AMOLED
     final ColorScheme amoledColorScheme = baseColorScheme.copyWith(
@@ -68,7 +98,9 @@ class AppTheme {
     );
 
     return _buildTheme(amoledColorScheme, uiStyle).copyWith(
-      scaffoldBackgroundColor: uiStyle == UiStyle.liquidGlass ? Colors.transparent : Colors.black,
+      scaffoldBackgroundColor: uiStyle == UiStyle.liquidGlass
+          ? Colors.transparent
+          : Colors.black,
     );
   }
 
@@ -76,9 +108,13 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: uiStyle == UiStyle.liquidGlass ? Colors.transparent : colorScheme.surface,
+      scaffoldBackgroundColor: uiStyle == UiStyle.liquidGlass
+          ? Colors.transparent
+          : colorScheme.surface,
       appBarTheme: AppBarTheme(
-        backgroundColor: uiStyle == UiStyle.liquidGlass ? Colors.transparent : null,
+        backgroundColor: uiStyle == UiStyle.liquidGlass
+            ? Colors.transparent
+            : null,
         elevation: 0,
         scrolledUnderElevation: uiStyle == UiStyle.liquidGlass ? 0 : null,
       ),

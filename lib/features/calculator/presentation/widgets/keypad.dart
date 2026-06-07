@@ -9,6 +9,10 @@ import 'package:calculator_flutter_app/shared/widgets/glass_button.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/widgets/animated_equals_button.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 
+/// The interactive keypad for the calculator.
+///
+/// Adapts dynamically to show scientific functions, trigonometric options, logs,
+/// and memory operations based on the current state.
 class Keypad extends ConsumerWidget {
   const Keypad({super.key});
 
@@ -26,7 +30,12 @@ class Keypad extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             // === Dropdown chip row: [▾] [Trig ∨] [Log ∨] [Mem ∨] ===
-            _DropdownChipRow(isSci: isSci, expanded: expanded, ref: ref, uiStyle: uiStyle),
+            _DropdownChipRow(
+              isSci: isSci,
+              expanded: expanded,
+              ref: ref,
+              uiStyle: uiStyle,
+            ),
 
             // === Expanded panel content (animated) ===
             AnimatedSize(
@@ -42,14 +51,35 @@ class Keypad extends ConsumerWidget {
                 flex: 60,
                 child: Row(
                   children: [
-                    _btn(ref, '√', ButtonType.scientific,
-                      () => ref.read(calculatorProvider.notifier).append('sqrt('), uiStyle: uiStyle),
-                    _btn(ref, '^', ButtonType.scientific,
-                      () => ref.read(calculatorProvider.notifier).append('^'), uiStyle: uiStyle),
-                    _btn(ref, '!', ButtonType.scientific,
-                      () => ref.read(calculatorProvider.notifier).append('!'), uiStyle: uiStyle),
-                    _btn(ref, 'π', ButtonType.scientific,
-                      () => ref.read(calculatorProvider.notifier).append('π'), uiStyle: uiStyle),
+                    _btn(
+                      ref,
+                      '√',
+                      ButtonType.scientific,
+                      () =>
+                          ref.read(calculatorProvider.notifier).append('sqrt('),
+                      uiStyle: uiStyle,
+                    ),
+                    _btn(
+                      ref,
+                      '^',
+                      ButtonType.scientific,
+                      () => ref.read(calculatorProvider.notifier).append('^'),
+                      uiStyle: uiStyle,
+                    ),
+                    _btn(
+                      ref,
+                      '!',
+                      ButtonType.scientific,
+                      () => ref.read(calculatorProvider.notifier).append('!'),
+                      uiStyle: uiStyle,
+                    ),
+                    _btn(
+                      ref,
+                      'π',
+                      ButtonType.scientific,
+                      () => ref.read(calculatorProvider.notifier).append('π'),
+                      uiStyle: uiStyle,
+                    ),
                   ],
                 ),
               ),
@@ -59,16 +89,36 @@ class Keypad extends ConsumerWidget {
               flex: 60,
               child: Row(
                 children: [
-                  _btn(ref, '(', ButtonType.action,
-                    () => ref.read(calculatorProvider.notifier).append('('), uiStyle: uiStyle),
-                  _btn(ref, ')', ButtonType.action,
-                    () => ref.read(calculatorProvider.notifier).append(')'), uiStyle: uiStyle),
-                  _btn(ref, '%', ButtonType.action,
+                  _btn(
+                    ref,
+                    '(',
+                    ButtonType.action,
+                    () => ref.read(calculatorProvider.notifier).append('('),
+                    uiStyle: uiStyle,
+                  ),
+                  _btn(
+                    ref,
+                    ')',
+                    ButtonType.action,
+                    () => ref.read(calculatorProvider.notifier).append(')'),
+                    uiStyle: uiStyle,
+                  ),
+                  _btn(
+                    ref,
+                    '%',
+                    ButtonType.action,
                     () => ref.read(calculatorProvider.notifier).append('%'),
-                    tooltip: 'Percentage', uiStyle: uiStyle),
-                  _btn(ref, '/', ButtonType.action,
+                    tooltip: 'Percentage',
+                    uiStyle: uiStyle,
+                  ),
+                  _btn(
+                    ref,
+                    '/',
+                    ButtonType.action,
                     () => ref.read(calculatorProvider.notifier).append('/'),
-                    tooltip: 'Fraction', uiStyle: uiStyle),
+                    tooltip: 'Fraction',
+                    uiStyle: uiStyle,
+                  ),
                 ],
               ),
             ),
@@ -79,14 +129,34 @@ class Keypad extends ConsumerWidget {
               flex: 72,
               child: Row(
                 children: [
-                  _btn(ref, '7', ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('7'), uiStyle: uiStyle),
-                  _btn(ref, '8', ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('8'), uiStyle: uiStyle),
-                  _btn(ref, '9', ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('9'), uiStyle: uiStyle),
-                  _btn(ref, '÷', ButtonType.operator,
-                    () => ref.read(calculatorProvider.notifier).append('÷'), uiStyle: uiStyle),
+                  _btn(
+                    ref,
+                    '7',
+                    ButtonType.number,
+                    () => ref.read(calculatorProvider.notifier).append('7'),
+                    uiStyle: uiStyle,
+                  ),
+                  _btn(
+                    ref,
+                    '8',
+                    ButtonType.number,
+                    () => ref.read(calculatorProvider.notifier).append('8'),
+                    uiStyle: uiStyle,
+                  ),
+                  _btn(
+                    ref,
+                    '9',
+                    ButtonType.number,
+                    () => ref.read(calculatorProvider.notifier).append('9'),
+                    uiStyle: uiStyle,
+                  ),
+                  _btn(
+                    ref,
+                    '÷',
+                    ButtonType.operator,
+                    () => ref.read(calculatorProvider.notifier).append('÷'),
+                    uiStyle: uiStyle,
+                  ),
                 ],
               ),
             ),
@@ -95,14 +165,34 @@ class Keypad extends ConsumerWidget {
               flex: 72,
               child: Row(
                 children: [
-                  _btn(ref, '4', ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('4'), uiStyle: uiStyle),
-                  _btn(ref, '5', ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('5'), uiStyle: uiStyle),
-                  _btn(ref, '6', ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('6'), uiStyle: uiStyle),
-                  _btn(ref, '×', ButtonType.operator,
-                    () => ref.read(calculatorProvider.notifier).append('×'), uiStyle: uiStyle),
+                  _btn(
+                    ref,
+                    '4',
+                    ButtonType.number,
+                    () => ref.read(calculatorProvider.notifier).append('4'),
+                    uiStyle: uiStyle,
+                  ),
+                  _btn(
+                    ref,
+                    '5',
+                    ButtonType.number,
+                    () => ref.read(calculatorProvider.notifier).append('5'),
+                    uiStyle: uiStyle,
+                  ),
+                  _btn(
+                    ref,
+                    '6',
+                    ButtonType.number,
+                    () => ref.read(calculatorProvider.notifier).append('6'),
+                    uiStyle: uiStyle,
+                  ),
+                  _btn(
+                    ref,
+                    '×',
+                    ButtonType.operator,
+                    () => ref.read(calculatorProvider.notifier).append('×'),
+                    uiStyle: uiStyle,
+                  ),
                 ],
               ),
             ),
@@ -111,14 +201,34 @@ class Keypad extends ConsumerWidget {
               flex: 72,
               child: Row(
                 children: [
-                  _btn(ref, '1', ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('1'), uiStyle: uiStyle),
-                  _btn(ref, '2', ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('2'), uiStyle: uiStyle),
-                  _btn(ref, '3', ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('3'), uiStyle: uiStyle),
-                  _btn(ref, '−', ButtonType.operator,
-                    () => ref.read(calculatorProvider.notifier).append('−'), uiStyle: uiStyle),
+                  _btn(
+                    ref,
+                    '1',
+                    ButtonType.number,
+                    () => ref.read(calculatorProvider.notifier).append('1'),
+                    uiStyle: uiStyle,
+                  ),
+                  _btn(
+                    ref,
+                    '2',
+                    ButtonType.number,
+                    () => ref.read(calculatorProvider.notifier).append('2'),
+                    uiStyle: uiStyle,
+                  ),
+                  _btn(
+                    ref,
+                    '3',
+                    ButtonType.number,
+                    () => ref.read(calculatorProvider.notifier).append('3'),
+                    uiStyle: uiStyle,
+                  ),
+                  _btn(
+                    ref,
+                    '−',
+                    ButtonType.operator,
+                    () => ref.read(calculatorProvider.notifier).append('−'),
+                    uiStyle: uiStyle,
+                  ),
                 ],
               ),
             ),
@@ -127,15 +237,35 @@ class Keypad extends ConsumerWidget {
               flex: 72,
               child: Row(
                 children: [
-                  _btn(ref, '0', ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('0'), uiStyle: uiStyle),
-                  _btn(ref, '.', ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('.'), uiStyle: uiStyle),
-                  _btn(ref, 'MOD', ButtonType.scientific,
+                  _btn(
+                    ref,
+                    '0',
+                    ButtonType.number,
+                    () => ref.read(calculatorProvider.notifier).append('0'),
+                    uiStyle: uiStyle,
+                  ),
+                  _btn(
+                    ref,
+                    '.',
+                    ButtonType.number,
+                    () => ref.read(calculatorProvider.notifier).append('.'),
+                    uiStyle: uiStyle,
+                  ),
+                  _btn(
+                    ref,
+                    'MOD',
+                    ButtonType.scientific,
                     () => ref.read(calculatorProvider.notifier).append('mod'),
-                    tooltip: 'Remainder after division', uiStyle: uiStyle),
-                  _btn(ref, '+', ButtonType.operator,
-                    () => ref.read(calculatorProvider.notifier).append('+'), uiStyle: uiStyle),
+                    tooltip: 'Remainder after division',
+                    uiStyle: uiStyle,
+                  ),
+                  _btn(
+                    ref,
+                    '+',
+                    ButtonType.operator,
+                    () => ref.read(calculatorProvider.notifier).append('+'),
+                    uiStyle: uiStyle,
+                  ),
                 ],
               ),
             ),
@@ -148,9 +278,14 @@ class Keypad extends ConsumerWidget {
                     ref.read(calculatorProvider.notifier).clear();
                     return true;
                   }, uiStyle: uiStyle),
-                  _btn(ref, 'ANS', ButtonType.action,
+                  _btn(
+                    ref,
+                    'ANS',
+                    ButtonType.action,
                     () => ref.read(calculatorProvider.notifier).append('Ans'),
-                    tooltip: 'Last Answer', uiStyle: uiStyle),
+                    tooltip: 'Last Answer',
+                    uiStyle: uiStyle,
+                  ),
                   _buildBackspaceButton(ref, uiStyle),
                   Expanded(
                     child: AnimatedEqualsButton(
@@ -206,44 +341,73 @@ class Keypad extends ConsumerWidget {
           height: 40,
           child: Row(
             children: [
-              _btn(ref, state.isDegreeMode ? 'Deg' : 'Rad', ButtonType.scientific, () {
-                ref.read(calculatorProvider.notifier).toggleDegreeMode();
-                return true;
-              }, isActive: state.isDegreeMode, uiStyle: uiStyle),
-              _btn(ref,
+              _btn(
+                ref,
+                state.isDegreeMode ? 'Deg' : 'Rad',
+                ButtonType.scientific,
+                () {
+                  ref.read(calculatorProvider.notifier).toggleDegreeMode();
+                  return true;
+                },
+                isActive: state.isDegreeMode,
+                uiStyle: uiStyle,
+              ),
+              _btn(
+                ref,
                 state.isInvMode
                     ? (state.isHypMode ? 'asinh' : 'asin')
                     : (state.isHypMode ? 'sinh' : 'sin'),
                 ButtonType.scientific,
-                () => ref.read(calculatorProvider.notifier).append(
-                  state.isInvMode
-                      ? (state.isHypMode ? 'asinh(' : 'asin(')
-                      : (state.isHypMode ? 'sinh(' : 'sin('),
-                ), uiStyle: uiStyle),
-              _btn(ref,
+                () => ref
+                    .read(calculatorProvider.notifier)
+                    .append(
+                      state.isInvMode
+                          ? (state.isHypMode ? 'asinh(' : 'asin(')
+                          : (state.isHypMode ? 'sinh(' : 'sin('),
+                    ),
+                uiStyle: uiStyle,
+              ),
+              _btn(
+                ref,
                 state.isInvMode
                     ? (state.isHypMode ? 'acosh' : 'acos')
                     : (state.isHypMode ? 'cosh' : 'cos'),
                 ButtonType.scientific,
-                () => ref.read(calculatorProvider.notifier).append(
-                  state.isInvMode
-                      ? (state.isHypMode ? 'acosh(' : 'acos(')
-                      : (state.isHypMode ? 'cosh(' : 'cos('),
-                ), uiStyle: uiStyle),
-              _btn(ref,
+                () => ref
+                    .read(calculatorProvider.notifier)
+                    .append(
+                      state.isInvMode
+                          ? (state.isHypMode ? 'acosh(' : 'acos(')
+                          : (state.isHypMode ? 'cosh(' : 'cos('),
+                    ),
+                uiStyle: uiStyle,
+              ),
+              _btn(
+                ref,
                 state.isInvMode
                     ? (state.isHypMode ? 'atanh' : 'atan')
                     : (state.isHypMode ? 'tanh' : 'tan'),
                 ButtonType.scientific,
-                () => ref.read(calculatorProvider.notifier).append(
-                  state.isInvMode
-                      ? (state.isHypMode ? 'atanh(' : 'atan(')
-                      : (state.isHypMode ? 'tanh(' : 'tan('),
-                ), uiStyle: uiStyle),
-              _btn(ref, 'Inv', ButtonType.scientific, () {
-                ref.read(calculatorProvider.notifier).toggleInvMode();
-                return true;
-              }, isActive: state.isInvMode, uiStyle: uiStyle),
+                () => ref
+                    .read(calculatorProvider.notifier)
+                    .append(
+                      state.isInvMode
+                          ? (state.isHypMode ? 'atanh(' : 'atan(')
+                          : (state.isHypMode ? 'tanh(' : 'tan('),
+                    ),
+                uiStyle: uiStyle,
+              ),
+              _btn(
+                ref,
+                'Inv',
+                ButtonType.scientific,
+                () {
+                  ref.read(calculatorProvider.notifier).toggleInvMode();
+                  return true;
+                },
+                isActive: state.isInvMode,
+                uiStyle: uiStyle,
+              ),
             ],
           ),
         );
@@ -252,14 +416,34 @@ class Keypad extends ConsumerWidget {
           height: 40,
           child: Row(
             children: [
-              _btn(ref, 'log', ButtonType.scientific,
-                () => ref.read(calculatorProvider.notifier).append('log('), uiStyle: uiStyle),
-              _btn(ref, 'ln', ButtonType.scientific,
-                () => ref.read(calculatorProvider.notifier).append('ln('), uiStyle: uiStyle),
-              _btn(ref, 'log₂', ButtonType.scientific,
-                () => ref.read(calculatorProvider.notifier).append('log2('), uiStyle: uiStyle),
-              _btn(ref, 'e', ButtonType.scientific,
-                () => ref.read(calculatorProvider.notifier).append('e'), uiStyle: uiStyle),
+              _btn(
+                ref,
+                'log',
+                ButtonType.scientific,
+                () => ref.read(calculatorProvider.notifier).append('log('),
+                uiStyle: uiStyle,
+              ),
+              _btn(
+                ref,
+                'ln',
+                ButtonType.scientific,
+                () => ref.read(calculatorProvider.notifier).append('ln('),
+                uiStyle: uiStyle,
+              ),
+              _btn(
+                ref,
+                'log₂',
+                ButtonType.scientific,
+                () => ref.read(calculatorProvider.notifier).append('log2('),
+                uiStyle: uiStyle,
+              ),
+              _btn(
+                ref,
+                'e',
+                ButtonType.scientific,
+                () => ref.read(calculatorProvider.notifier).append('e'),
+                uiStyle: uiStyle,
+              ),
             ],
           ),
         );
@@ -272,14 +456,34 @@ class Keypad extends ConsumerWidget {
                 ref.read(calculatorProvider.notifier).memoryClear();
                 return true;
               }, uiStyle: uiStyle),
-              _btn(ref, 'MR', ButtonType.scientific,
-                () => ref.read(calculatorProvider.notifier).memoryRecall(), uiStyle: uiStyle),
-              _btn(ref, 'M+', ButtonType.scientific,
-                () => ref.read(calculatorProvider.notifier).memoryAdd(), uiStyle: uiStyle),
-              _btn(ref, 'M−', ButtonType.scientific,
-                () => ref.read(calculatorProvider.notifier).memorySubtract(), uiStyle: uiStyle),
-              _btn(ref, 'MS', ButtonType.scientific,
-                () => ref.read(calculatorProvider.notifier).memoryStore(), uiStyle: uiStyle),
+              _btn(
+                ref,
+                'MR',
+                ButtonType.scientific,
+                () => ref.read(calculatorProvider.notifier).memoryRecall(),
+                uiStyle: uiStyle,
+              ),
+              _btn(
+                ref,
+                'M+',
+                ButtonType.scientific,
+                () => ref.read(calculatorProvider.notifier).memoryAdd(),
+                uiStyle: uiStyle,
+              ),
+              _btn(
+                ref,
+                'M−',
+                ButtonType.scientific,
+                () => ref.read(calculatorProvider.notifier).memorySubtract(),
+                uiStyle: uiStyle,
+              ),
+              _btn(
+                ref,
+                'MS',
+                ButtonType.scientific,
+                () => ref.read(calculatorProvider.notifier).memoryStore(),
+                uiStyle: uiStyle,
+              ),
             ],
           ),
         );
@@ -324,7 +528,8 @@ class Keypad extends ConsumerWidget {
   }
 }
 
-/// Dropdown chip row: [▾] [Trig ∨] [Log ∨] [Mem ∨]
+/// A row of interactive chips used to toggle scientific mode and open
+/// secondary panels (Trig, Log, Mem).
 class _DropdownChipRow extends StatelessWidget {
   final bool isSci;
   final ExpandedPanel expanded;

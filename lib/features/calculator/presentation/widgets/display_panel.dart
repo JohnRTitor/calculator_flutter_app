@@ -7,6 +7,11 @@ import 'package:calculator_flutter_app/features/calculator/presentation/provider
 import 'package:calculator_flutter_app/features/calculator/presentation/widgets/token_text_field.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 
+/// The main display area of the calculator.
+///
+/// Shows the current mathematical expression, real-time evaluation preview,
+/// error messages, and the final evaluated result. Adapts its background to the
+/// current UI style (Material vs Liquid Glass).
 class DisplayPanel extends ConsumerWidget {
   const DisplayPanel({super.key});
 

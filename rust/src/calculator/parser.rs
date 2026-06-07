@@ -1,5 +1,6 @@
 use crate::calculator::error::CalcError;
 
+/// Represents a single lexical token in a mathematical expression.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Token {
     Number(f64),
@@ -33,6 +34,10 @@ pub enum Token {
     Ans,
 }
 
+/// Converts a string representation of a mathematical expression into a sequence of tokens.
+///
+/// Returns a list of `Token`s if successful, or a `CalcError` if the input contains
+/// invalid characters or syntax.
 pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
     let mut tokens = Vec::new();
     let mut chars = input.chars().peekable();
@@ -278,6 +283,7 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
     Ok(tokens)
 }
 
+/// Represents a node in the Abstract Syntax Tree (AST) of a mathematical expression.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Expr {
     Number(f64),
@@ -310,12 +316,14 @@ pub enum Expr {
     Ans,
 }
 
+/// A parser that constructs an Abstract Syntax Tree (AST) from a sequence of `Token`s.
 pub struct Parser<'a> {
     tokens: &'a [Token],
     pos: usize,
 }
 
 impl<'a> Parser<'a> {
+    /// Creates a new `Parser` instance for the given slice of tokens.
     pub fn new(tokens: &'a [Token]) -> Self {
         Parser { tokens, pos: 0 }
     }
@@ -339,6 +347,10 @@ impl<'a> Parser<'a> {
         }
     }
 
+    /// Parses the tokens into an `Expr` (AST).
+    ///
+    /// Returns an `Expr` if successful, or a `CalcError` if the token sequence
+    /// is not a valid mathematical expression.
     pub fn parse(&mut self) -> Result<Expr, CalcError> {
         if self.tokens.is_empty() {
             return Err(CalcError::InvalidExpression("Empty expression".to_string()));

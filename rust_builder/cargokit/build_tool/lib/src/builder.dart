@@ -153,7 +153,7 @@ class RustBuilder {
           ? 'zigbuild'
           : 'build',
     ];
-    
+
     runCommand(
       executable,
       [

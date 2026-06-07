@@ -1,3 +1,4 @@
+/// Represents a physical unit of measurement.
 #[derive(Debug, Clone)]
 pub struct Unit {
     pub id: String,
@@ -8,6 +9,7 @@ pub struct Unit {
 }
 
 impl Unit {
+    /// Creates a new `Unit` instance.
     pub fn new(id: &str, name: &str, symbol: &str, multiplier: f64, offset: f64) -> Self {
         Self {
             id: id.to_string(),
@@ -19,6 +21,7 @@ impl Unit {
     }
 }
 
+/// Represents a category of units (e.g., Length, Mass, Volume).
 #[derive(Debug, Clone)]
 pub struct ConverterCategory {
     pub id: String,
@@ -27,6 +30,7 @@ pub struct ConverterCategory {
     pub units: Vec<Unit>,
 }
 
+/// Retrieves all available converter categories and their respective units.
 pub fn get_all_categories() -> Vec<ConverterCategory> {
     vec![
         get_length_category(),
@@ -212,6 +216,7 @@ fn get_numeral_category() -> ConverterCategory {
     }
 }
 
+/// Converts a value from one standard unit to another within the same category.
 pub fn convert_standard(value: f64, from_unit: &Unit, to_unit: &Unit) -> f64 {
     // 1. Convert from_unit to base_unit
     let base_value = (value + from_unit.offset) * from_unit.multiplier;
@@ -219,12 +224,16 @@ pub fn convert_standard(value: f64, from_unit: &Unit, to_unit: &Unit) -> f64 {
     (base_value / to_unit.multiplier) - to_unit.offset
 }
 
+/// Calculates the discount on an original price.
+/// Returns a tuple of `(amount_saved, final_price, amount_saved)`.
 pub fn calculate_discount(original_price: f64, discount_percentage: f64) -> (f64, f64, f64) {
     let amount_saved = (original_price * discount_percentage) / 100.0;
     let final_price = original_price - amount_saved;
     (amount_saved, final_price, amount_saved)
 }
 
+/// Calculates the Goods and Services Tax (GST) for a given amount.
+/// If `add_gst` is true, the GST is added to the amount. Otherwise, it is extracted from the amount.
 pub fn calculate_gst(amount: f64, gst_percentage: f64, add_gst: bool) -> (f64, f64, f64, f64) {
     if add_gst {
         let gst_amount = (amount * gst_percentage) / 100.0;
@@ -237,6 +246,8 @@ pub fn calculate_gst(amount: f64, gst_percentage: f64, add_gst: bool) -> (f64, f
     }
 }
 
+/// Calculates the Body Mass Index (BMI) given weight in kg and height in meters.
+/// Returns a tuple of `(bmi_value, category_string)`.
 pub fn calculate_bmi(weight_kg: f64, height_m: f64) -> (f64, String) {
     if height_m <= 0.0 {
         return (0.0, "Invalid".to_string());
@@ -256,6 +267,8 @@ pub fn calculate_bmi(weight_kg: f64, height_m: f64) -> (f64, String) {
     (bmi, category.to_string())
 }
 
+/// Converts a numeral string from one base (radix) to another.
+/// Returns `None` if the input string is invalid for the given `from_base`.
 pub fn convert_numeral(value: &str, from_base: u32, to_base: u32) -> Option<String> {
     // Attempt to parse the value using the from_base
     let decimal_val = match u128::from_str_radix(value, from_base) {

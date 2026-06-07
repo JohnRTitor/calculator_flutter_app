@@ -7,6 +7,8 @@ import '../calculator/history.dart';
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
+/// Evaluates a mathematical expression string from Flutter and returns the result.
+/// This is a synchronous Flutter Rust Bridge function.
 CalcResult evaluate({
   required String expression,
   required bool isDegree,
@@ -17,45 +19,58 @@ CalcResult evaluate({
   ansValue: ansValue,
 );
 
+/// Formats a floating-point result into a string, trimming trailing zeros and decimals.
 String formatResult({required double value, required int maxPrecision}) =>
     RustLib.instance.api.crateBridgeCalculatorFormatResult(
       value: value,
       maxPrecision: maxPrecision,
     );
 
+/// Stores a value in the global calculator memory.
 void memoryStore({required double value}) =>
     RustLib.instance.api.crateBridgeCalculatorMemoryStore(value: value);
 
+/// Recalls a value from the global calculator memory.
 double? memoryRecall() =>
     RustLib.instance.api.crateBridgeCalculatorMemoryRecall();
 
+/// Adds a value to the global calculator memory.
 void memoryAdd({required double value}) =>
     RustLib.instance.api.crateBridgeCalculatorMemoryAdd(value: value);
 
+/// Subtracts a value from the global calculator memory.
 void memorySubtract({required double value}) =>
     RustLib.instance.api.crateBridgeCalculatorMemorySubtract(value: value);
 
+/// Clears the global calculator memory.
 void memoryClear() => RustLib.instance.api.crateBridgeCalculatorMemoryClear();
 
+/// Adds a history entry from Flutter.
 void historyAdd({required String expression, required String result}) => RustLib
     .instance
     .api
     .crateBridgeCalculatorHistoryAdd(expression: expression, result: result);
 
+/// Retrieves all history entries to display in Flutter.
 List<HistoryEntry> historyGetAll() =>
     RustLib.instance.api.crateBridgeCalculatorHistoryGetAll();
 
+/// Clears all history entries.
 void historyClear() => RustLib.instance.api.crateBridgeCalculatorHistoryClear();
 
+/// Deletes a specific history entry.
 void historyDelete({required BigInt index}) =>
     RustLib.instance.api.crateBridgeCalculatorHistoryDelete(index: index);
 
+/// Saves the calculation history to a file path provided by Flutter.
 Future<void> historySave({required String path}) =>
     RustLib.instance.api.crateBridgeCalculatorHistorySave(path: path);
 
+/// Loads the calculation history from a file path provided by Flutter.
 Future<void> historyLoad({required String path}) =>
     RustLib.instance.api.crateBridgeCalculatorHistoryLoad(path: path);
 
+/// Represents the result of a calculation to be returned to Flutter.
 class CalcResult {
   final double value;
   final String formatted;

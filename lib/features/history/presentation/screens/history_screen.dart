@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/features/history/presentation/providers/history_provider.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/providers/calculator_provider.dart';
 
+/// A screen that displays a list of past calculations.
+///
+/// Allows users to view their calculation history, tap an entry to restore it to the
+/// calculator display, swipe to delete individual entries, or clear the entire history.
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key});
 
@@ -50,12 +54,20 @@ class HistoryScreen extends ConsumerWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.history, size: 48, color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3)),
+                  Icon(
+                    Icons.history,
+                    size: 48,
+                    color: theme.colorScheme.onSurfaceVariant.withValues(
+                      alpha: 0.3,
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   Text(
                     'No history yet',
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                      color: theme.colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.5,
+                      ),
                     ),
                   ),
                 ],
@@ -78,7 +90,10 @@ class HistoryScreen extends ConsumerWidget {
                     color: theme.colorScheme.errorContainer,
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Icon(Icons.delete_outline, color: theme.colorScheme.onErrorContainer),
+                  child: Icon(
+                    Icons.delete_outline,
+                    color: theme.colorScheme.onErrorContainer,
+                  ),
                 ),
                 onDismissed: (_) {
                   ref.read(historyProvider.notifier).delete(index);
@@ -86,16 +101,23 @@ class HistoryScreen extends ConsumerWidget {
                 child: Card(
                   elevation: 0,
                   color: theme.colorScheme.surfaceContainerHigh,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
                     onTap: () {
                       ref.read(calculatorProvider.notifier).clear();
-                      ref.read(calculatorProvider.notifier).append(entry.result);
+                      ref
+                          .read(calculatorProvider.notifier)
+                          .append(entry.result);
                       Navigator.pop(context);
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 16,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [

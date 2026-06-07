@@ -1,6 +1,7 @@
 use crate::calculator::{evaluator, history, memory, parser};
 use flutter_rust_bridge::frb;
 
+/// Represents the result of a calculation to be returned to Flutter.
 #[frb]
 pub struct CalcResult {
     pub value: f64,
@@ -8,6 +9,8 @@ pub struct CalcResult {
     pub exact_fraction: Option<String>,
 }
 
+/// Evaluates a mathematical expression string from Flutter and returns the result.
+/// This is a synchronous Flutter Rust Bridge function.
 #[frb(sync)]
 pub fn evaluate(expression: String, is_degree: bool, ans_value: f64) -> Result<CalcResult, String> {
     if expression.trim().is_empty() {
@@ -65,6 +68,7 @@ pub fn evaluate(expression: String, is_degree: bool, ans_value: f64) -> Result<C
     })
 }
 
+/// Formats a floating-point result into a string, trimming trailing zeros and decimals.
 #[frb(sync)]
 pub fn format_result(value: f64, max_precision: u32) -> String {
     // Basic formatting logic
@@ -78,55 +82,66 @@ pub fn format_result(value: f64, max_precision: u32) -> String {
     s
 }
 
+/// Stores a value in the global calculator memory.
 #[frb(sync)]
 pub fn memory_store(value: f64) {
     memory::store(value);
 }
 
+/// Recalls a value from the global calculator memory.
 #[frb(sync)]
 pub fn memory_recall() -> Option<f64> {
     memory::recall()
 }
 
+/// Adds a value to the global calculator memory.
 #[frb(sync)]
 pub fn memory_add(value: f64) {
     memory::add(value);
 }
 
+/// Subtracts a value from the global calculator memory.
 #[frb(sync)]
 pub fn memory_subtract(value: f64) {
     memory::subtract(value);
 }
 
+/// Clears the global calculator memory.
 #[frb(sync)]
 pub fn memory_clear() {
     memory::clear();
 }
 
+/// Adds a history entry from Flutter.
 #[frb(sync)]
 pub fn history_add(expression: String, result: String) {
     history::add(expression, result);
 }
 
+/// Retrieves all history entries to display in Flutter.
 #[frb(sync)]
 pub fn history_get_all() -> Vec<history::HistoryEntry> {
     history::get_all()
 }
 
+/// Clears all history entries.
 #[frb(sync)]
 pub fn history_clear() {
     history::clear();
 }
 
+/// Deletes a specific history entry.
 #[frb(sync)]
 pub fn history_delete(index: usize) {
     history::delete(index);
 }
 
+/// Saves the calculation history to a file path provided by Flutter.
 pub fn history_save(path: String) -> Result<(), String> {
     history::save(&path).map_err(|e| e.to_string())
 }
 
+/// Loads the calculation history from a file path provided by Flutter.
 pub fn history_load(path: String) -> Result<(), String> {
     history::load(&path).map_err(|e| e.to_string())
 }

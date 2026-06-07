@@ -8,6 +8,10 @@ import 'package:calculator_flutter_app/features/settings/presentation/providers/
 import 'package:calculator_flutter_app/app/navigation/main_navigation_bar.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 
+/// The root widget of the Calculator application.
+///
+/// It sets up the dynamic theming system, provides the global application state,
+/// and handles the background rendering for the Liquid Glass visual style.
 class CalculatorApp extends ConsumerWidget {
   const CalculatorApp({super.key});
 
@@ -33,7 +37,11 @@ class CalculatorApp extends ConsumerWidget {
 
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-        final lightTheme = AppTheme.lightTheme(lightDynamic, uiStyle, colorOption);
+        final lightTheme = AppTheme.lightTheme(
+          lightDynamic,
+          uiStyle,
+          colorOption,
+        );
         final darkTheme = themeMode == AppThemeMode.amoled
             ? AppTheme.amoledTheme(darkDynamic, uiStyle, colorOption)
             : AppTheme.darkTheme(darkDynamic, uiStyle, colorOption);

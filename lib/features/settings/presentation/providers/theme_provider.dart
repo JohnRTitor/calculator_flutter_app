@@ -4,16 +4,19 @@ import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 
 part 'theme_provider.g.dart';
 
+/// Defines the overall brightness and background style of the application.
 enum AppThemeMode { light, dark, amoled, system }
 
+/// Defines the primary color seed used for the Material 3 color scheme.
 enum AppColorOption {
   defaultColor, // Green tinted
-  materialYou,  // Dynamic
+  materialYou, // Dynamic
   blue,
   purple,
   orange,
 }
 
+/// A Riverpod Notifier that manages and persists the selected `AppThemeMode`.
 @riverpod
 class ThemeModeNotifier extends _$ThemeModeNotifier {
   @override
@@ -28,6 +31,7 @@ class ThemeModeNotifier extends _$ThemeModeNotifier {
     state = AppThemeMode.values[idx];
   }
 
+  /// Updates the theme mode and persists it to SharedPreferences.
   Future<void> setThemeMode(AppThemeMode mode) async {
     state = mode;
     final prefs = await SharedPreferences.getInstance();
@@ -35,6 +39,7 @@ class ThemeModeNotifier extends _$ThemeModeNotifier {
   }
 }
 
+/// A Riverpod Notifier that manages and persists the selected `AppColorOption`.
 @riverpod
 class AppColorNotifier extends _$AppColorNotifier {
   @override
@@ -51,6 +56,7 @@ class AppColorNotifier extends _$AppColorNotifier {
     }
   }
 
+  /// Updates the application color option and persists it to SharedPreferences.
   Future<void> setAppColorOption(AppColorOption option) async {
     state = option;
     final prefs = await SharedPreferences.getInstance();
@@ -58,6 +64,7 @@ class AppColorNotifier extends _$AppColorNotifier {
   }
 }
 
+/// A Riverpod Notifier that manages and persists the selected `UiStyle`.
 @riverpod
 class UiStyleNotifier extends _$UiStyleNotifier {
   @override
@@ -74,6 +81,7 @@ class UiStyleNotifier extends _$UiStyleNotifier {
     }
   }
 
+  /// Updates the UI style and persists it to SharedPreferences.
   Future<void> setUiStyle(UiStyle style) async {
     state = style;
     final prefs = await SharedPreferences.getInstance();

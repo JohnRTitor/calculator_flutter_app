@@ -7,6 +7,10 @@ import 'package:calculator_flutter_app/features/settings/presentation/providers/
 import 'package:calculator_flutter_app/features/converter/presentation/widgets/converter_keypad.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/widgets/unit_selector_bottom_sheet.dart';
 
+/// The detail screen for a specific converter category.
+///
+/// Displays the active "from" and "to" units, the calculated result, and provides
+/// the keypad for numeric input. Also allows users to swap units or select new ones.
 class ConverterDetailScreen extends ConsumerWidget {
   const ConverterDetailScreen({super.key});
 

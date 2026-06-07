@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:calculator_flutter_app/generated/rust/bridge/converter.dart';
 
+/// A modal bottom sheet allowing users to search and select a specific unit
+/// from a provided list of units (e.g., selecting "Meters" from Length units).
 class UnitSelectorBottomSheet extends StatefulWidget {
+  /// The list of available units to display and search.
   final List<FfiUnit> units;
   final FfiUnit? selectedUnit;
   final Function(FfiUnit) onSelect;
@@ -14,7 +17,8 @@ class UnitSelectorBottomSheet extends StatefulWidget {
   });
 
   @override
-  State<UnitSelectorBottomSheet> createState() => _UnitSelectorBottomSheetState();
+  State<UnitSelectorBottomSheet> createState() =>
+      _UnitSelectorBottomSheetState();
 }
 
 class _UnitSelectorBottomSheetState extends State<UnitSelectorBottomSheet> {
@@ -24,7 +28,9 @@ class _UnitSelectorBottomSheetState extends State<UnitSelectorBottomSheet> {
   Widget build(BuildContext context) {
     final filteredUnits = widget.units.where((u) {
       final query = _searchQuery.toLowerCase();
-      return u.name.toLowerCase().contains(query) || u.symbol.toLowerCase().contains(query) || u.id.toLowerCase().contains(query);
+      return u.name.toLowerCase().contains(query) ||
+          u.symbol.toLowerCase().contains(query) ||
+          u.id.toLowerCase().contains(query);
     }).toList();
 
     return Container(
@@ -55,7 +61,7 @@ class _UnitSelectorBottomSheetState extends State<UnitSelectorBottomSheet> {
               itemBuilder: (context, index) {
                 final unit = filteredUnits[index];
                 final isSelected = widget.selectedUnit?.id == unit.id;
-                
+
                 return ListTile(
                   title: Text(unit.name),
                   subtitle: Text(unit.symbol),

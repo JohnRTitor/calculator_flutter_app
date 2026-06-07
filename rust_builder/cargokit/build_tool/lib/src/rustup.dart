@@ -108,7 +108,7 @@ class Rustup {
       final sysrootRes = runCommand("rustc", ["--print", "sysroot"]);
       final sysroot = sysrootRes.stdout.toString().trim();
       final rustlibDir = Directory(path.join(sysroot, "lib", "rustlib"));
-      
+
       if (rustlibDir.existsSync()) {
         final targetListRes = runCommand("rustc", ["--print", "target-list"]);
         final validTargets = targetListRes.stdout

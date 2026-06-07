@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 /// A lightweight Liquid Glass variant of the calculator button.
+///
+/// Provides animated scale feedback and haptic feedback on error. It utilizes
+/// `SharedSurface` under the hood to ensure consistency with the Liquid Glass design system.
 class LiquidGlassCalcButton extends StatefulWidget {
   final String text;
   final bool Function()? onPressed;
@@ -81,7 +84,10 @@ class _LiquidGlassCalcButtonState extends State<LiquidGlassCalcButton> {
               isInteractive: true,
               isSelected: widget.isActive,
               glassRole: style.role,
-              frosted: style.role == GlassSurfaceRole.primary || style.role == GlassSurfaceRole.destructive || widget.isActive,
+              frosted:
+                  style.role == GlassSurfaceRole.primary ||
+                  style.role == GlassSurfaceRole.destructive ||
+                  widget.isActive,
               borderRadius: BorderRadius.circular(28),
               child: Center(child: label),
             ),

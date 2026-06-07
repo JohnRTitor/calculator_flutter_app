@@ -6,6 +6,7 @@
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
+/// Represents a single calculation in the application history.
 class HistoryEntry {
   final String expression;
   final String result;

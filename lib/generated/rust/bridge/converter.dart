@@ -8,9 +8,11 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `fmt`, `fmt`
 
+/// Retrieves all available converter categories for the Flutter UI.
 List<FfiConverterCategory> getConverterCategories() =>
     RustLib.instance.api.crateBridgeConverterGetConverterCategories();
 
+/// Converts a value between two standard units.
 double convertStandard({
   required double value,
   required FfiUnit fromUnit,
@@ -21,6 +23,7 @@ double convertStandard({
   toUnit: toUnit,
 );
 
+/// Calculates the discount and final price from an original price and percentage.
 DiscountResult calculateDiscount({
   required double originalPrice,
   required double discountPercentage,
@@ -29,6 +32,7 @@ DiscountResult calculateDiscount({
   discountPercentage: discountPercentage,
 );
 
+/// Calculates the GST amount and total amount for a given base amount and rate.
 GstResult calculateGst({
   required double amount,
   required double gstPercentage,
@@ -39,12 +43,14 @@ GstResult calculateGst({
   addGst: addGst,
 );
 
+/// Calculates BMI based on weight (kg) and height (m).
 BmiResult calculateBmi({required double weightKg, required double heightM}) =>
     RustLib.instance.api.crateBridgeConverterCalculateBmi(
       weightKg: weightKg,
       heightM: heightM,
     );
 
+/// Converts a string representing a numeral from one base to another.
 String? convertNumeral({
   required String value,
   required int fromBase,
@@ -55,6 +61,7 @@ String? convertNumeral({
   toBase: toBase,
 );
 
+/// FFI representation of a Body Mass Index (BMI) calculation result.
 class BmiResult {
   final double bmi;
   final String category;
@@ -73,6 +80,7 @@ class BmiResult {
           category == other.category;
 }
 
+/// FFI representation of a discount calculation result.
 class DiscountResult {
   final double amountSaved;
   final double finalPrice;
@@ -91,6 +99,7 @@ class DiscountResult {
           finalPrice == other.finalPrice;
 }
 
+/// FFI representation of a category of units.
 class FfiConverterCategory {
   final String id;
   final String name;
@@ -119,6 +128,7 @@ class FfiConverterCategory {
           units == other.units;
 }
 
+/// FFI representation of a physical unit of measurement.
 class FfiUnit {
   final String id;
   final String name;
@@ -154,6 +164,7 @@ class FfiUnit {
           offset == other.offset;
 }
 
+/// FFI representation of a Goods and Services Tax (GST) calculation result.
 class GstResult {
   final double gstAmount;
   final double totalAmount;

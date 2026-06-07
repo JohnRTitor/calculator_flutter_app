@@ -5,6 +5,10 @@ import 'package:calculator_flutter_app/features/settings/presentation/providers/
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 
+/// A numeric keypad specifically designed for the Unit Converter screen.
+///
+/// Includes standard digits, decimal point, and special buttons for clearing
+/// and deleting input. Utilizes the shared UI style system.
 class ConverterKeypad extends ConsumerWidget {
   const ConverterKeypad({super.key});
 

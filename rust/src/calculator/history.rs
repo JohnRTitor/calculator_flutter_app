@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::sync::Mutex;
 
+/// Represents a single calculation in the application history.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HistoryEntry {
     pub expression: String,
@@ -11,12 +12,14 @@ pub struct HistoryEntry {
 
 static HISTORY: Mutex<Vec<HistoryEntry>> = Mutex::new(Vec::new());
 
+/// Adds a new calculation entry to the global history.
 pub fn add(expression: String, result: String) {
     if let Ok(mut history) = HISTORY.lock() {
         history.push(HistoryEntry { expression, result });
     }
 }
 
+/// Retrieves all stored history entries.
 pub fn get_all() -> Vec<HistoryEntry> {
     if let Ok(history) = HISTORY.lock() {
         history.clone()
@@ -25,12 +28,14 @@ pub fn get_all() -> Vec<HistoryEntry> {
     }
 }
 
+/// Clears all stored history entries.
 pub fn clear() {
     if let Ok(mut history) = HISTORY.lock() {
         history.clear();
     }
 }
 
+/// Deletes a specific history entry by its index.
 pub fn delete(index: usize) {
     if let Ok(mut history) = HISTORY.lock()
         && index < history.len()
@@ -39,6 +44,7 @@ pub fn delete(index: usize) {
     }
 }
 
+/// Saves the global history to a JSON file at the specified path.
 pub fn save(path: &str) -> Result<(), CalcError> {
     let history = get_all();
     let json = serde_json::to_string(&history)
@@ -47,6 +53,7 @@ pub fn save(path: &str) -> Result<(), CalcError> {
     Ok(())
 }
 
+/// Loads the global history from a JSON file at the specified path.
 pub fn load(path: &str) -> Result<(), CalcError> {
     if !std::path::Path::new(path).exists() {
         return Ok(()); // No history yet

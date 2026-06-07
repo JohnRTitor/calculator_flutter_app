@@ -6,7 +6,12 @@ import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 
+/// A specialized button widget for the equals sign in the calculator.
+///
+/// It provides visual feedback by flashing red and shaking horizontally if the
+/// evaluation of the current expression fails (e.g., due to a syntax error).
 class AnimatedEqualsButton extends ConsumerStatefulWidget {
+  /// The callback to evaluate the expression. Must return true if successful, false otherwise.
   final Future<bool> Function() onEvaluate;
 
   const AnimatedEqualsButton({super.key, required this.onEvaluate});

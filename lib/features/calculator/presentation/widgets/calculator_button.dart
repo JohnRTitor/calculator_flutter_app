@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+/// Defines the functional category of a calculator button, which dictates its default
+/// visual style and behavior.
 enum ButtonType {
   number,
   operator,
@@ -12,12 +14,27 @@ enum ButtonType {
   backspace,
 }
 
+/// A customizable button widget used throughout the calculator keypad.
+///
+/// Features a scale-down animation on press and a shake animation if the assigned
+/// action fails (returns false).
 class CalculatorButton extends StatefulWidget {
+  /// The text displayed on the button (if [icon] is null).
   final String text;
+
+  /// The callback fired when the button is pressed. If it returns false, the button shakes.
   final bool Function()? onPressed;
+
+  /// The category of the button, determining its color and typography.
   final ButtonType type;
+
+  /// An optional icon to display instead of text.
   final Widget? icon;
+
+  /// Whether the button represents an active state (e.g., an active toggle).
   final bool isActive;
+
+  /// The flex factor for this button within its row/column.
   final int flex;
 
   const CalculatorButton({
@@ -88,33 +105,34 @@ class _CalculatorButtonState extends State<CalculatorButton>
         );
 
     return Padding(
-      padding: const EdgeInsets.all(3.0),
-      child: AnimatedScale(
-        scale: _scale,
-        duration: const Duration(milliseconds: 150),
-        curve: Curves.easeOut,
-        child: SizedBox.expand(
-          child: GestureDetector(
-            onTapDown: (_) => _handlePressDown(),
-            onTapUp: (_) => _handlePressUp(),
-            onTapCancel: () => _handlePressUp(),
-            child: FilledButton(
-              onPressed: widget.onPressed == null ? null : _handlePress,
-              style: FilledButton.styleFrom(
-                backgroundColor: backgroundColor,
-                foregroundColor: foregroundColor,
-                padding: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(28),
+          padding: const EdgeInsets.all(3.0),
+          child: AnimatedScale(
+            scale: _scale,
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOut,
+            child: SizedBox.expand(
+              child: GestureDetector(
+                onTapDown: (_) => _handlePressDown(),
+                onTapUp: (_) => _handlePressUp(),
+                onTapCancel: () => _handlePressUp(),
+                child: FilledButton(
+                  onPressed: widget.onPressed == null ? null : _handlePress,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: backgroundColor,
+                    foregroundColor: foregroundColor,
+                    padding: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(28),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: child,
                 ),
-                elevation: 0,
               ),
-              child: child,
             ),
           ),
-        ),
-      ),
-    ).animate(controller: _shakeController, autoPlay: false)
+        )
+        .animate(controller: _shakeController, autoPlay: false)
         .shakeX(hz: 4, amount: 4);
   }
 

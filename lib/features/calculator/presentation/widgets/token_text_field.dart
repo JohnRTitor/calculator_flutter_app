@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/providers/calculator_provider.dart';
 
+/// A specialized read-only text field that displays the current mathematical expression.
+///
+/// It correctly handles cursor placement between tokens rather than individual characters,
+/// ensuring that users don't accidentally split multi-character tokens like `sin(` or `mod`.
 class TokenTextField extends ConsumerStatefulWidget {
   const TokenTextField({super.key});
 
@@ -54,8 +58,14 @@ class _TokenTextFieldState extends ConsumerState<TokenTextField> {
     final selection = _controller.selection;
 
     if (selection.isValid && selection.isCollapsed) {
-      final newIndex = _getCursorIndexFromCharOffset(state.tokens, selection.baseOffset);
-      final snappedOffset = _getCharOffsetFromCursorIndex(state.tokens, newIndex);
+      final newIndex = _getCursorIndexFromCharOffset(
+        state.tokens,
+        selection.baseOffset,
+      );
+      final snappedOffset = _getCharOffsetFromCursorIndex(
+        state.tokens,
+        newIndex,
+      );
 
       if (selection.baseOffset != snappedOffset) {
         _isUpdatingFromState = true;
@@ -79,15 +89,19 @@ class _TokenTextFieldState extends ConsumerState<TokenTextField> {
 
     // Sync state to controller
     final expectedText = state.expression;
-    final expectedOffset = _getCharOffsetFromCursorIndex(state.tokens, state.cursorIndex);
+    final expectedOffset = _getCharOffsetFromCursorIndex(
+      state.tokens,
+      state.cursorIndex,
+    );
 
     _isUpdatingFromState = true;
     if (_controller.text != expectedText) {
       _controller.text = expectedText;
     }
-    
+
     // Only update selection if it differs, to prevent interrupting user gestures unnecessarily
-    if (_controller.selection.baseOffset != expectedOffset || !_controller.selection.isCollapsed) {
+    if (_controller.selection.baseOffset != expectedOffset ||
+        !_controller.selection.isCollapsed) {
       _controller.selection = TextSelection.collapsed(offset: expectedOffset);
     }
     _isUpdatingFromState = false;

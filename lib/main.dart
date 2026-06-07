@@ -9,6 +9,10 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
+/// The main entry point for the Calculator application.
+///
+/// Initializes Flutter bindings, sets up Edge-to-Edge UI, loads the Rust library
+/// via flutter_rust_bridge, and starts the app wrapped in a Riverpod ProviderScope.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);

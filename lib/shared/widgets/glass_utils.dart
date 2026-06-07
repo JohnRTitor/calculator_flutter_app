@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 /// Lightweight Liquid Glass roles for consistent, theme-aware surfaces.
 enum GlassSurfaceRole { panel, card, button, accent, primary, destructive }
 
+/// Defines the color, border, and shadow properties for a specific glass surface.
 class GlassStyle {
   final Color fillColor;
   final Color borderColor;
@@ -74,6 +75,10 @@ class SharedGlassBackground extends StatelessWidget {
   }
 }
 
+/// Resolves the specific visual properties (`GlassStyle`) for a given surface role.
+///
+/// Adapts the colors and borders based on the current theme brightness, color scheme,
+/// and whether the surface is currently selected/active.
 GlassStyle resolveGlassStyle(
   ColorScheme colorScheme, {
   required Brightness brightness,

@@ -8,6 +8,10 @@ import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/app/navigation/route_transitions.dart';
 
+/// The entry point screen for the Unit Converter feature.
+///
+/// Displays a grid of available converter categories (e.g., Length, Mass, Currency, BMI).
+/// Tapping a category navigates to the `ConverterDetailScreen` with that category pre-selected.
 class ConverterHomeScreen extends ConsumerStatefulWidget {
   const ConverterHomeScreen({super.key});
 

@@ -6,6 +6,9 @@ import 'package:calculator_flutter_app/generated/rust/calculator/history.dart';
 
 part 'history_provider.g.dart';
 
+/// A Riverpod Notifier that manages the history of calculations.
+///
+/// Interacts with the Rust backend to load, save, clear, and delete history entries.
 @Riverpod(keepAlive: true)
 class History extends _$History {
   @override
@@ -16,7 +19,7 @@ class History extends _$History {
     } catch (_) {}
     return historyGetAll();
   }
-  
+
   Future<File> _getHistoryFile() async {
     final dir = await getApplicationDocumentsDirectory();
     return File('${dir.path}/calc_history.json');
@@ -28,17 +31,17 @@ class History extends _$History {
       await historySave(path: file.path);
     } catch (_) {}
   }
-  
+
   Future<void> refresh() async {
     state = AsyncData(historyGetAll());
   }
-  
+
   Future<void> delete(int index) async {
     historyDelete(index: BigInt.from(index));
     await saveHistoryToFile();
     await refresh();
   }
-  
+
   Future<void> clear() async {
     historyClear();
     await saveHistoryToFile();
