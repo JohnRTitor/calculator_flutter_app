@@ -1,0 +1,158 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:calculator_flutter_app/app/theme/ui_style.dart';
+import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
+import 'package:calculator_flutter_app/app/navigation/route_transitions.dart';
+import 'package:calculator_flutter_app/generated/rust/bridge/converter.dart';
+import 'package:calculator_flutter_app/features/converter/presentation/providers/converter_provider.dart';
+import 'package:calculator_flutter_app/features/converter/presentation/screens/converter_detail_screen.dart';
+
+// Import screens when they are created
+import 'package:calculator_flutter_app/features/utilities/presentation/screens/date_calculator_screen.dart';
+import 'package:calculator_flutter_app/features/utilities/presentation/screens/loan_calculator_screen.dart';
+import 'package:calculator_flutter_app/features/utilities/presentation/screens/investment_screen.dart';
+
+import 'package:toastification/toastification.dart';
+
+class UtilityItem {
+  final String id;
+  final String name;
+  final IconData icon;
+
+  const UtilityItem({
+    required this.id,
+    required this.name,
+    required this.icon,
+  });
+}
+
+class UtilitiesHomeScreen extends ConsumerWidget {
+  const UtilitiesHomeScreen({super.key});
+
+  static const List<UtilityItem> utilities = [
+    UtilityItem(id: 'date', name: 'Date Difference', icon: Icons.calendar_month),
+    UtilityItem(id: 'loan', name: 'Loan / EMI', icon: Icons.real_estate_agent),
+    UtilityItem(id: 'investment', name: 'Investment', icon: Icons.trending_up),
+    UtilityItem(id: 'bmi', name: 'BMI', icon: Icons.monitor_weight),
+    UtilityItem(id: 'discount', name: 'Discount', icon: Icons.local_offer),
+    UtilityItem(id: 'gst', name: 'GST', icon: Icons.receipt_long),
+  ];
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uiStyle = ref.watch(uiStyleProvider);
+    // Explicitly depend on Theme to ensure the grid rebuilds when theme changes
+    final _ = Theme.of(context);
+
+    return Scaffold(
+      body: GridView.builder(
+        padding: const EdgeInsets.all(24.0),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 16.0,
+          mainAxisSpacing: 24.0,
+          childAspectRatio: 0.8,
+        ),
+        itemCount: utilities.length,
+        itemBuilder: (context, index) {
+          final item = utilities[index];
+
+          return SharedSurface(
+            uiStyle: uiStyle,
+            onTap: () {
+              if (item.id == 'date') {
+                Navigator.push(
+                  context,
+                  FadePageRoute(page: const DateCalculatorScreen()),
+                );
+              } else if (item.id == 'loan') {
+                Navigator.push(
+                  context,
+                  FadePageRoute(page: const LoanCalculatorScreen()),
+                );
+              } else if (item.id == 'investment') {
+                Navigator.push(
+                  context,
+                  FadePageRoute(page: const InvestmentScreen()),
+                );
+              } else if (item.id == 'bmi' || item.id == 'discount' || item.id == 'gst') {
+                final cat = FfiConverterCategory(
+                  id: item.id,
+                  name: item.name,
+                  iconName: '', // not strictly needed for the detail screen
+                  units: [],
+                  showSwapUnitsToggler: false,
+                  showResultSection: true,
+                );
+                ref.read(converterProvider.notifier).setCategory(cat);
+                Navigator.push(
+                  context,
+                  FadePageRoute(page: const ConverterDetailScreen()),
+                );
+              } else {
+                toastification.showCustom(
+                  context: context,
+                  autoCloseDuration: const Duration(seconds: 2),
+                  alignment: Alignment.bottomCenter,
+                  builder: (context, holder) {
+                    return SharedSurface(
+                      uiStyle: uiStyle,
+                      glassRole: GlassSurfaceRole.panel,
+                      frosted: true,
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      borderRadius: BorderRadius.circular(16),
+                      child: Text(
+                        '${item.name} Coming Soon',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
+            },
+            borderRadius: BorderRadius.circular(24.0),
+            isInteractive: true,
+            glassRole: GlassSurfaceRole.card,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: uiStyle == UiStyle.liquidGlass
+                        ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.12)
+                        : Theme.of(context).colorScheme.surfaceContainerHighest,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    item.icon,
+                    size: 32,
+                    color: uiStyle == UiStyle.liquidGlass
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 8.0),
+                Text(
+                  item.name,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

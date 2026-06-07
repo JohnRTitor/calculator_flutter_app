@@ -224,48 +224,7 @@ pub fn convert_standard(value: f64, from_unit: &Unit, to_unit: &Unit) -> f64 {
     (base_value / to_unit.multiplier) - to_unit.offset
 }
 
-/// Calculates the discount on an original price.
-/// Returns a tuple of `(amount_saved, final_price, amount_saved)`.
-pub fn calculate_discount(original_price: f64, discount_percentage: f64) -> (f64, f64, f64) {
-    let amount_saved = (original_price * discount_percentage) / 100.0;
-    let final_price = original_price - amount_saved;
-    (amount_saved, final_price, amount_saved)
-}
 
-/// Calculates the Goods and Services Tax (GST) for a given amount.
-/// If `add_gst` is true, the GST is added to the amount. Otherwise, it is extracted from the amount.
-pub fn calculate_gst(amount: f64, gst_percentage: f64, add_gst: bool) -> (f64, f64, f64, f64) {
-    if add_gst {
-        let gst_amount = (amount * gst_percentage) / 100.0;
-        let total = amount + gst_amount;
-        (gst_amount, total, amount, total)
-    } else {
-        let original_amount = amount / (1.0 + gst_percentage / 100.0);
-        let gst_amount = amount - original_amount;
-        (gst_amount, amount, original_amount, amount)
-    }
-}
-
-/// Calculates the Body Mass Index (BMI) given weight in kg and height in meters.
-/// Returns a tuple of `(bmi_value, category_string)`.
-pub fn calculate_bmi(weight_kg: f64, height_m: f64) -> (f64, String) {
-    if height_m <= 0.0 {
-        return (0.0, "Invalid".to_string());
-    }
-    let bmi = weight_kg / (height_m * height_m);
-
-    let category = if bmi < 18.5 {
-        "Underweight"
-    } else if bmi >= 18.5 && bmi < 25.0 {
-        "Normal"
-    } else if bmi >= 25.0 && bmi < 30.0 {
-        "Overweight"
-    } else {
-        "Obese"
-    };
-
-    (bmi, category.to_string())
-}
 
 /// Converts a numeral string from one base (radix) to another.
 /// Returns `None` if the input string is invalid for the given `from_base`.

@@ -5,20 +5,29 @@ import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:toastification/toastification.dart';
-import 'package:calculator_flutter_app/features/converter/presentation/widgets/converter_keypad.dart';
+import 'package:calculator_flutter_app/features/utilities/presentation/widgets/utilities_keypad.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/widgets/converter_result_card.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/widgets/unit_selector_bottom_sheet.dart';
 import 'package:calculator_flutter_app/generated/rust/bridge/converter.dart';
+import 'package:calculator_flutter_app/shared/widgets/screenshot_share_wrapper.dart';
+import 'package:screenshot/screenshot.dart';
 
 /// The detail screen for a specific converter category.
 ///
 /// Displays the active "from" and "to" units, the calculated result, and provides
 /// the keypad for numeric input. Also allows users to swap units or select new ones.
-class ConverterDetailScreen extends ConsumerWidget {
+class ConverterDetailScreen extends ConsumerStatefulWidget {
   const ConverterDetailScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConverterDetailScreen> createState() => _ConverterDetailScreenState();
+}
+
+class _ConverterDetailScreenState extends ConsumerState<ConverterDetailScreen> {
+  final ScreenshotController _screenshotController = ScreenshotController();
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(converterProvider);
     final notifier = ref.read(converterProvider.notifier);
     final category = state.category;
@@ -29,6 +38,7 @@ class ConverterDetailScreen extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     Widget body = SafeArea(
+      bottom: false,
       child: Column(
         children: [
           // Display Area
@@ -53,7 +63,20 @@ class ConverterDetailScreen extends ConsumerWidget {
           ),
 
           // Keypad
-          const Expanded(flex: 45, child: ConverterKeypad()),
+          Expanded(
+            flex: 45, 
+            child: UtilitiesKeypad(
+              onKeyPressed: (key) {
+                if (key == '⌫') {
+                  notifier.onDelete();
+                } else if (key == '.') {
+                  notifier.onDot();
+                } else {
+                  notifier.onDigit(key);
+                }
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -219,9 +242,30 @@ class ConverterDetailScreen extends ConsumerWidget {
               tooltip: 'Information',
             ),
           ],
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: IconButton(
+              icon: const Icon(Icons.ios_share),
+              onPressed: () {
+                captureAndShareScreenshot(
+                  context: context,
+                  screenshotController: _screenshotController,
+                  subject: '${category.name} Result',
+                  text: 'Check out this ${category.name} calculation from the Calculator app!',
+                );
+              },
+              tooltip: 'Share screenshot',
+            ),
+          ),
         ],
       ),
-      body: body,
+      body: ScreenshotShareWrapper(
+        screenshotController: _screenshotController,
+        child: Container(
+          color: Theme.of(context).scaffoldBackgroundColor, // Ensure background is solid for screenshot
+          child: body,
+        ),
+      ),
     );
   }
 
@@ -238,10 +282,10 @@ class ConverterDetailScreen extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildCompactInputCard(
-            context,
-            ref,
-            label: state.bmiWeightUnit?.name ?? 'Weight',
+            _buildCompactInputCard(
+              context,
+              ref,
+              label: state.bmiWeightUnit?.name ?? 'Weight',
             value: state.bmiWeight.isEmpty ? '0' : state.bmiWeight,
             symbol: state.bmiWeightUnit?.symbol ?? '',
             inputId: 'bmiWeight',

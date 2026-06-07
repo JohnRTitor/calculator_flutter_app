@@ -3,6 +3,7 @@ import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/screens/calculator_screen.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/screens/converter_home_screen.dart';
+import 'package:calculator_flutter_app/features/utilities/presentation/screens/utilities_home_screen.dart';
 import 'package:calculator_flutter_app/features/history/presentation/screens/history_screen.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/screens/settings_screen.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
@@ -27,7 +28,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -59,7 +60,11 @@ class _MainScreenState extends ConsumerState<MainScreen>
             Expanded(
               child: TabBarView(
                 controller: _tabController,
-                children: [const CalculatorScreen(), const ConverterHomeScreen()],
+                children: [
+                  const CalculatorScreen(),
+                  const ConverterHomeScreen(),
+                  const UtilitiesHomeScreen(),
+                ],
               ),
             ),
           ],
@@ -135,7 +140,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
               frosted: true,
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               child: SizedBox(
-                width: 220,
+                width: 200,
                 height: 36,
                 child: TabBar(
                   controller: _tabController,
@@ -184,8 +189,9 @@ class _MainScreenState extends ConsumerState<MainScreen>
                   unselectedLabelStyle: textTheme.titleSmall,
                   splashBorderRadius: BorderRadius.circular(20),
                   tabs: const [
-                    Tab(text: 'Calculator'),
-                    Tab(text: 'Converter'),
+                    Tab(icon: Icon(Icons.calculate_outlined, size: 20)),
+                    Tab(icon: Icon(Icons.swap_horiz_outlined, size: 20)),
+                    Tab(icon: Icon(Icons.attach_money_outlined, size: 20)),
                   ],
                 ),
               ),

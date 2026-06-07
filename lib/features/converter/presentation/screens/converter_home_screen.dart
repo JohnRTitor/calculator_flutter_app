@@ -85,30 +85,6 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
         showResultSection: true,
       ),
       ...categories!,
-      FfiConverterCategory(
-        id: 'discount',
-        name: 'Discount',
-        iconName: 'local_offer',
-        units: [],
-        showSwapUnitsToggler: false,
-        showResultSection: true,
-      ),
-      FfiConverterCategory(
-        id: 'gst',
-        name: 'GST',
-        iconName: 'receipt_long',
-        units: [],
-        showSwapUnitsToggler: false,
-        showResultSection: true,
-      ),
-      FfiConverterCategory(
-        id: 'bmi',
-        name: 'BMI',
-        iconName: 'monitor_weight',
-        units: [],
-        showSwapUnitsToggler: false,
-        showResultSection: true,
-      ),
     ];
 
     return Scaffold(
@@ -125,9 +101,6 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
           final cat = displayCategories[index];
           IconData iconData = _getIcon(cat.iconName);
           if (cat.id == 'currency') iconData = Icons.currency_exchange;
-          if (cat.id == 'discount') iconData = Icons.local_offer;
-          if (cat.id == 'gst') iconData = Icons.receipt_long;
-          if (cat.id == 'bmi') iconData = Icons.monitor_weight;
 
           return SharedSurface(
             uiStyle: uiStyle,

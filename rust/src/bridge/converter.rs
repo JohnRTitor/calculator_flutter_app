@@ -71,57 +71,6 @@ pub fn convert_standard(value: f64, from_unit: FfiUnit, to_unit: FfiUnit) -> f64
     converter::convert_standard(value, &from, &to)
 }
 
-/// FFI representation of a discount calculation result.
-#[frb]
-pub struct DiscountResult {
-    pub amount_saved: f64,
-    pub final_price: f64,
-}
-
-/// Calculates the discount and final price from an original price and percentage.
-#[frb(sync)]
-pub fn calculate_discount(original_price: f64, discount_percentage: f64) -> DiscountResult {
-    let (_, final_price, amount_saved) =
-        converter::calculate_discount(original_price, discount_percentage);
-    DiscountResult {
-        amount_saved,
-        final_price,
-    }
-}
-
-/// FFI representation of a Goods and Services Tax (GST) calculation result.
-#[frb]
-pub struct GstResult {
-    pub gst_amount: f64,
-    pub total_amount: f64,
-    pub original_amount: f64,
-}
-
-/// Calculates the GST amount and total amount for a given base amount and rate.
-#[frb(sync)]
-pub fn calculate_gst(amount: f64, gst_percentage: f64, add_gst: bool) -> GstResult {
-    let (gst_amount, total_amount, original_amount, _) =
-        converter::calculate_gst(amount, gst_percentage, add_gst);
-    GstResult {
-        gst_amount,
-        total_amount,
-        original_amount,
-    }
-}
-
-/// FFI representation of a Body Mass Index (BMI) calculation result.
-#[frb]
-pub struct BmiResult {
-    pub bmi: f64,
-    pub category: String,
-}
-
-/// Calculates BMI based on weight (kg) and height (m).
-#[frb(sync)]
-pub fn calculate_bmi(weight_kg: f64, height_m: f64) -> BmiResult {
-    let (bmi, category) = converter::calculate_bmi(weight_kg, height_m);
-    BmiResult { bmi, category }
-}
 
 /// Converts a string representing a numeral from one base to another.
 #[frb(sync)]

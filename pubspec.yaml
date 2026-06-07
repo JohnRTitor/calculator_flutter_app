@@ -46,6 +46,10 @@ dependencies:
   flutter_animate: ^4.5.2
   http: ^1.6.0
   toastification: ^3.2.0
+  fl_chart: ^1.2.0
+  share_plus: ^13.1.0
+  screenshot: ^3.0.0
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:

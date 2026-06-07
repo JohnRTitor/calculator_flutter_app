@@ -23,33 +23,6 @@ double convertStandard({
   toUnit: toUnit,
 );
 
-/// Calculates the discount and final price from an original price and percentage.
-DiscountResult calculateDiscount({
-  required double originalPrice,
-  required double discountPercentage,
-}) => RustLib.instance.api.crateBridgeConverterCalculateDiscount(
-  originalPrice: originalPrice,
-  discountPercentage: discountPercentage,
-);
-
-/// Calculates the GST amount and total amount for a given base amount and rate.
-GstResult calculateGst({
-  required double amount,
-  required double gstPercentage,
-  required bool addGst,
-}) => RustLib.instance.api.crateBridgeConverterCalculateGst(
-  amount: amount,
-  gstPercentage: gstPercentage,
-  addGst: addGst,
-);
-
-/// Calculates BMI based on weight (kg) and height (m).
-BmiResult calculateBmi({required double weightKg, required double heightM}) =>
-    RustLib.instance.api.crateBridgeConverterCalculateBmi(
-      weightKg: weightKg,
-      heightM: heightM,
-    );
-
 /// Converts a string representing a numeral from one base to another.
 String? convertNumeral({
   required String value,
@@ -60,44 +33,6 @@ String? convertNumeral({
   fromBase: fromBase,
   toBase: toBase,
 );
-
-/// FFI representation of a Body Mass Index (BMI) calculation result.
-class BmiResult {
-  final double bmi;
-  final String category;
-
-  const BmiResult({required this.bmi, required this.category});
-
-  @override
-  int get hashCode => bmi.hashCode ^ category.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is BmiResult &&
-          runtimeType == other.runtimeType &&
-          bmi == other.bmi &&
-          category == other.category;
-}
-
-/// FFI representation of a discount calculation result.
-class DiscountResult {
-  final double amountSaved;
-  final double finalPrice;
-
-  const DiscountResult({required this.amountSaved, required this.finalPrice});
-
-  @override
-  int get hashCode => amountSaved.hashCode ^ finalPrice.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is DiscountResult &&
-          runtimeType == other.runtimeType &&
-          amountSaved == other.amountSaved &&
-          finalPrice == other.finalPrice;
-}
 
 /// FFI representation of a category of units.
 class FfiConverterCategory {
@@ -173,30 +108,4 @@ class FfiUnit {
           symbol == other.symbol &&
           multiplier == other.multiplier &&
           offset == other.offset;
-}
-
-/// FFI representation of a Goods and Services Tax (GST) calculation result.
-class GstResult {
-  final double gstAmount;
-  final double totalAmount;
-  final double originalAmount;
-
-  const GstResult({
-    required this.gstAmount,
-    required this.totalAmount,
-    required this.originalAmount,
-  });
-
-  @override
-  int get hashCode =>
-      gstAmount.hashCode ^ totalAmount.hashCode ^ originalAmount.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is GstResult &&
-          runtimeType == other.runtimeType &&
-          gstAmount == other.gstAmount &&
-          totalAmount == other.totalAmount &&
-          originalAmount == other.originalAmount;
 }

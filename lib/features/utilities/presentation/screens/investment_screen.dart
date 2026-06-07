@@ -1,0 +1,360 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:calculator_flutter_app/features/utilities/presentation/providers/investment_provider.dart';
+import 'package:calculator_flutter_app/features/utilities/presentation/widgets/utilities_keypad.dart';
+import 'package:calculator_flutter_app/app/theme/ui_style.dart';
+import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
+import 'package:calculator_flutter_app/shared/widgets/screenshot_share_wrapper.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:intl/intl.dart';
+import 'package:fl_chart/fl_chart.dart';
+
+class InvestmentScreen extends ConsumerStatefulWidget {
+  const InvestmentScreen({super.key});
+
+  @override
+  ConsumerState<InvestmentScreen> createState() => _InvestmentScreenState();
+}
+
+class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  final ScreenshotController _screenshotController = ScreenshotController();
+  final NumberFormat _currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        final mode = _tabController.index == 0 ? InvestmentMode.oneTime : InvestmentMode.sip;
+        ref.read(investmentProvider.notifier).setMode(mode);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(investmentProvider);
+    final notifier = ref.read(investmentProvider.notifier);
+    final uiStyle = ref.watch(uiStyleProvider);
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    final result = state.result;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Investment'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => notifier.reset(),
+            tooltip: 'Reset',
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: IconButton(
+              icon: const Icon(Icons.ios_share),
+              onPressed: () {
+                captureAndShareScreenshot(
+                  context: context,
+                  screenshotController: _screenshotController,
+                  subject: 'Investment Calculation',
+                  text: 'Expected Returns: ${_currencyFormat.format(result.futureValue)}',
+                );
+              },
+              tooltip: 'Share result',
+            ),
+          ),
+        ],
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: uiStyle == UiStyle.liquidGlass ? colorScheme.primary : null,
+          tabs: const [
+            Tab(text: 'One-Time'),
+            Tab(text: 'SIP'),
+          ],
+        ),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            flex: 60,
+            child: ScreenshotShareWrapper(
+              screenshotController: _screenshotController,
+              child: Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    // One-Time Tab
+                    SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildResultChartArea(context, result, uiStyle, colorScheme, textTheme),
+                          const SizedBox(height: 24),
+                          _buildInputCard(
+                            context: context,
+                            label: 'Total Investment',
+                            value: state.principalStr.isEmpty ? '0' : state.principalStr,
+                            symbol: '\$',
+                            inputId: 'principal',
+                            isActive: state.activeInput == 'principal',
+                            onTap: () => notifier.setActiveInput('principal'),
+                            uiStyle: uiStyle,
+                            colorScheme: colorScheme,
+                          ),
+                          const SizedBox(height: 12),
+                          _buildInputCard(
+                            context: context,
+                            label: 'Expected Return Rate (p.a)',
+                            value: state.interestRateStr.isEmpty ? '0' : state.interestRateStr,
+                            symbol: '%',
+                            inputId: 'interestRate',
+                            isActive: state.activeInput == 'interestRate',
+                            onTap: () => notifier.setActiveInput('interestRate'),
+                            uiStyle: uiStyle,
+                            colorScheme: colorScheme,
+                          ),
+                          const SizedBox(height: 12),
+                          _buildInputCard(
+                            context: context,
+                            label: 'Time Period',
+                            value: state.yearsStr.isEmpty ? '0' : state.yearsStr,
+                            symbol: 'Yr',
+                            inputId: 'years',
+                            isActive: state.activeInput == 'years',
+                            onTap: () => notifier.setActiveInput('years'),
+                            uiStyle: uiStyle,
+                            colorScheme: colorScheme,
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                    // SIP Tab
+                    SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildResultChartArea(context, result, uiStyle, colorScheme, textTheme),
+                          const SizedBox(height: 24),
+                          _buildInputCard(
+                            context: context,
+                            label: 'Monthly Investment',
+                            value: state.monthlyContributionStr.isEmpty ? '0' : state.monthlyContributionStr,
+                            symbol: '\$',
+                            inputId: 'monthlyContribution',
+                            isActive: state.activeInput == 'monthlyContribution',
+                            onTap: () => notifier.setActiveInput('monthlyContribution'),
+                            uiStyle: uiStyle,
+                            colorScheme: colorScheme,
+                          ),
+                          const SizedBox(height: 12),
+                          _buildInputCard(
+                            context: context,
+                            label: 'Expected Return Rate (p.a)',
+                            value: state.interestRateStr.isEmpty ? '0' : state.interestRateStr,
+                            symbol: '%',
+                            inputId: 'interestRate',
+                            isActive: state.activeInput == 'interestRate',
+                            onTap: () => notifier.setActiveInput('interestRate'),
+                            uiStyle: uiStyle,
+                            colorScheme: colorScheme,
+                          ),
+                          const SizedBox(height: 12),
+                          _buildInputCard(
+                            context: context,
+                            label: 'Time Period',
+                            value: state.yearsStr.isEmpty ? '0' : state.yearsStr,
+                            symbol: 'Yr',
+                            inputId: 'years',
+                            isActive: state.activeInput == 'years',
+                            onTap: () => notifier.setActiveInput('years'),
+                            uiStyle: uiStyle,
+                            colorScheme: colorScheme,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          Expanded(
+            flex: 40,
+            child: UtilitiesKeypad(
+              onKeyPressed: notifier.onKeyPressed,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResultChartArea(BuildContext context, dynamic result, UiStyle uiStyle, ColorScheme colorScheme, TextTheme textTheme) {
+    final bool hasData = result.totalInvestment > 0 || result.totalInterest > 0;
+    
+    return SharedSurface(
+      uiStyle: uiStyle,
+      glassRole: GlassSurfaceRole.card,
+      padding: const EdgeInsets.all(24),
+      borderRadius: BorderRadius.circular(24),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Total Value', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant)),
+                    Text(
+                      _currencyFormat.format(result.futureValue),
+                      style: textTheme.headlineSmall?.copyWith(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.bold,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Container(width: 12, height: 12, decoration: BoxDecoration(color: colorScheme.primary, shape: BoxShape.circle)),
+                        const SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Est. Returns', style: textTheme.bodySmall),
+                            Text(_currencyFormat.format(result.totalInterest), style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Container(width: 12, height: 12, decoration: BoxDecoration(color: colorScheme.tertiary, shape: BoxShape.circle)),
+                        const SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Invested Amount', style: textTheme.bodySmall),
+                            Text(_currencyFormat.format(result.totalInvestment), style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 120,
+                height: 120,
+                child: hasData 
+                ? PieChart(
+                    PieChartData(
+                      sectionsSpace: 2,
+                      centerSpaceRadius: 30,
+                      startDegreeOffset: -90,
+                      sections: [
+                        PieChartSectionData(
+                          color: colorScheme.primary,
+                          value: result.totalInterest,
+                          title: '',
+                          radius: 20,
+                        ),
+                        PieChartSectionData(
+                          color: colorScheme.tertiary,
+                          value: result.totalInvestment,
+                          title: '',
+                          radius: 20,
+                        ),
+                      ],
+                    ),
+                  )
+                : Center(
+                    child: Text('0%', style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurfaceVariant)),
+                  ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInputCard({
+    required BuildContext context,
+    required String label,
+    required String value,
+    required String symbol,
+    required String inputId,
+    required bool isActive,
+    required VoidCallback onTap,
+    required UiStyle uiStyle,
+    required ColorScheme colorScheme,
+  }) {
+    return SharedSurface(
+      uiStyle: uiStyle,
+      glassRole: GlassSurfaceRole.panel,
+      isInteractive: true,
+      onTap: onTap,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      borderRadius: BorderRadius.circular(20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: isActive ? colorScheme.primary : colorScheme.onSurfaceVariant,
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+            ),
+          ),
+          Row(
+            children: [
+              if (symbol == '\$')
+                Text(
+                  symbol,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: isActive ? colorScheme.primary : colorScheme.onSurface,
+                  ),
+                ),
+              Text(
+                value,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: isActive ? colorScheme.primary : colorScheme.onSurface,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              if (symbol == '%' || symbol == 'Yr')
+                Padding(
+                  padding: const EdgeInsets.only(left: 4.0),
+                  child: Text(
+                    symbol,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: isActive ? colorScheme.primary : colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}

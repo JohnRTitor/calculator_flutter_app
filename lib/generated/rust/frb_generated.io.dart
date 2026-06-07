@@ -5,6 +5,7 @@
 
 import 'bridge/calculator.dart';
 import 'bridge/converter.dart';
+import 'bridge/utilities.dart';
 import 'calculator/history.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -39,6 +40,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   CalcResult dco_decode_calc_result(dynamic raw);
 
   @protected
+  DateDiffResult dco_decode_date_diff_result(dynamic raw);
+
+  @protected
   DiscountResult dco_decode_discount_result(dynamic raw);
 
   @protected
@@ -57,6 +61,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   HistoryEntry dco_decode_history_entry(dynamic raw);
 
   @protected
+  int dco_decode_i_32(dynamic raw);
+
+  @protected
+  PlatformInt64 dco_decode_i_64(dynamic raw);
+
+  @protected
+  InvestmentResult dco_decode_investment_result(dynamic raw);
+
+  @protected
   List<FfiConverterCategory> dco_decode_list_ffi_converter_category(
     dynamic raw,
   );
@@ -69,6 +82,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
+
+  @protected
+  LoanResult dco_decode_loan_result(dynamic raw);
 
   @protected
   String? dco_decode_opt_String(dynamic raw);
@@ -107,6 +123,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   CalcResult sse_decode_calc_result(SseDeserializer deserializer);
 
   @protected
+  DateDiffResult sse_decode_date_diff_result(SseDeserializer deserializer);
+
+  @protected
   DiscountResult sse_decode_discount_result(SseDeserializer deserializer);
 
   @protected
@@ -127,6 +146,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   HistoryEntry sse_decode_history_entry(SseDeserializer deserializer);
 
   @protected
+  int sse_decode_i_32(SseDeserializer deserializer);
+
+  @protected
+  PlatformInt64 sse_decode_i_64(SseDeserializer deserializer);
+
+  @protected
+  InvestmentResult sse_decode_investment_result(SseDeserializer deserializer);
+
+  @protected
   List<FfiConverterCategory> sse_decode_list_ffi_converter_category(
     SseDeserializer deserializer,
   );
@@ -141,6 +169,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
+
+  @protected
+  LoanResult sse_decode_loan_result(SseDeserializer deserializer);
 
   @protected
   String? sse_decode_opt_String(SseDeserializer deserializer);
@@ -161,9 +192,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   BigInt sse_decode_usize(SseDeserializer deserializer);
 
   @protected
-  int sse_decode_i_32(SseDeserializer deserializer);
-
-  @protected
   void sse_encode_String(String self, SseSerializer serializer);
 
   @protected
@@ -180,6 +208,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_calc_result(CalcResult self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_date_diff_result(
+    DateDiffResult self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_discount_result(
@@ -206,6 +240,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_history_entry(HistoryEntry self, SseSerializer serializer);
 
   @protected
+  void sse_encode_i_32(int self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_i_64(PlatformInt64 self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_investment_result(
+    InvestmentResult self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_list_ffi_converter_category(
     List<FfiConverterCategory> self,
     SseSerializer serializer,
@@ -227,6 +273,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_loan_result(LoanResult self, SseSerializer serializer);
+
+  @protected
   void sse_encode_opt_String(String? self, SseSerializer serializer);
 
   @protected
@@ -243,9 +292,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_usize(BigInt self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_i_32(int self, SseSerializer serializer);
 }
 
 // Section: wire_class
