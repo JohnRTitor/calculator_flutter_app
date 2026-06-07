@@ -131,8 +131,8 @@ class _AnimatedEqualsButtonState extends ConsumerState<AnimatedEqualsButton> wit
               shape: const LiquidRoundedSuperellipse(borderRadius: 28),
               useOwnLayer: true,
               settings: LiquidGlassSettings(
-                thickness: 40,
-                glassColor: colorScheme.primary.withValues(alpha: 0.3),
+                thickness: 20,
+                glassColor: colorScheme.primary.withValues(alpha: 0.25),
               ),
               child: Material(
                 color: Colors.transparent,

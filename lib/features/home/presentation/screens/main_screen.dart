@@ -7,6 +7,7 @@ import 'package:calculator_flutter_app/features/converter/presentation/screens/c
 import 'package:calculator_flutter_app/features/history/presentation/screens/history_screen.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/screens/settings_screen.dart';
 import 'package:calculator_flutter_app/features/settings/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/core/theme/glass_utils.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -72,7 +73,11 @@ class _MainScreenState extends ConsumerState<MainScreen> with SingleTickerProvid
     final brightness = Theme.of(context).brightness;
 
     return GlassScaffold(
-      background: _buildGlassBackground(colorScheme, brightness, themeMode),
+      background: SharedGlassBackground(
+        themeMode: themeMode,
+        brightness: brightness,
+        colorScheme: colorScheme,
+      ),
       statusBarStyle: GlassStatusBarStyle.auto,
       body: SafeArea(
         bottom: false,
@@ -94,46 +99,6 @@ class _MainScreenState extends ConsumerState<MainScreen> with SingleTickerProvid
     );
   }
 
-  /// Dynamic gradient background for glass refraction.
-  /// Adapts to theme mode and color scheme.
-  Widget _buildGlassBackground(ColorScheme colorScheme, Brightness brightness, AppThemeMode themeMode) {
-    final List<Color> gradientColors;
-
-    if (themeMode == AppThemeMode.amoled) {
-      // AMOLED: pure black with very subtle accent hints
-      gradientColors = [
-        Colors.black,
-        colorScheme.primaryContainer.withValues(alpha: 0.06),
-        Colors.black,
-      ];
-    } else if (brightness == Brightness.dark) {
-      // Dark: deep dark with subtle color accents
-      gradientColors = [
-        colorScheme.surface,
-        colorScheme.primaryContainer.withValues(alpha: 0.15),
-        colorScheme.tertiaryContainer.withValues(alpha: 0.08),
-        colorScheme.surface,
-      ];
-    } else {
-      // Light: soft gradient with pastel tints
-      gradientColors = [
-        colorScheme.surface,
-        colorScheme.primaryContainer.withValues(alpha: 0.3),
-        colorScheme.tertiaryContainer.withValues(alpha: 0.2),
-        colorScheme.surface,
-      ];
-    }
-
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: gradientColors,
-        ),
-      ),
-    );
-  }
 
   Widget _buildTopBar(ColorScheme colorScheme, TextTheme textTheme) {
     return Padding(

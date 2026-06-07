@@ -95,29 +95,29 @@ class _LiquidGlassCalcButtonState extends State<LiquidGlassCalcButton> {
     double thickness;
     
     if (widget.isActive) {
-      tintColor = cs.tertiaryContainer.withValues(alpha: 0.3);
-      thickness = 40;
+      tintColor = cs.tertiaryContainer.withValues(alpha: 0.15);
+      thickness = 20;
     } else {
       switch (widget.type) {
         case ButtonType.number:
-          tintColor = cs.surfaceContainerLow.withValues(alpha: 0.15);
-          thickness = 25;
+          tintColor = cs.surfaceContainerLow.withValues(alpha: 0.08);
+          thickness = 10;
         case ButtonType.operator:
-          tintColor = cs.primary.withValues(alpha: 0.25);
-          thickness = 35;
+          tintColor = cs.primary.withValues(alpha: 0.15);
+          thickness = 15;
         case ButtonType.action:
         case ButtonType.scientific:
-          tintColor = cs.surfaceContainerHigh.withValues(alpha: 0.2);
-          thickness = 28;
+          tintColor = cs.surfaceContainerHigh.withValues(alpha: 0.1);
+          thickness = 12;
         case ButtonType.clear:
-          tintColor = cs.errorContainer.withValues(alpha: 0.25);
-          thickness = 35;
+          tintColor = cs.errorContainer.withValues(alpha: 0.15);
+          thickness = 15;
         case ButtonType.backspace:
-          tintColor = cs.tertiaryContainer.withValues(alpha: 0.2);
-          thickness = 30;
+          tintColor = cs.tertiaryContainer.withValues(alpha: 0.1);
+          thickness = 15;
         case ButtonType.equals:
-          tintColor = cs.primary.withValues(alpha: 0.3);
-          thickness = 40;
+          tintColor = cs.primary.withValues(alpha: 0.2);
+          thickness = 20;
       }
     }
     

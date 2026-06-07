@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/features/converter/providers/converter_provider.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+import 'package:calculator_flutter_app/core/theme/ui_style.dart';
+import 'package:calculator_flutter_app/core/theme/glass_utils.dart';
+import 'package:calculator_flutter_app/features/settings/providers/theme_provider.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/widgets/converter_keypad.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/widgets/unit_selector_bottom_sheet.dart';
 
@@ -15,7 +19,80 @@ class ConverterDetailScreen extends ConsumerWidget {
 
     if (category == null) return const Scaffold();
 
+    final uiStyle = ref.watch(uiStyleProvider);
+    final themeMode = ref.watch(themeModeProvider);
+    final brightness = Theme.of(context).brightness;
     final colorScheme = Theme.of(context).colorScheme;
+
+    Widget body = SafeArea(
+      child: Column(
+        children: [
+          // Display Area
+          Expanded(
+            flex: 35,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // From Unit row
+                  _buildUnitRow(
+                    context,
+                    ref,
+                    label: state.fromUnit?.name ?? 'Select unit',
+                    value: state.inputValue.isEmpty ? '0' : state.inputValue,
+                    symbol: state.fromUnit?.symbol ?? '',
+                    isFrom: true,
+                    colorScheme: colorScheme,
+                    uiStyle: uiStyle,
+                  ),
+                  const SizedBox(height: 16),
+                  // To Unit row
+                  _buildUnitRow(
+                    context,
+                    ref,
+                    label: state.toUnit?.name ?? 'Select unit',
+                    value: state.resultValue.isEmpty ? '0' : state.resultValue,
+                    symbol: state.toUnit?.symbol ?? '',
+                    isFrom: false,
+                    colorScheme: colorScheme,
+                    uiStyle: uiStyle,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          // Keypad
+          const Expanded(
+            flex: 65,
+            child: ConverterKeypad(),
+          ),
+        ],
+      ),
+    );
+
+    if (uiStyle == UiStyle.liquidGlass) {
+      return GlassScaffold(
+        background: SharedGlassBackground(
+          themeMode: themeMode,
+          brightness: brightness,
+          colorScheme: colorScheme,
+        ),
+        appBar: GlassAppBar(
+          title: Text(category.name),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.swap_vert),
+              onPressed: () => notifier.swapUnits(),
+              tooltip: 'Swap units',
+            ),
+          ],
+        ),
+        body: body,
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -28,52 +105,7 @@ class ConverterDetailScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Display Area
-            Expanded(
-              flex: 30,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    // From Unit row
-                    _buildUnitRow(
-                      context,
-                      ref,
-                      label: state.fromUnit?.name ?? 'Select unit',
-                      value: state.inputValue.isEmpty ? '0' : state.inputValue,
-                      symbol: state.fromUnit?.symbol ?? '',
-                      isFrom: true,
-                      colorScheme: colorScheme,
-                    ),
-                    const Divider(height: 32),
-                    // To Unit row
-                    _buildUnitRow(
-                      context,
-                      ref,
-                      label: state.toUnit?.name ?? 'Select unit',
-                      value: state.resultValue.isEmpty ? '0' : state.resultValue,
-                      symbol: state.toUnit?.symbol ?? '',
-                      isFrom: false,
-                      colorScheme: colorScheme,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            
-            // Keypad
-            const Expanded(
-              flex: 70,
-              child: ConverterKeypad(),
-            ),
-          ],
-        ),
-      ),
+      body: body,
     );
   }
 
@@ -85,56 +117,66 @@ class ConverterDetailScreen extends ConsumerWidget {
     required String symbol,
     required bool isFrom,
     required ColorScheme colorScheme,
+    required UiStyle uiStyle,
   }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        InkWell(
-          onTap: () {
-            _showUnitSelector(context, ref, isFrom);
-          },
-          borderRadius: BorderRadius.circular(8.0),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Text(
-                  label,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: isFrom ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
-                      ),
-                ),
-                const Icon(Icons.arrow_drop_down),
-              ],
+    return SharedSurface(
+      uiStyle: uiStyle,
+      padding: const EdgeInsets.all(16.0),
+      glassThickness: 12,
+      glassColor: isFrom ? colorScheme.primaryContainer.withValues(alpha: 0.1) : colorScheme.surfaceContainerHighest.withValues(alpha: 0.1),
+      materialColor: isFrom ? colorScheme.primaryContainer : colorScheme.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          InkWell(
+            onTap: () {
+              _showUnitSelector(context, ref, isFrom);
+            },
+            borderRadius: BorderRadius.circular(12.0),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+              child: Row(
+                children: [
+                  Text(
+                    label,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                  const Icon(Icons.arrow_drop_down),
+                ],
+              ),
             ),
           ),
-        ),
-        Flexible(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            reverse: true,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  value,
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                        color: isFrom ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
-                        fontWeight: isFrom ? FontWeight.w500 : FontWeight.w400,
-                      ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  symbol,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                ),
-              ],
+          Flexible(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              reverse: true,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    value,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          color: colorScheme.onSurface,
+                          fontWeight: isFrom ? FontWeight.w600 : FontWeight.w400,
+                        ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    symbol,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

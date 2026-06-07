@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/src/rust/api/converter.dart';
 import 'package:calculator_flutter_app/features/converter/providers/converter_provider.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/screens/converter_detail_screen.dart';
-
+import 'package:calculator_flutter_app/features/settings/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/core/theme/ui_style.dart';
+import 'package:calculator_flutter_app/core/theme/glass_utils.dart';
 class ConverterHomeScreen extends ConsumerStatefulWidget {
   const ConverterHomeScreen({super.key});
 
@@ -50,6 +52,8 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
       return const Center(child: CircularProgressIndicator());
     }
 
+    final uiStyle = ref.watch(uiStyleProvider);
+
     // Add extra items to match user request (Discount, GST, BMI, Currency)
     // We'll create custom FfiConverterCategory objects for them since they are specialized
     final displayCategories = [
@@ -78,7 +82,8 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
           if (cat.id == 'gst') iconData = Icons.receipt_long;
           if (cat.id == 'bmi') iconData = Icons.monitor_weight;
 
-          return InkWell(
+          return SharedSurface(
+            uiStyle: uiStyle,
             onTap: () {
               ref.read(converterProvider.notifier).setCategory(cat);
               Navigator.push(
@@ -86,14 +91,16 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
                 MaterialPageRoute(builder: (_) => const ConverterDetailScreen()),
               );
             },
-            borderRadius: BorderRadius.circular(16.0),
+            borderRadius: BorderRadius.circular(24.0),
+            glassThickness: 10,
+            isInteractive: true,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: uiStyle == UiStyle.liquidGlass ? 0.0 : 1.0),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(

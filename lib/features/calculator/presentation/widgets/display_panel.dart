@@ -99,8 +99,8 @@ class DisplayPanel extends ConsumerWidget {
             shape: const LiquidRoundedSuperellipse(borderRadius: 24),
             useOwnLayer: true,
             settings: LiquidGlassSettings(
-              thickness: 30,
-              glassColor: colorScheme.surfaceContainerLowest.withValues(alpha: 0.15),
+              thickness: 15,
+              glassColor: colorScheme.surfaceContainerLowest.withValues(alpha: 0.08),
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),

@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/features/converter/providers/converter_provider.dart';
+import 'package:calculator_flutter_app/features/settings/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/core/theme/ui_style.dart';
+import 'package:calculator_flutter_app/core/theme/glass_utils.dart';
 
 class ConverterKeypad extends ConsumerWidget {
   const ConverterKeypad({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final uiStyle = ref.watch(uiStyleProvider);
+    
     return LayoutBuilder(
       builder: (context, constraints) {
         // Build a 5x4 grid
@@ -15,8 +20,8 @@ class ConverterKeypad extends ConsumerWidget {
             Expanded(
               child: Row(
                 children: [
-                  _buildButton(context, ref, 'C', isSpecial: true),
-                  _buildButton(context, ref, '⌫', isSpecial: true),
+                  _buildButton(context, ref, 'C', uiStyle, isSpecial: true),
+                  _buildButton(context, ref, '⌫', uiStyle, isSpecial: true),
                   // Additional buttons for other features later (e.g. swap)
                   const Expanded(child: SizedBox()),
                   const Expanded(child: SizedBox()),
@@ -26,36 +31,36 @@ class ConverterKeypad extends ConsumerWidget {
             Expanded(
               child: Row(
                 children: [
-                  _buildButton(context, ref, '7'),
-                  _buildButton(context, ref, '8'),
-                  _buildButton(context, ref, '9'),
+                  _buildButton(context, ref, '7', uiStyle),
+                  _buildButton(context, ref, '8', uiStyle),
+                  _buildButton(context, ref, '9', uiStyle),
                 ],
               ),
             ),
             Expanded(
               child: Row(
                 children: [
-                  _buildButton(context, ref, '4'),
-                  _buildButton(context, ref, '5'),
-                  _buildButton(context, ref, '6'),
+                  _buildButton(context, ref, '4', uiStyle),
+                  _buildButton(context, ref, '5', uiStyle),
+                  _buildButton(context, ref, '6', uiStyle),
                 ],
               ),
             ),
             Expanded(
               child: Row(
                 children: [
-                  _buildButton(context, ref, '1'),
-                  _buildButton(context, ref, '2'),
-                  _buildButton(context, ref, '3'),
+                  _buildButton(context, ref, '1', uiStyle),
+                  _buildButton(context, ref, '2', uiStyle),
+                  _buildButton(context, ref, '3', uiStyle),
                 ],
               ),
             ),
             Expanded(
               child: Row(
                 children: [
-                  _buildButton(context, ref, '00'),
-                  _buildButton(context, ref, '0'),
-                  _buildButton(context, ref, '.'),
+                  _buildButton(context, ref, '00', uiStyle),
+                  _buildButton(context, ref, '0', uiStyle),
+                  _buildButton(context, ref, '.', uiStyle),
                 ],
               ),
             ),
@@ -65,18 +70,31 @@ class ConverterKeypad extends ConsumerWidget {
     );
   }
 
-  Widget _buildButton(BuildContext context, WidgetRef ref, String label, {bool isSpecial = false}) {
+  Widget _buildButton(BuildContext context, WidgetRef ref, String label, UiStyle uiStyle, {bool isSpecial = false}) {
     final colorScheme = Theme.of(context).colorScheme;
+    
+    Color glassColor;
+    if (isSpecial) {
+      if (label == '⌫') {
+        glassColor = colorScheme.errorContainer.withValues(alpha: 0.15);
+      } else {
+        glassColor = colorScheme.tertiaryContainer.withValues(alpha: 0.15);
+      }
+    } else {
+      glassColor = colorScheme.surfaceContainerHighest.withValues(alpha: 0.1);
+    }
+    
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(4.0),
-        child: FilledButton(
-          style: FilledButton.styleFrom(
-            backgroundColor: isSpecial ? colorScheme.tertiaryContainer : colorScheme.surfaceContainerHighest,
-            foregroundColor: isSpecial ? colorScheme.onTertiaryContainer : colorScheme.onSurface,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
-          ),
-          onPressed: () {
+        child: SharedSurface(
+          uiStyle: uiStyle,
+          isInteractive: true,
+          glassThickness: 10,
+          glassColor: glassColor,
+          materialColor: isSpecial ? colorScheme.tertiaryContainer : colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(24.0),
+          onTap: () {
             final notifier = ref.read(converterProvider.notifier);
             if (label == 'C') {
               notifier.onClear();
@@ -88,9 +106,15 @@ class ConverterKeypad extends ConsumerWidget {
               notifier.onDigit(label);
             }
           },
-          child: Text(
-            label,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 24, 
+                fontWeight: FontWeight.w400,
+                color: isSpecial ? colorScheme.onTertiaryContainer : colorScheme.onSurface,
+              ),
+            ),
           ),
         ),
       ),
