@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:calculator_flutter_app/src/rust/frb_generated.dart';
+import 'package:calculator_flutter_app/generated/rust/frb_generated.dart';
 
-import 'package:calculator_flutter_app/app.dart';
+import 'package:calculator_flutter_app/app/app.dart';
 
 import 'package:flutter/services.dart';
 import 'dart:io';

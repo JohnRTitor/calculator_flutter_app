@@ -1,5 +1,5 @@
-import 'package:calculator_flutter_app/core/theme/ui_style.dart';
-import 'package:calculator_flutter_app/features/settings/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/app/theme/ui_style.dart';
+import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 
 /// Lightweight Liquid Glass roles for consistent, theme-aware surfaces.

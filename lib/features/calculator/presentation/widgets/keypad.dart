@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:calculator_flutter_app/core/theme/ui_style.dart';
-import 'package:calculator_flutter_app/features/calculator/providers/calculator_provider.dart';
-import 'package:calculator_flutter_app/features/calculator/providers/calculator_state.dart';
+import 'package:calculator_flutter_app/app/theme/ui_style.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/providers/calculator_provider.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/providers/calculator_state.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/widgets/calculator_button.dart';
-import 'package:calculator_flutter_app/features/calculator/presentation/widgets/liquid_glass_button.dart';
+import 'package:calculator_flutter_app/shared/widgets/glass_button.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/widgets/animated_equals_button.dart';
-import 'package:calculator_flutter_app/features/settings/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 
 class Keypad extends ConsumerWidget {
   const Keypad({super.key});

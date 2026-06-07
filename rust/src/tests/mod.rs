@@ -128,37 +128,37 @@ mod tests {
 
     #[test]
     fn test_length_conversion() {
-        let cats = crate::unit_converter::converter::get_all_categories();
+        let cats = crate::converter::converter::get_all_categories();
         let length_cat = cats.iter().find(|c| c.id == "length").unwrap();
 
         let m = length_cat.units.iter().find(|u| u.id == "m").unwrap();
         let km = length_cat.units.iter().find(|u| u.id == "km").unwrap();
 
-        let res1 = crate::unit_converter::converter::convert_standard(1000.0, m, km);
+        let res1 = crate::converter::converter::convert_standard(1000.0, m, km);
         assert!((res1 - 1.0).abs() < 1e-9);
     }
 
     #[test]
     fn test_temperature_conversion() {
-        let cats = crate::unit_converter::converter::get_all_categories();
+        let cats = crate::converter::converter::get_all_categories();
         let temp_cat = cats.iter().find(|c| c.id == "temperature").unwrap();
         let c = temp_cat.units.iter().find(|u| u.id == "c").unwrap();
         let f = temp_cat.units.iter().find(|u| u.id == "f").unwrap();
 
-        let res1 = crate::unit_converter::converter::convert_standard(0.0, c, f);
+        let res1 = crate::converter::converter::convert_standard(0.0, c, f);
         assert!((res1 - 32.0).abs() < 1e-9);
     }
 
     #[test]
     fn test_bmi_calculation() {
-        let (bmi, category) = crate::unit_converter::converter::calculate_bmi(70.0, 1.75);
+        let (bmi, category) = crate::converter::converter::calculate_bmi(70.0, 1.75);
         assert!((bmi - 22.857142857142858).abs() < 1e-9);
         assert_eq!(category, "Normal");
     }
 
     #[test]
     fn test_numeral_conversion() {
-        let hex_val = crate::unit_converter::converter::convert_numeral("255", 10, 16).unwrap();
+        let hex_val = crate::converter::converter::convert_numeral("255", 10, 16).unwrap();
         assert_eq!(hex_val, "FF");
     }
 }

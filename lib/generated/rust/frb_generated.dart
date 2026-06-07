@@ -3,8 +3,8 @@
 
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
-import 'api/calculator.dart';
-import 'api/converter.dart';
+import 'bridge/calculator.dart';
+import 'bridge/converter.dart';
 import 'calculator/history.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -66,7 +66,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => 1465447929;
+  int get rustContentHash => -1356494330;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -78,71 +78,71 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
-  BmiResult crateApiConverterCalculateBmi({
+  BmiResult crateBridgeConverterCalculateBmi({
     required double weightKg,
     required double heightM,
   });
 
-  DiscountResult crateApiConverterCalculateDiscount({
+  DiscountResult crateBridgeConverterCalculateDiscount({
     required double originalPrice,
     required double discountPercentage,
   });
 
-  GstResult crateApiConverterCalculateGst({
+  GstResult crateBridgeConverterCalculateGst({
     required double amount,
     required double gstPercentage,
     required bool addGst,
   });
 
-  String? crateApiConverterConvertNumeral({
+  String? crateBridgeConverterConvertNumeral({
     required String value,
     required int fromBase,
     required int toBase,
   });
 
-  double crateApiConverterConvertStandard({
+  double crateBridgeConverterConvertStandard({
     required double value,
     required FfiUnit fromUnit,
     required FfiUnit toUnit,
   });
 
-  CalcResult crateApiCalculatorEvaluate({
+  CalcResult crateBridgeCalculatorEvaluate({
     required String expression,
     required bool isDegree,
     required double ansValue,
   });
 
-  String crateApiCalculatorFormatResult({
+  String crateBridgeCalculatorFormatResult({
     required double value,
     required int maxPrecision,
   });
 
-  List<FfiConverterCategory> crateApiConverterGetConverterCategories();
+  List<FfiConverterCategory> crateBridgeConverterGetConverterCategories();
 
-  void crateApiCalculatorHistoryAdd({
+  void crateBridgeCalculatorHistoryAdd({
     required String expression,
     required String result,
   });
 
-  void crateApiCalculatorHistoryClear();
+  void crateBridgeCalculatorHistoryClear();
 
-  void crateApiCalculatorHistoryDelete({required BigInt index});
+  void crateBridgeCalculatorHistoryDelete({required BigInt index});
 
-  List<HistoryEntry> crateApiCalculatorHistoryGetAll();
+  List<HistoryEntry> crateBridgeCalculatorHistoryGetAll();
 
-  Future<void> crateApiCalculatorHistoryLoad({required String path});
+  Future<void> crateBridgeCalculatorHistoryLoad({required String path});
 
-  Future<void> crateApiCalculatorHistorySave({required String path});
+  Future<void> crateBridgeCalculatorHistorySave({required String path});
 
-  void crateApiCalculatorMemoryAdd({required double value});
+  void crateBridgeCalculatorMemoryAdd({required double value});
 
-  void crateApiCalculatorMemoryClear();
+  void crateBridgeCalculatorMemoryClear();
 
-  double? crateApiCalculatorMemoryRecall();
+  double? crateBridgeCalculatorMemoryRecall();
 
-  void crateApiCalculatorMemoryStore({required double value});
+  void crateBridgeCalculatorMemoryStore({required double value});
 
-  void crateApiCalculatorMemorySubtract({required double value});
+  void crateBridgeCalculatorMemorySubtract({required double value});
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -154,7 +154,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
-  BmiResult crateApiConverterCalculateBmi({
+  BmiResult crateBridgeConverterCalculateBmi({
     required double weightKg,
     required double heightM,
   }) {
@@ -170,21 +170,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_bmi_result,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiConverterCalculateBmiConstMeta,
+        constMeta: kCrateBridgeConverterCalculateBmiConstMeta,
         argValues: [weightKg, heightM],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiConverterCalculateBmiConstMeta =>
+  TaskConstMeta get kCrateBridgeConverterCalculateBmiConstMeta =>
       const TaskConstMeta(
         debugName: "calculate_bmi",
         argNames: ["weightKg", "heightM"],
       );
 
   @override
-  DiscountResult crateApiConverterCalculateDiscount({
+  DiscountResult crateBridgeConverterCalculateDiscount({
     required double originalPrice,
     required double discountPercentage,
   }) {
@@ -200,21 +200,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_discount_result,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiConverterCalculateDiscountConstMeta,
+        constMeta: kCrateBridgeConverterCalculateDiscountConstMeta,
         argValues: [originalPrice, discountPercentage],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiConverterCalculateDiscountConstMeta =>
+  TaskConstMeta get kCrateBridgeConverterCalculateDiscountConstMeta =>
       const TaskConstMeta(
         debugName: "calculate_discount",
         argNames: ["originalPrice", "discountPercentage"],
       );
 
   @override
-  GstResult crateApiConverterCalculateGst({
+  GstResult crateBridgeConverterCalculateGst({
     required double amount,
     required double gstPercentage,
     required bool addGst,
@@ -232,21 +232,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_gst_result,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiConverterCalculateGstConstMeta,
+        constMeta: kCrateBridgeConverterCalculateGstConstMeta,
         argValues: [amount, gstPercentage, addGst],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiConverterCalculateGstConstMeta =>
+  TaskConstMeta get kCrateBridgeConverterCalculateGstConstMeta =>
       const TaskConstMeta(
         debugName: "calculate_gst",
         argNames: ["amount", "gstPercentage", "addGst"],
       );
 
   @override
-  String? crateApiConverterConvertNumeral({
+  String? crateBridgeConverterConvertNumeral({
     required String value,
     required int fromBase,
     required int toBase,
@@ -264,21 +264,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_opt_String,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiConverterConvertNumeralConstMeta,
+        constMeta: kCrateBridgeConverterConvertNumeralConstMeta,
         argValues: [value, fromBase, toBase],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiConverterConvertNumeralConstMeta =>
+  TaskConstMeta get kCrateBridgeConverterConvertNumeralConstMeta =>
       const TaskConstMeta(
         debugName: "convert_numeral",
         argNames: ["value", "fromBase", "toBase"],
       );
 
   @override
-  double crateApiConverterConvertStandard({
+  double crateBridgeConverterConvertStandard({
     required double value,
     required FfiUnit fromUnit,
     required FfiUnit toUnit,
@@ -296,21 +296,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_f_64,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiConverterConvertStandardConstMeta,
+        constMeta: kCrateBridgeConverterConvertStandardConstMeta,
         argValues: [value, fromUnit, toUnit],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiConverterConvertStandardConstMeta =>
+  TaskConstMeta get kCrateBridgeConverterConvertStandardConstMeta =>
       const TaskConstMeta(
         debugName: "convert_standard",
         argNames: ["value", "fromUnit", "toUnit"],
       );
 
   @override
-  CalcResult crateApiCalculatorEvaluate({
+  CalcResult crateBridgeCalculatorEvaluate({
     required String expression,
     required bool isDegree,
     required double ansValue,
@@ -328,20 +328,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_calc_result,
           decodeErrorData: sse_decode_String,
         ),
-        constMeta: kCrateApiCalculatorEvaluateConstMeta,
+        constMeta: kCrateBridgeCalculatorEvaluateConstMeta,
         argValues: [expression, isDegree, ansValue],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiCalculatorEvaluateConstMeta => const TaskConstMeta(
-    debugName: "evaluate",
-    argNames: ["expression", "isDegree", "ansValue"],
-  );
+  TaskConstMeta get kCrateBridgeCalculatorEvaluateConstMeta =>
+      const TaskConstMeta(
+        debugName: "evaluate",
+        argNames: ["expression", "isDegree", "ansValue"],
+      );
 
   @override
-  String crateApiCalculatorFormatResult({
+  String crateBridgeCalculatorFormatResult({
     required double value,
     required int maxPrecision,
   }) {
@@ -357,21 +358,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_String,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiCalculatorFormatResultConstMeta,
+        constMeta: kCrateBridgeCalculatorFormatResultConstMeta,
         argValues: [value, maxPrecision],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiCalculatorFormatResultConstMeta =>
+  TaskConstMeta get kCrateBridgeCalculatorFormatResultConstMeta =>
       const TaskConstMeta(
         debugName: "format_result",
         argNames: ["value", "maxPrecision"],
       );
 
   @override
-  List<FfiConverterCategory> crateApiConverterGetConverterCategories() {
+  List<FfiConverterCategory> crateBridgeConverterGetConverterCategories() {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
@@ -382,18 +383,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_list_ffi_converter_category,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiConverterGetConverterCategoriesConstMeta,
+        constMeta: kCrateBridgeConverterGetConverterCategoriesConstMeta,
         argValues: [],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiConverterGetConverterCategoriesConstMeta =>
+  TaskConstMeta get kCrateBridgeConverterGetConverterCategoriesConstMeta =>
       const TaskConstMeta(debugName: "get_converter_categories", argNames: []);
 
   @override
-  void crateApiCalculatorHistoryAdd({
+  void crateBridgeCalculatorHistoryAdd({
     required String expression,
     required String result,
   }) {
@@ -409,21 +410,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_unit,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiCalculatorHistoryAddConstMeta,
+        constMeta: kCrateBridgeCalculatorHistoryAddConstMeta,
         argValues: [expression, result],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiCalculatorHistoryAddConstMeta =>
+  TaskConstMeta get kCrateBridgeCalculatorHistoryAddConstMeta =>
       const TaskConstMeta(
         debugName: "history_add",
         argNames: ["expression", "result"],
       );
 
   @override
-  void crateApiCalculatorHistoryClear() {
+  void crateBridgeCalculatorHistoryClear() {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
@@ -434,18 +435,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_unit,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiCalculatorHistoryClearConstMeta,
+        constMeta: kCrateBridgeCalculatorHistoryClearConstMeta,
         argValues: [],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiCalculatorHistoryClearConstMeta =>
+  TaskConstMeta get kCrateBridgeCalculatorHistoryClearConstMeta =>
       const TaskConstMeta(debugName: "history_clear", argNames: []);
 
   @override
-  void crateApiCalculatorHistoryDelete({required BigInt index}) {
+  void crateBridgeCalculatorHistoryDelete({required BigInt index}) {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
@@ -457,18 +458,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_unit,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiCalculatorHistoryDeleteConstMeta,
+        constMeta: kCrateBridgeCalculatorHistoryDeleteConstMeta,
         argValues: [index],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiCalculatorHistoryDeleteConstMeta =>
+  TaskConstMeta get kCrateBridgeCalculatorHistoryDeleteConstMeta =>
       const TaskConstMeta(debugName: "history_delete", argNames: ["index"]);
 
   @override
-  List<HistoryEntry> crateApiCalculatorHistoryGetAll() {
+  List<HistoryEntry> crateBridgeCalculatorHistoryGetAll() {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
@@ -479,18 +480,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_list_history_entry,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiCalculatorHistoryGetAllConstMeta,
+        constMeta: kCrateBridgeCalculatorHistoryGetAllConstMeta,
         argValues: [],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiCalculatorHistoryGetAllConstMeta =>
+  TaskConstMeta get kCrateBridgeCalculatorHistoryGetAllConstMeta =>
       const TaskConstMeta(debugName: "history_get_all", argNames: []);
 
   @override
-  Future<void> crateApiCalculatorHistoryLoad({required String path}) {
+  Future<void> crateBridgeCalculatorHistoryLoad({required String path}) {
     return handler.executeNormal(
       NormalTask(
         callFfi: (port_) {
@@ -507,18 +508,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_unit,
           decodeErrorData: sse_decode_String,
         ),
-        constMeta: kCrateApiCalculatorHistoryLoadConstMeta,
+        constMeta: kCrateBridgeCalculatorHistoryLoadConstMeta,
         argValues: [path],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiCalculatorHistoryLoadConstMeta =>
+  TaskConstMeta get kCrateBridgeCalculatorHistoryLoadConstMeta =>
       const TaskConstMeta(debugName: "history_load", argNames: ["path"]);
 
   @override
-  Future<void> crateApiCalculatorHistorySave({required String path}) {
+  Future<void> crateBridgeCalculatorHistorySave({required String path}) {
     return handler.executeNormal(
       NormalTask(
         callFfi: (port_) {
@@ -535,18 +536,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_unit,
           decodeErrorData: sse_decode_String,
         ),
-        constMeta: kCrateApiCalculatorHistorySaveConstMeta,
+        constMeta: kCrateBridgeCalculatorHistorySaveConstMeta,
         argValues: [path],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiCalculatorHistorySaveConstMeta =>
+  TaskConstMeta get kCrateBridgeCalculatorHistorySaveConstMeta =>
       const TaskConstMeta(debugName: "history_save", argNames: ["path"]);
 
   @override
-  void crateApiCalculatorMemoryAdd({required double value}) {
+  void crateBridgeCalculatorMemoryAdd({required double value}) {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
@@ -558,18 +559,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_unit,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiCalculatorMemoryAddConstMeta,
+        constMeta: kCrateBridgeCalculatorMemoryAddConstMeta,
         argValues: [value],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiCalculatorMemoryAddConstMeta =>
+  TaskConstMeta get kCrateBridgeCalculatorMemoryAddConstMeta =>
       const TaskConstMeta(debugName: "memory_add", argNames: ["value"]);
 
   @override
-  void crateApiCalculatorMemoryClear() {
+  void crateBridgeCalculatorMemoryClear() {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
@@ -580,18 +581,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_unit,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiCalculatorMemoryClearConstMeta,
+        constMeta: kCrateBridgeCalculatorMemoryClearConstMeta,
         argValues: [],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiCalculatorMemoryClearConstMeta =>
+  TaskConstMeta get kCrateBridgeCalculatorMemoryClearConstMeta =>
       const TaskConstMeta(debugName: "memory_clear", argNames: []);
 
   @override
-  double? crateApiCalculatorMemoryRecall() {
+  double? crateBridgeCalculatorMemoryRecall() {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
@@ -602,18 +603,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_opt_box_autoadd_f_64,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiCalculatorMemoryRecallConstMeta,
+        constMeta: kCrateBridgeCalculatorMemoryRecallConstMeta,
         argValues: [],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiCalculatorMemoryRecallConstMeta =>
+  TaskConstMeta get kCrateBridgeCalculatorMemoryRecallConstMeta =>
       const TaskConstMeta(debugName: "memory_recall", argNames: []);
 
   @override
-  void crateApiCalculatorMemoryStore({required double value}) {
+  void crateBridgeCalculatorMemoryStore({required double value}) {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
@@ -625,18 +626,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_unit,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiCalculatorMemoryStoreConstMeta,
+        constMeta: kCrateBridgeCalculatorMemoryStoreConstMeta,
         argValues: [value],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiCalculatorMemoryStoreConstMeta =>
+  TaskConstMeta get kCrateBridgeCalculatorMemoryStoreConstMeta =>
       const TaskConstMeta(debugName: "memory_store", argNames: ["value"]);
 
   @override
-  void crateApiCalculatorMemorySubtract({required double value}) {
+  void crateBridgeCalculatorMemorySubtract({required double value}) {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
@@ -648,14 +649,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_unit,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiCalculatorMemorySubtractConstMeta,
+        constMeta: kCrateBridgeCalculatorMemorySubtractConstMeta,
         argValues: [value],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiCalculatorMemorySubtractConstMeta =>
+  TaskConstMeta get kCrateBridgeCalculatorMemorySubtractConstMeta =>
       const TaskConstMeta(debugName: "memory_subtract", argNames: ["value"]);
 
   @protected

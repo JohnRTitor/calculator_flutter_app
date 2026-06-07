@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:calculator_flutter_app/features/calculator/providers/calculator_provider.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/providers/calculator_provider.dart';
 
 class TokenTextField extends ConsumerStatefulWidget {
   const TokenTextField({super.key});

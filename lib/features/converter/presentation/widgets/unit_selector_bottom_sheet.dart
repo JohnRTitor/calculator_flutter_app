@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:calculator_flutter_app/src/rust/api/converter.dart';
+import 'package:calculator_flutter_app/generated/rust/bridge/converter.dart';
 
 class UnitSelectorBottomSheet extends StatefulWidget {
   final List<FfiUnit> units;

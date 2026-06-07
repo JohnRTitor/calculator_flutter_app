@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:calculator_flutter_app/core/theme/glass_utils.dart';
-import 'package:calculator_flutter_app/core/theme/ui_style.dart';
-import 'package:calculator_flutter_app/features/settings/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
+import 'package:calculator_flutter_app/app/theme/ui_style.dart';
+import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 
 class AnimatedEqualsButton extends ConsumerStatefulWidget {
   final Future<bool> Function() onEvaluate;

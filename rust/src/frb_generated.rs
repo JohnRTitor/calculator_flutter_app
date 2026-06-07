@@ -38,7 +38,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.12.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1465447929;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1356494330;
 
 // Section: executor
 
@@ -46,7 +46,7 @@ flutter_rust_bridge::frb_generated_default_handler!();
 
 // Section: wire_funcs
 
-fn wire__crate__api__converter__calculate_bmi_impl(
+fn wire__crate__bridge__converter__calculate_bmi_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -71,7 +71,7 @@ fn wire__crate__api__converter__calculate_bmi_impl(
             let api_height_m = <f64>::sse_decode(&mut deserializer);
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
-                let output_ok = Result::<_, ()>::Ok(crate::api::converter::calculate_bmi(
+                let output_ok = Result::<_, ()>::Ok(crate::bridge::converter::calculate_bmi(
                     api_weight_kg,
                     api_height_m,
                 ))?;
@@ -80,7 +80,7 @@ fn wire__crate__api__converter__calculate_bmi_impl(
         },
     )
 }
-fn wire__crate__api__converter__calculate_discount_impl(
+fn wire__crate__bridge__converter__calculate_discount_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -105,7 +105,7 @@ fn wire__crate__api__converter__calculate_discount_impl(
             let api_discount_percentage = <f64>::sse_decode(&mut deserializer);
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
-                let output_ok = Result::<_, ()>::Ok(crate::api::converter::calculate_discount(
+                let output_ok = Result::<_, ()>::Ok(crate::bridge::converter::calculate_discount(
                     api_original_price,
                     api_discount_percentage,
                 ))?;
@@ -114,7 +114,7 @@ fn wire__crate__api__converter__calculate_discount_impl(
         },
     )
 }
-fn wire__crate__api__converter__calculate_gst_impl(
+fn wire__crate__bridge__converter__calculate_gst_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -140,7 +140,7 @@ fn wire__crate__api__converter__calculate_gst_impl(
             let api_add_gst = <bool>::sse_decode(&mut deserializer);
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
-                let output_ok = Result::<_, ()>::Ok(crate::api::converter::calculate_gst(
+                let output_ok = Result::<_, ()>::Ok(crate::bridge::converter::calculate_gst(
                     api_amount,
                     api_gst_percentage,
                     api_add_gst,
@@ -150,7 +150,7 @@ fn wire__crate__api__converter__calculate_gst_impl(
         },
     )
 }
-fn wire__crate__api__converter__convert_numeral_impl(
+fn wire__crate__bridge__converter__convert_numeral_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -176,7 +176,7 @@ fn wire__crate__api__converter__convert_numeral_impl(
             let api_to_base = <u32>::sse_decode(&mut deserializer);
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
-                let output_ok = Result::<_, ()>::Ok(crate::api::converter::convert_numeral(
+                let output_ok = Result::<_, ()>::Ok(crate::bridge::converter::convert_numeral(
                     api_value,
                     api_from_base,
                     api_to_base,
@@ -186,7 +186,7 @@ fn wire__crate__api__converter__convert_numeral_impl(
         },
     )
 }
-fn wire__crate__api__converter__convert_standard_impl(
+fn wire__crate__bridge__converter__convert_standard_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -208,11 +208,11 @@ fn wire__crate__api__converter__convert_standard_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_value = <f64>::sse_decode(&mut deserializer);
-            let api_from_unit = <crate::api::converter::FfiUnit>::sse_decode(&mut deserializer);
-            let api_to_unit = <crate::api::converter::FfiUnit>::sse_decode(&mut deserializer);
+            let api_from_unit = <crate::bridge::converter::FfiUnit>::sse_decode(&mut deserializer);
+            let api_to_unit = <crate::bridge::converter::FfiUnit>::sse_decode(&mut deserializer);
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
-                let output_ok = Result::<_, ()>::Ok(crate::api::converter::convert_standard(
+                let output_ok = Result::<_, ()>::Ok(crate::bridge::converter::convert_standard(
                     api_value,
                     api_from_unit,
                     api_to_unit,
@@ -222,7 +222,7 @@ fn wire__crate__api__converter__convert_standard_impl(
         },
     )
 }
-fn wire__crate__api__calculator__evaluate_impl(
+fn wire__crate__bridge__calculator__evaluate_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -248,14 +248,17 @@ fn wire__crate__api__calculator__evaluate_impl(
             let api_ans_value = <f64>::sse_decode(&mut deserializer);
             deserializer.end();
             transform_result_sse::<_, String>((move || {
-                let output_ok =
-                    crate::api::calculator::evaluate(api_expression, api_is_degree, api_ans_value)?;
+                let output_ok = crate::bridge::calculator::evaluate(
+                    api_expression,
+                    api_is_degree,
+                    api_ans_value,
+                )?;
                 Ok(output_ok)
             })())
         },
     )
 }
-fn wire__crate__api__calculator__format_result_impl(
+fn wire__crate__bridge__calculator__format_result_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -280,7 +283,7 @@ fn wire__crate__api__calculator__format_result_impl(
             let api_max_precision = <u32>::sse_decode(&mut deserializer);
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
-                let output_ok = Result::<_, ()>::Ok(crate::api::calculator::format_result(
+                let output_ok = Result::<_, ()>::Ok(crate::bridge::calculator::format_result(
                     api_value,
                     api_max_precision,
                 ))?;
@@ -289,7 +292,7 @@ fn wire__crate__api__calculator__format_result_impl(
         },
     )
 }
-fn wire__crate__api__converter__get_converter_categories_impl(
+fn wire__crate__bridge__converter__get_converter_categories_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -313,13 +316,13 @@ fn wire__crate__api__converter__get_converter_categories_impl(
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
                 let output_ok =
-                    Result::<_, ()>::Ok(crate::api::converter::get_converter_categories())?;
+                    Result::<_, ()>::Ok(crate::bridge::converter::get_converter_categories())?;
                 Ok(output_ok)
             })())
         },
     )
 }
-fn wire__crate__api__calculator__history_add_impl(
+fn wire__crate__bridge__calculator__history_add_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -345,14 +348,14 @@ fn wire__crate__api__calculator__history_add_impl(
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
                 let output_ok = Result::<_, ()>::Ok({
-                    crate::api::calculator::history_add(api_expression, api_result);
+                    crate::bridge::calculator::history_add(api_expression, api_result);
                 })?;
                 Ok(output_ok)
             })())
         },
     )
 }
-fn wire__crate__api__calculator__history_clear_impl(
+fn wire__crate__bridge__calculator__history_clear_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -376,14 +379,14 @@ fn wire__crate__api__calculator__history_clear_impl(
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
                 let output_ok = Result::<_, ()>::Ok({
-                    crate::api::calculator::history_clear();
+                    crate::bridge::calculator::history_clear();
                 })?;
                 Ok(output_ok)
             })())
         },
     )
 }
-fn wire__crate__api__calculator__history_delete_impl(
+fn wire__crate__bridge__calculator__history_delete_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -408,14 +411,14 @@ fn wire__crate__api__calculator__history_delete_impl(
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
                 let output_ok = Result::<_, ()>::Ok({
-                    crate::api::calculator::history_delete(api_index);
+                    crate::bridge::calculator::history_delete(api_index);
                 })?;
                 Ok(output_ok)
             })())
         },
     )
 }
-fn wire__crate__api__calculator__history_get_all_impl(
+fn wire__crate__bridge__calculator__history_get_all_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -438,13 +441,13 @@ fn wire__crate__api__calculator__history_get_all_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
-                let output_ok = Result::<_, ()>::Ok(crate::api::calculator::history_get_all())?;
+                let output_ok = Result::<_, ()>::Ok(crate::bridge::calculator::history_get_all())?;
                 Ok(output_ok)
             })())
         },
     )
 }
-fn wire__crate__api__calculator__history_load_impl(
+fn wire__crate__bridge__calculator__history_load_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -470,14 +473,14 @@ fn wire__crate__api__calculator__history_load_impl(
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, String>((move || {
-                    let output_ok = crate::api::calculator::history_load(api_path)?;
+                    let output_ok = crate::bridge::calculator::history_load(api_path)?;
                     Ok(output_ok)
                 })())
             }
         },
     )
 }
-fn wire__crate__api__calculator__history_save_impl(
+fn wire__crate__bridge__calculator__history_save_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -503,14 +506,14 @@ fn wire__crate__api__calculator__history_save_impl(
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, String>((move || {
-                    let output_ok = crate::api::calculator::history_save(api_path)?;
+                    let output_ok = crate::bridge::calculator::history_save(api_path)?;
                     Ok(output_ok)
                 })())
             }
         },
     )
 }
-fn wire__crate__api__calculator__memory_add_impl(
+fn wire__crate__bridge__calculator__memory_add_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -535,14 +538,14 @@ fn wire__crate__api__calculator__memory_add_impl(
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
                 let output_ok = Result::<_, ()>::Ok({
-                    crate::api::calculator::memory_add(api_value);
+                    crate::bridge::calculator::memory_add(api_value);
                 })?;
                 Ok(output_ok)
             })())
         },
     )
 }
-fn wire__crate__api__calculator__memory_clear_impl(
+fn wire__crate__bridge__calculator__memory_clear_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -566,14 +569,14 @@ fn wire__crate__api__calculator__memory_clear_impl(
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
                 let output_ok = Result::<_, ()>::Ok({
-                    crate::api::calculator::memory_clear();
+                    crate::bridge::calculator::memory_clear();
                 })?;
                 Ok(output_ok)
             })())
         },
     )
 }
-fn wire__crate__api__calculator__memory_recall_impl(
+fn wire__crate__bridge__calculator__memory_recall_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -596,13 +599,13 @@ fn wire__crate__api__calculator__memory_recall_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
-                let output_ok = Result::<_, ()>::Ok(crate::api::calculator::memory_recall())?;
+                let output_ok = Result::<_, ()>::Ok(crate::bridge::calculator::memory_recall())?;
                 Ok(output_ok)
             })())
         },
     )
 }
-fn wire__crate__api__calculator__memory_store_impl(
+fn wire__crate__bridge__calculator__memory_store_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -627,14 +630,14 @@ fn wire__crate__api__calculator__memory_store_impl(
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
                 let output_ok = Result::<_, ()>::Ok({
-                    crate::api::calculator::memory_store(api_value);
+                    crate::bridge::calculator::memory_store(api_value);
                 })?;
                 Ok(output_ok)
             })())
         },
     )
 }
-fn wire__crate__api__calculator__memory_subtract_impl(
+fn wire__crate__bridge__calculator__memory_subtract_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -659,7 +662,7 @@ fn wire__crate__api__calculator__memory_subtract_impl(
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
                 let output_ok = Result::<_, ()>::Ok({
-                    crate::api::calculator::memory_subtract(api_value);
+                    crate::bridge::calculator::memory_subtract(api_value);
                 })?;
                 Ok(output_ok)
             })())
@@ -677,12 +680,12 @@ impl SseDecode for String {
     }
 }
 
-impl SseDecode for crate::api::converter::BmiResult {
+impl SseDecode for crate::bridge::converter::BmiResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_bmi = <f64>::sse_decode(deserializer);
         let mut var_category = <String>::sse_decode(deserializer);
-        return crate::api::converter::BmiResult {
+        return crate::bridge::converter::BmiResult {
             bmi: var_bmi,
             category: var_category,
         };
@@ -696,13 +699,13 @@ impl SseDecode for bool {
     }
 }
 
-impl SseDecode for crate::api::calculator::CalcResult {
+impl SseDecode for crate::bridge::calculator::CalcResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_value = <f64>::sse_decode(deserializer);
         let mut var_formatted = <String>::sse_decode(deserializer);
         let mut var_exactFraction = <Option<String>>::sse_decode(deserializer);
-        return crate::api::calculator::CalcResult {
+        return crate::bridge::calculator::CalcResult {
             value: var_value,
             formatted: var_formatted,
             exact_fraction: var_exactFraction,
@@ -710,12 +713,12 @@ impl SseDecode for crate::api::calculator::CalcResult {
     }
 }
 
-impl SseDecode for crate::api::converter::DiscountResult {
+impl SseDecode for crate::bridge::converter::DiscountResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_amountSaved = <f64>::sse_decode(deserializer);
         let mut var_finalPrice = <f64>::sse_decode(deserializer);
-        return crate::api::converter::DiscountResult {
+        return crate::bridge::converter::DiscountResult {
             amount_saved: var_amountSaved,
             final_price: var_finalPrice,
         };
@@ -729,14 +732,14 @@ impl SseDecode for f64 {
     }
 }
 
-impl SseDecode for crate::api::converter::FfiConverterCategory {
+impl SseDecode for crate::bridge::converter::FfiConverterCategory {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_id = <String>::sse_decode(deserializer);
         let mut var_name = <String>::sse_decode(deserializer);
         let mut var_iconName = <String>::sse_decode(deserializer);
-        let mut var_units = <Vec<crate::api::converter::FfiUnit>>::sse_decode(deserializer);
-        return crate::api::converter::FfiConverterCategory {
+        let mut var_units = <Vec<crate::bridge::converter::FfiUnit>>::sse_decode(deserializer);
+        return crate::bridge::converter::FfiConverterCategory {
             id: var_id,
             name: var_name,
             icon_name: var_iconName,
@@ -745,7 +748,7 @@ impl SseDecode for crate::api::converter::FfiConverterCategory {
     }
 }
 
-impl SseDecode for crate::api::converter::FfiUnit {
+impl SseDecode for crate::bridge::converter::FfiUnit {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_id = <String>::sse_decode(deserializer);
@@ -753,7 +756,7 @@ impl SseDecode for crate::api::converter::FfiUnit {
         let mut var_symbol = <String>::sse_decode(deserializer);
         let mut var_multiplier = <f64>::sse_decode(deserializer);
         let mut var_offset = <f64>::sse_decode(deserializer);
-        return crate::api::converter::FfiUnit {
+        return crate::bridge::converter::FfiUnit {
             id: var_id,
             name: var_name,
             symbol: var_symbol,
@@ -763,13 +766,13 @@ impl SseDecode for crate::api::converter::FfiUnit {
     }
 }
 
-impl SseDecode for crate::api::converter::GstResult {
+impl SseDecode for crate::bridge::converter::GstResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_gstAmount = <f64>::sse_decode(deserializer);
         let mut var_totalAmount = <f64>::sse_decode(deserializer);
         let mut var_originalAmount = <f64>::sse_decode(deserializer);
-        return crate::api::converter::GstResult {
+        return crate::bridge::converter::GstResult {
             gst_amount: var_gstAmount,
             total_amount: var_totalAmount,
             original_amount: var_originalAmount,
@@ -789,27 +792,27 @@ impl SseDecode for crate::calculator::history::HistoryEntry {
     }
 }
 
-impl SseDecode for Vec<crate::api::converter::FfiConverterCategory> {
+impl SseDecode for Vec<crate::bridge::converter::FfiConverterCategory> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut len_ = <i32>::sse_decode(deserializer);
         let mut ans_ = Vec::with_capacity(len_ as usize);
         for idx_ in 0..len_ {
-            ans_.push(<crate::api::converter::FfiConverterCategory>::sse_decode(
-                deserializer,
-            ));
+            ans_.push(<crate::bridge::converter::FfiConverterCategory>::sse_decode(deserializer));
         }
         return ans_;
     }
 }
 
-impl SseDecode for Vec<crate::api::converter::FfiUnit> {
+impl SseDecode for Vec<crate::bridge::converter::FfiUnit> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut len_ = <i32>::sse_decode(deserializer);
         let mut ans_ = Vec::with_capacity(len_ as usize);
         for idx_ in 0..len_ {
-            ans_.push(<crate::api::converter::FfiUnit>::sse_decode(deserializer));
+            ans_.push(<crate::bridge::converter::FfiUnit>::sse_decode(
+                deserializer,
+            ));
         }
         return ans_;
     }
@@ -905,8 +908,8 @@ fn pde_ffi_dispatcher_primary_impl(
 ) {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        13 => wire__crate__api__calculator__history_load_impl(port, ptr, rust_vec_len, data_len),
-        14 => wire__crate__api__calculator__history_save_impl(port, ptr, rust_vec_len, data_len),
+        13 => wire__crate__bridge__calculator__history_load_impl(port, ptr, rust_vec_len, data_len),
+        14 => wire__crate__bridge__calculator__history_save_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -919,25 +922,27 @@ fn pde_ffi_dispatcher_sync_impl(
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        1 => wire__crate__api__converter__calculate_bmi_impl(ptr, rust_vec_len, data_len),
-        2 => wire__crate__api__converter__calculate_discount_impl(ptr, rust_vec_len, data_len),
-        3 => wire__crate__api__converter__calculate_gst_impl(ptr, rust_vec_len, data_len),
-        4 => wire__crate__api__converter__convert_numeral_impl(ptr, rust_vec_len, data_len),
-        5 => wire__crate__api__converter__convert_standard_impl(ptr, rust_vec_len, data_len),
-        6 => wire__crate__api__calculator__evaluate_impl(ptr, rust_vec_len, data_len),
-        7 => wire__crate__api__calculator__format_result_impl(ptr, rust_vec_len, data_len),
-        8 => {
-            wire__crate__api__converter__get_converter_categories_impl(ptr, rust_vec_len, data_len)
-        }
-        9 => wire__crate__api__calculator__history_add_impl(ptr, rust_vec_len, data_len),
-        10 => wire__crate__api__calculator__history_clear_impl(ptr, rust_vec_len, data_len),
-        11 => wire__crate__api__calculator__history_delete_impl(ptr, rust_vec_len, data_len),
-        12 => wire__crate__api__calculator__history_get_all_impl(ptr, rust_vec_len, data_len),
-        15 => wire__crate__api__calculator__memory_add_impl(ptr, rust_vec_len, data_len),
-        16 => wire__crate__api__calculator__memory_clear_impl(ptr, rust_vec_len, data_len),
-        17 => wire__crate__api__calculator__memory_recall_impl(ptr, rust_vec_len, data_len),
-        18 => wire__crate__api__calculator__memory_store_impl(ptr, rust_vec_len, data_len),
-        19 => wire__crate__api__calculator__memory_subtract_impl(ptr, rust_vec_len, data_len),
+        1 => wire__crate__bridge__converter__calculate_bmi_impl(ptr, rust_vec_len, data_len),
+        2 => wire__crate__bridge__converter__calculate_discount_impl(ptr, rust_vec_len, data_len),
+        3 => wire__crate__bridge__converter__calculate_gst_impl(ptr, rust_vec_len, data_len),
+        4 => wire__crate__bridge__converter__convert_numeral_impl(ptr, rust_vec_len, data_len),
+        5 => wire__crate__bridge__converter__convert_standard_impl(ptr, rust_vec_len, data_len),
+        6 => wire__crate__bridge__calculator__evaluate_impl(ptr, rust_vec_len, data_len),
+        7 => wire__crate__bridge__calculator__format_result_impl(ptr, rust_vec_len, data_len),
+        8 => wire__crate__bridge__converter__get_converter_categories_impl(
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        9 => wire__crate__bridge__calculator__history_add_impl(ptr, rust_vec_len, data_len),
+        10 => wire__crate__bridge__calculator__history_clear_impl(ptr, rust_vec_len, data_len),
+        11 => wire__crate__bridge__calculator__history_delete_impl(ptr, rust_vec_len, data_len),
+        12 => wire__crate__bridge__calculator__history_get_all_impl(ptr, rust_vec_len, data_len),
+        15 => wire__crate__bridge__calculator__memory_add_impl(ptr, rust_vec_len, data_len),
+        16 => wire__crate__bridge__calculator__memory_clear_impl(ptr, rust_vec_len, data_len),
+        17 => wire__crate__bridge__calculator__memory_recall_impl(ptr, rust_vec_len, data_len),
+        18 => wire__crate__bridge__calculator__memory_store_impl(ptr, rust_vec_len, data_len),
+        19 => wire__crate__bridge__calculator__memory_subtract_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -945,7 +950,7 @@ fn pde_ffi_dispatcher_sync_impl(
 // Section: rust2dart
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api::converter::BmiResult {
+impl flutter_rust_bridge::IntoDart for crate::bridge::converter::BmiResult {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.bmi.into_into_dart().into_dart(),
@@ -955,18 +960,18 @@ impl flutter_rust_bridge::IntoDart for crate::api::converter::BmiResult {
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::api::converter::BmiResult
+    for crate::bridge::converter::BmiResult
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::api::converter::BmiResult>
-    for crate::api::converter::BmiResult
+impl flutter_rust_bridge::IntoIntoDart<crate::bridge::converter::BmiResult>
+    for crate::bridge::converter::BmiResult
 {
-    fn into_into_dart(self) -> crate::api::converter::BmiResult {
+    fn into_into_dart(self) -> crate::bridge::converter::BmiResult {
         self
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api::calculator::CalcResult {
+impl flutter_rust_bridge::IntoDart for crate::bridge::calculator::CalcResult {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.value.into_into_dart().into_dart(),
@@ -977,18 +982,18 @@ impl flutter_rust_bridge::IntoDart for crate::api::calculator::CalcResult {
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::api::calculator::CalcResult
+    for crate::bridge::calculator::CalcResult
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::api::calculator::CalcResult>
-    for crate::api::calculator::CalcResult
+impl flutter_rust_bridge::IntoIntoDart<crate::bridge::calculator::CalcResult>
+    for crate::bridge::calculator::CalcResult
 {
-    fn into_into_dart(self) -> crate::api::calculator::CalcResult {
+    fn into_into_dart(self) -> crate::bridge::calculator::CalcResult {
         self
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api::converter::DiscountResult {
+impl flutter_rust_bridge::IntoDart for crate::bridge::converter::DiscountResult {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.amount_saved.into_into_dart().into_dart(),
@@ -998,18 +1003,18 @@ impl flutter_rust_bridge::IntoDart for crate::api::converter::DiscountResult {
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::api::converter::DiscountResult
+    for crate::bridge::converter::DiscountResult
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::api::converter::DiscountResult>
-    for crate::api::converter::DiscountResult
+impl flutter_rust_bridge::IntoIntoDart<crate::bridge::converter::DiscountResult>
+    for crate::bridge::converter::DiscountResult
 {
-    fn into_into_dart(self) -> crate::api::converter::DiscountResult {
+    fn into_into_dart(self) -> crate::bridge::converter::DiscountResult {
         self
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api::converter::FfiConverterCategory {
+impl flutter_rust_bridge::IntoDart for crate::bridge::converter::FfiConverterCategory {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.id.into_into_dart().into_dart(),
@@ -1021,18 +1026,18 @@ impl flutter_rust_bridge::IntoDart for crate::api::converter::FfiConverterCatego
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::api::converter::FfiConverterCategory
+    for crate::bridge::converter::FfiConverterCategory
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::api::converter::FfiConverterCategory>
-    for crate::api::converter::FfiConverterCategory
+impl flutter_rust_bridge::IntoIntoDart<crate::bridge::converter::FfiConverterCategory>
+    for crate::bridge::converter::FfiConverterCategory
 {
-    fn into_into_dart(self) -> crate::api::converter::FfiConverterCategory {
+    fn into_into_dart(self) -> crate::bridge::converter::FfiConverterCategory {
         self
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api::converter::FfiUnit {
+impl flutter_rust_bridge::IntoDart for crate::bridge::converter::FfiUnit {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.id.into_into_dart().into_dart(),
@@ -1045,18 +1050,18 @@ impl flutter_rust_bridge::IntoDart for crate::api::converter::FfiUnit {
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::api::converter::FfiUnit
+    for crate::bridge::converter::FfiUnit
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::api::converter::FfiUnit>
-    for crate::api::converter::FfiUnit
+impl flutter_rust_bridge::IntoIntoDart<crate::bridge::converter::FfiUnit>
+    for crate::bridge::converter::FfiUnit
 {
-    fn into_into_dart(self) -> crate::api::converter::FfiUnit {
+    fn into_into_dart(self) -> crate::bridge::converter::FfiUnit {
         self
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api::converter::GstResult {
+impl flutter_rust_bridge::IntoDart for crate::bridge::converter::GstResult {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.gst_amount.into_into_dart().into_dart(),
@@ -1067,13 +1072,13 @@ impl flutter_rust_bridge::IntoDart for crate::api::converter::GstResult {
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::api::converter::GstResult
+    for crate::bridge::converter::GstResult
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::api::converter::GstResult>
-    for crate::api::converter::GstResult
+impl flutter_rust_bridge::IntoIntoDart<crate::bridge::converter::GstResult>
+    for crate::bridge::converter::GstResult
 {
-    fn into_into_dart(self) -> crate::api::converter::GstResult {
+    fn into_into_dart(self) -> crate::bridge::converter::GstResult {
         self
     }
 }
@@ -1106,7 +1111,7 @@ impl SseEncode for String {
     }
 }
 
-impl SseEncode for crate::api::converter::BmiResult {
+impl SseEncode for crate::bridge::converter::BmiResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <f64>::sse_encode(self.bmi, serializer);
@@ -1121,7 +1126,7 @@ impl SseEncode for bool {
     }
 }
 
-impl SseEncode for crate::api::calculator::CalcResult {
+impl SseEncode for crate::bridge::calculator::CalcResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <f64>::sse_encode(self.value, serializer);
@@ -1130,7 +1135,7 @@ impl SseEncode for crate::api::calculator::CalcResult {
     }
 }
 
-impl SseEncode for crate::api::converter::DiscountResult {
+impl SseEncode for crate::bridge::converter::DiscountResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <f64>::sse_encode(self.amount_saved, serializer);
@@ -1145,17 +1150,17 @@ impl SseEncode for f64 {
     }
 }
 
-impl SseEncode for crate::api::converter::FfiConverterCategory {
+impl SseEncode for crate::bridge::converter::FfiConverterCategory {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.id, serializer);
         <String>::sse_encode(self.name, serializer);
         <String>::sse_encode(self.icon_name, serializer);
-        <Vec<crate::api::converter::FfiUnit>>::sse_encode(self.units, serializer);
+        <Vec<crate::bridge::converter::FfiUnit>>::sse_encode(self.units, serializer);
     }
 }
 
-impl SseEncode for crate::api::converter::FfiUnit {
+impl SseEncode for crate::bridge::converter::FfiUnit {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.id, serializer);
@@ -1166,7 +1171,7 @@ impl SseEncode for crate::api::converter::FfiUnit {
     }
 }
 
-impl SseEncode for crate::api::converter::GstResult {
+impl SseEncode for crate::bridge::converter::GstResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <f64>::sse_encode(self.gst_amount, serializer);
@@ -1183,22 +1188,22 @@ impl SseEncode for crate::calculator::history::HistoryEntry {
     }
 }
 
-impl SseEncode for Vec<crate::api::converter::FfiConverterCategory> {
+impl SseEncode for Vec<crate::bridge::converter::FfiConverterCategory> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
-            <crate::api::converter::FfiConverterCategory>::sse_encode(item, serializer);
+            <crate::bridge::converter::FfiConverterCategory>::sse_encode(item, serializer);
         }
     }
 }
 
-impl SseEncode for Vec<crate::api::converter::FfiUnit> {
+impl SseEncode for Vec<crate::bridge::converter::FfiUnit> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
-            <crate::api::converter::FfiUnit>::sse_encode(item, serializer);
+            <crate::bridge::converter::FfiUnit>::sse_encode(item, serializer);
         }
     }
 }

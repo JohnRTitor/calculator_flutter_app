@@ -6,8 +6,8 @@
 // Static analysis wrongly picks the IO variant, thus ignore this
 // ignore_for_file: argument_type_not_assignable
 
-import 'api/calculator.dart';
-import 'api/converter.dart';
+import 'bridge/calculator.dart';
+import 'bridge/converter.dart';
 import 'calculator/history.dart';
 import 'dart:async';
 import 'dart:convert';

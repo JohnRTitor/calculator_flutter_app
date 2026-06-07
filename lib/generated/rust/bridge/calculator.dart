@@ -11,49 +11,50 @@ CalcResult evaluate({
   required String expression,
   required bool isDegree,
   required double ansValue,
-}) => RustLib.instance.api.crateApiCalculatorEvaluate(
+}) => RustLib.instance.api.crateBridgeCalculatorEvaluate(
   expression: expression,
   isDegree: isDegree,
   ansValue: ansValue,
 );
 
 String formatResult({required double value, required int maxPrecision}) =>
-    RustLib.instance.api.crateApiCalculatorFormatResult(
+    RustLib.instance.api.crateBridgeCalculatorFormatResult(
       value: value,
       maxPrecision: maxPrecision,
     );
 
 void memoryStore({required double value}) =>
-    RustLib.instance.api.crateApiCalculatorMemoryStore(value: value);
+    RustLib.instance.api.crateBridgeCalculatorMemoryStore(value: value);
 
-double? memoryRecall() => RustLib.instance.api.crateApiCalculatorMemoryRecall();
+double? memoryRecall() =>
+    RustLib.instance.api.crateBridgeCalculatorMemoryRecall();
 
 void memoryAdd({required double value}) =>
-    RustLib.instance.api.crateApiCalculatorMemoryAdd(value: value);
+    RustLib.instance.api.crateBridgeCalculatorMemoryAdd(value: value);
 
 void memorySubtract({required double value}) =>
-    RustLib.instance.api.crateApiCalculatorMemorySubtract(value: value);
+    RustLib.instance.api.crateBridgeCalculatorMemorySubtract(value: value);
 
-void memoryClear() => RustLib.instance.api.crateApiCalculatorMemoryClear();
+void memoryClear() => RustLib.instance.api.crateBridgeCalculatorMemoryClear();
 
 void historyAdd({required String expression, required String result}) => RustLib
     .instance
     .api
-    .crateApiCalculatorHistoryAdd(expression: expression, result: result);
+    .crateBridgeCalculatorHistoryAdd(expression: expression, result: result);
 
 List<HistoryEntry> historyGetAll() =>
-    RustLib.instance.api.crateApiCalculatorHistoryGetAll();
+    RustLib.instance.api.crateBridgeCalculatorHistoryGetAll();
 
-void historyClear() => RustLib.instance.api.crateApiCalculatorHistoryClear();
+void historyClear() => RustLib.instance.api.crateBridgeCalculatorHistoryClear();
 
 void historyDelete({required BigInt index}) =>
-    RustLib.instance.api.crateApiCalculatorHistoryDelete(index: index);
+    RustLib.instance.api.crateBridgeCalculatorHistoryDelete(index: index);
 
 Future<void> historySave({required String path}) =>
-    RustLib.instance.api.crateApiCalculatorHistorySave(path: path);
+    RustLib.instance.api.crateBridgeCalculatorHistorySave(path: path);
 
 Future<void> historyLoad({required String path}) =>
-    RustLib.instance.api.crateApiCalculatorHistoryLoad(path: path);
+    RustLib.instance.api.crateBridgeCalculatorHistoryLoad(path: path);
 
 class CalcResult {
   final double value;

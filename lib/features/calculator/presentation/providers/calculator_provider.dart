@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:calculator_flutter_app/features/calculator/providers/calculator_state.dart';
-import 'package:calculator_flutter_app/src/rust/api/calculator.dart' as rust;
-import 'package:calculator_flutter_app/features/history/providers/history_provider.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/providers/calculator_state.dart';
+import 'package:calculator_flutter_app/generated/rust/bridge/calculator.dart' as rust;
+import 'package:calculator_flutter_app/features/history/presentation/providers/history_provider.dart';
 
 part 'calculator_provider.g.dart';
 

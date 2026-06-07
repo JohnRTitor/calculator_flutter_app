@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:calculator_flutter_app/features/converter/providers/converter_provider.dart';
-import 'package:calculator_flutter_app/core/theme/ui_style.dart';
-import 'package:calculator_flutter_app/core/theme/glass_utils.dart';
-import 'package:calculator_flutter_app/features/settings/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/features/converter/presentation/providers/converter_provider.dart';
+import 'package:calculator_flutter_app/app/theme/ui_style.dart';
+import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
+import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/widgets/converter_keypad.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/widgets/unit_selector_bottom_sheet.dart';
 

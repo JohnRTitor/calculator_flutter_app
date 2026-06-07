@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:calculator_flutter_app/core/theme/app_theme.dart';
-import 'package:calculator_flutter_app/core/theme/ui_style.dart';
+import 'package:calculator_flutter_app/app/theme/app_theme.dart';
+import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 
-import 'package:calculator_flutter_app/features/settings/providers/theme_provider.dart';
-import 'package:calculator_flutter_app/features/home/presentation/screens/main_screen.dart';
-import 'package:calculator_flutter_app/core/theme/glass_utils.dart';
+import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/app/navigation/main_navigation_bar.dart';
+import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 
 class CalculatorApp extends ConsumerWidget {
   const CalculatorApp({super.key});
