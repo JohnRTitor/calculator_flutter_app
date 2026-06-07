@@ -32,8 +32,8 @@ class Keypad extends ConsumerWidget {
 
           // === Scientific utility row: √ ^ ! π ===
           if (isSci)
-            SizedBox(
-              height: 60,
+            Expanded(
+              flex: 60,
               child: Row(
                 children: [
                   _btn(
@@ -65,8 +65,8 @@ class Keypad extends ConsumerWidget {
             ),
 
           // === ( ) % / ===
-          SizedBox(
-            height: 60,
+          Expanded(
+            flex: 60,
             child: Row(
               children: [
                 _btn(
@@ -100,8 +100,8 @@ class Keypad extends ConsumerWidget {
 
           // === Number grid + operators ===
           // 7 8 9 ÷
-          SizedBox(
-            height: 72,
+          Expanded(
+            flex: 72,
             child: Row(
               children: [
                 _btn(
@@ -132,8 +132,8 @@ class Keypad extends ConsumerWidget {
             ),
           ),
           // 4 5 6 ×
-          SizedBox(
-            height: 72,
+          Expanded(
+            flex: 72,
             child: Row(
               children: [
                 _btn(
@@ -164,8 +164,8 @@ class Keypad extends ConsumerWidget {
             ),
           ),
           // 1 2 3 −
-          SizedBox(
-            height: 72,
+          Expanded(
+            flex: 72,
             child: Row(
               children: [
                 _btn(
@@ -196,8 +196,8 @@ class Keypad extends ConsumerWidget {
             ),
           ),
           // 0 . mod +
-          SizedBox(
-            height: 72,
+          Expanded(
+            flex: 72,
             child: Row(
               children: [
                 _btn(
@@ -229,8 +229,8 @@ class Keypad extends ConsumerWidget {
             ),
           ),
           // AC ANS ⌫ =
-          SizedBox(
-            height: 72,
+          Expanded(
+            flex: 72,
             child: Row(
               children: [
                 _btn(ref, 'AC', ButtonType.clear, () {

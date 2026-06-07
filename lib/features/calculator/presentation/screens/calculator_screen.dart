@@ -8,14 +8,16 @@ class CalculatorScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return const Column(
-      children: [
-        // Display card
-        Expanded(flex: 30, child: DisplayPanel()),
+    return const SafeArea(
+      child: Column(
+        children: [
+          // Display card
+          DisplayPanel(),
 
-        // Keypad
-        Expanded(flex: 70, child: Keypad()),
-      ],
+          // Keypad
+          Expanded(child: Keypad()),
+        ],
+      ),
     );
   }
 }

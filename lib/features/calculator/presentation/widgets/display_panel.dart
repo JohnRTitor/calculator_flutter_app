@@ -21,11 +21,12 @@ class DisplayPanel extends ConsumerWidget {
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           // Expression input
-          const Expanded(child: Align(alignment: Alignment.bottomRight, child: TokenTextField())),
+          const Align(alignment: Alignment.bottomRight, child: TokenTextField()),
           const SizedBox(height: 8),
           
           // Error or Preview
