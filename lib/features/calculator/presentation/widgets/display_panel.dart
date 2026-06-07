@@ -98,6 +98,7 @@ class DisplayPanel extends ConsumerWidget {
         child: SharedSurface(
           uiStyle: uiStyle,
           glassRole: GlassSurfaceRole.panel,
+          frosted: true,
           margin: const EdgeInsets.fromLTRB(12, 4, 12, 8),
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
           borderRadius: BorderRadius.circular(24),

@@ -81,6 +81,7 @@ class _LiquidGlassCalcButtonState extends State<LiquidGlassCalcButton> {
               isInteractive: true,
               isSelected: widget.isActive,
               glassRole: style.role,
+              frosted: style.role == GlassSurfaceRole.primary || style.role == GlassSurfaceRole.destructive || widget.isActive,
               borderRadius: BorderRadius.circular(28),
               child: Center(child: label),
             ),

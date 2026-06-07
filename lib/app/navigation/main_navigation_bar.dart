@@ -94,7 +94,21 @@ class _MainScreenState extends ConsumerState<MainScreen>
         child: Row(
           children: [
             // History Icon
-            IconButton(
+            isGlass ? SharedSurface(
+              uiStyle: uiStyle,
+              glassRole: GlassSurfaceRole.button,
+              frosted: true,
+              borderRadius: BorderRadius.circular(24),
+              child: IconButton(
+                icon: const Icon(Icons.history, size: 22),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HistoryScreen()),
+                ),
+                tooltip: 'History',
+                color: glassCard.foregroundColor,
+              ),
+            ) : IconButton(
               icon: const Icon(Icons.history, size: 22),
               onPressed: () => Navigator.push(
                 context,
@@ -111,6 +125,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
               uiStyle: uiStyle,
               borderRadius: BorderRadius.circular(24),
               glassRole: GlassSurfaceRole.card,
+              frosted: true,
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               child: SizedBox(
                 width: 220,
@@ -121,10 +136,26 @@ class _MainScreenState extends ConsumerState<MainScreen>
                   indicatorSize: TabBarIndicatorSize.tab,
                   indicator: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: isGlass
-                        ? glassPrimary.fillColor
-                        : colorScheme.primary,
+                    color: isGlass ? null : colorScheme.primary,
+                    border: isGlass
+                        ? Border.all(
+                            color: glassPrimary.borderColor,
+                            width: 1.0,
+                          )
+                        : null,
                     boxShadow: isGlass ? glassPrimary.shadows : null,
+                    gradient: isGlass
+                        ? LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color.lerp(glassPrimary.fillColor, Colors.white, brightness == Brightness.light ? 0.2 : 0.1)!,
+                              glassPrimary.fillColor,
+                              Color.lerp(glassPrimary.fillColor, Colors.black, brightness == Brightness.light ? 0.05 : 0.15)!,
+                            ],
+                            stops: const [0.0, 0.4, 1.0],
+                          )
+                        : null,
                   ),
                   labelColor: isGlass
                       ? glassPrimary.foregroundColor
@@ -148,7 +179,31 @@ class _MainScreenState extends ConsumerState<MainScreen>
             const Spacer(),
 
             // More Menu
-            PopupMenuButton<String>(
+            isGlass ? SharedSurface(
+              uiStyle: uiStyle,
+              glassRole: GlassSurfaceRole.button,
+              frosted: true,
+              borderRadius: BorderRadius.circular(24),
+              child: PopupMenuButton<String>(
+                icon: Icon(
+                  Icons.more_vert,
+                  size: 22,
+                  color: glassCard.foregroundColor,
+                ),
+                tooltip: 'More options',
+                onSelected: (value) {
+                  if (value == 'settings') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                    );
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(value: 'settings', child: Text('Settings')),
+                ],
+              ),
+            ) : PopupMenuButton<String>(
               icon: Icon(
                 Icons.more_vert,
                 size: 22,

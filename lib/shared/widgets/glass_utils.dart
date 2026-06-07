@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class GlassStyle {
 }
 
 /// Provides a lightweight, flat-tint background for Liquid Glass mode.
-/// Rendered once at the app root — no gradients, no blur, no shader passes.
+/// Rendered once at the app root — no heavy shaders across the whole screen.
 class SharedGlassBackground extends StatelessWidget {
   final AppThemeMode themeMode;
   final Brightness brightness;
@@ -36,10 +37,11 @@ class SharedGlassBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color bgColor;
+    final bool isDark = brightness == Brightness.dark;
 
     if (themeMode == AppThemeMode.amoled) {
       bgColor = Colors.black;
-    } else if (brightness == Brightness.dark) {
+    } else if (isDark) {
       bgColor = Color.lerp(
         colorScheme.surface,
         colorScheme.primaryContainer,
@@ -53,7 +55,22 @@ class SharedGlassBackground extends StatelessWidget {
       )!;
     }
 
-    return ColoredBox(color: bgColor);
+    return Container(
+      decoration: BoxDecoration(
+        color: bgColor,
+        gradient: themeMode == AppThemeMode.amoled
+            ? null
+            : RadialGradient(
+                center: Alignment.topLeft,
+                radius: 1.5,
+                colors: [
+                  Color.lerp(bgColor, Colors.white, isDark ? 0.04 : 0.15)!,
+                  bgColor,
+                  Color.lerp(bgColor, Colors.black, isDark ? 0.3 : 0.08)!,
+                ],
+              ),
+      ),
+    );
   }
 }
 
@@ -75,31 +92,31 @@ GlassStyle resolveGlassStyle(
     case GlassSurfaceRole.panel:
       return GlassStyle(
         fillColor: isDark
-            ? raisedSurface.withValues(alpha: 0.66)
+            ? raisedSurface.withValues(alpha: 0.4)
             : Color.lerp(
                 baseSurface,
                 raisedSurface,
                 0.72,
-              )!.withValues(alpha: 0.94),
+              )!.withValues(alpha: 0.6),
         borderColor: isDark
-            ? Colors.white.withValues(alpha: 0.08)
-            : colorScheme.outlineVariant.withValues(alpha: 0.22),
+            ? Colors.white.withValues(alpha: 0.12)
+            : colorScheme.outlineVariant.withValues(alpha: 0.3),
         foregroundColor: colorScheme.onSurface,
       );
     case GlassSurfaceRole.card:
       return GlassStyle(
         fillColor: isDark
-            ? raisedSurface.withValues(alpha: isSelected ? 0.72 : 0.58)
+            ? raisedSurface.withValues(alpha: isSelected ? 0.5 : 0.3)
             : Color.lerp(
                 baseSurface,
                 raisedSurface,
                 isSelected ? 0.88 : 0.7,
-              )!.withValues(alpha: isSelected ? 0.96 : 0.9),
+              )!.withValues(alpha: isSelected ? 0.7 : 0.5),
         borderColor: isSelected
-            ? colorScheme.primary.withValues(alpha: isDark ? 0.34 : 0.32)
+            ? colorScheme.primary.withValues(alpha: isDark ? 0.4 : 0.4)
             : (isDark
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : colorScheme.outlineVariant.withValues(alpha: 0.18)),
+                  ? Colors.white.withValues(alpha: 0.1)
+                  : colorScheme.outlineVariant.withValues(alpha: 0.25)),
         foregroundColor: isSelected
             ? colorScheme.onPrimaryContainer
             : colorScheme.onSurface,
@@ -107,7 +124,7 @@ GlassStyle resolveGlassStyle(
             ? [
                 BoxShadow(
                   color: colorScheme.primary.withValues(
-                    alpha: isDark ? 0.12 : 0.1,
+                    alpha: isDark ? 0.15 : 0.12,
                   ),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
@@ -119,18 +136,18 @@ GlassStyle resolveGlassStyle(
       return GlassStyle(
         fillColor: isDark
             ? colorScheme.surfaceContainerHigh.withValues(
-                alpha: isSelected ? 0.72 : 0.56,
+                alpha: isSelected ? 0.5 : 0.3,
               )
             : Color.lerp(
                 baseSurface,
                 raisedSurface,
                 isSelected ? 0.92 : 0.76,
-              )!.withValues(alpha: isSelected ? 0.96 : 0.88),
+              )!.withValues(alpha: isSelected ? 0.7 : 0.5),
         borderColor: isSelected
-            ? colorScheme.primary.withValues(alpha: isDark ? 0.34 : 0.28)
+            ? colorScheme.primary.withValues(alpha: isDark ? 0.34 : 0.3)
             : (isDark
                   ? Colors.white.withValues(alpha: 0.08)
-                  : colorScheme.outlineVariant.withValues(alpha: 0.16)),
+                  : colorScheme.outlineVariant.withValues(alpha: 0.2)),
         foregroundColor: isSelected
             ? colorScheme.primary
             : colorScheme.onSurface,
@@ -139,15 +156,15 @@ GlassStyle resolveGlassStyle(
       return GlassStyle(
         fillColor: isDark
             ? colorScheme.tertiaryContainer.withValues(
-                alpha: isSelected ? 0.5 : 0.34,
+                alpha: isSelected ? 0.4 : 0.25,
               )
             : Color.lerp(
                 colorScheme.tertiaryContainer,
                 baseSurface,
                 0.18,
-              )!.withValues(alpha: isSelected ? 0.94 : 0.9),
+              )!.withValues(alpha: isSelected ? 0.6 : 0.45),
         borderColor: colorScheme.tertiary.withValues(
-          alpha: isDark ? 0.32 : 0.24,
+          alpha: isDark ? 0.32 : 0.25,
         ),
         foregroundColor: isSelected
             ? colorScheme.onTertiaryContainer
@@ -156,12 +173,12 @@ GlassStyle resolveGlassStyle(
     case GlassSurfaceRole.primary:
       return GlassStyle(
         fillColor: isDark
-            ? colorScheme.primary.withValues(alpha: isSelected ? 0.34 : 0.26)
+            ? colorScheme.primary.withValues(alpha: isSelected ? 0.35 : 0.25)
             : Color.lerp(
                 colorScheme.primaryContainer,
                 colorScheme.primary,
                 0.18,
-              )!.withValues(alpha: isSelected ? 0.98 : 0.94),
+              )!.withValues(alpha: isSelected ? 0.7 : 0.55),
         borderColor: colorScheme.primary.withValues(alpha: isDark ? 0.4 : 0.3),
         foregroundColor: isDark
             ? colorScheme.onPrimaryContainer
@@ -170,7 +187,7 @@ GlassStyle resolveGlassStyle(
                   : colorScheme.onPrimaryContainer),
         shadows: [
           BoxShadow(
-            color: colorScheme.primary.withValues(alpha: isDark ? 0.12 : 0.1),
+            color: colorScheme.primary.withValues(alpha: isDark ? 0.15 : 0.12),
             blurRadius: 14,
             offset: const Offset(0, 5),
           ),
@@ -179,13 +196,13 @@ GlassStyle resolveGlassStyle(
     case GlassSurfaceRole.destructive:
       return GlassStyle(
         fillColor: isDark
-            ? colorScheme.errorContainer.withValues(alpha: 0.34)
+            ? colorScheme.errorContainer.withValues(alpha: 0.3)
             : Color.lerp(
                 colorScheme.errorContainer,
                 baseSurface,
                 0.2,
-              )!.withValues(alpha: 0.94),
-        borderColor: colorScheme.error.withValues(alpha: isDark ? 0.24 : 0.18),
+              )!.withValues(alpha: 0.5),
+        borderColor: colorScheme.error.withValues(alpha: isDark ? 0.24 : 0.2),
         foregroundColor: isDark
             ? colorScheme.onErrorContainer
             : colorScheme.error,
@@ -206,6 +223,7 @@ class SharedSurface extends StatelessWidget {
   final bool isInteractive;
   final bool isSelected;
   final GlassSurfaceRole glassRole;
+  final bool frosted;
 
   const SharedSurface({
     super.key,
@@ -220,12 +238,14 @@ class SharedSurface extends StatelessWidget {
     this.isInteractive = false,
     this.isSelected = false,
     this.glassRole = GlassSurfaceRole.card,
+    this.frosted = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     Widget content = child;
     if (padding != null) {
@@ -240,18 +260,39 @@ class SharedSurface extends StatelessWidget {
         isSelected: isSelected,
       );
 
-      Widget glassLayer = DecoratedBox(
+      final baseColor = glassColor ?? style.fillColor;
+
+      Widget glassLayer = Container(
         decoration: BoxDecoration(
-          color: glassColor ?? style.fillColor,
           borderRadius: borderRadius,
           border: Border.all(
             color: style.borderColor,
-            width: isSelected ? 1.2 : 0.7,
+            width: isSelected ? 1.2 : 0.8,
           ),
           boxShadow: style.shadows,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color.lerp(baseColor, Colors.white, isDark ? 0.08 : 0.3)!,
+              baseColor,
+              Color.lerp(baseColor, Colors.black, isDark ? 0.15 : 0.05)!,
+            ],
+            stops: const [0.0, 0.4, 1.0],
+          ),
         ),
         child: ClipRRect(borderRadius: borderRadius, child: content),
       );
+
+      if (frosted) {
+        glassLayer = ClipRRect(
+          borderRadius: borderRadius,
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+            child: glassLayer,
+          ),
+        );
+      }
 
       if (onTap != null || isInteractive) {
         glassLayer = Material(
