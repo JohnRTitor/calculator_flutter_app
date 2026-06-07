@@ -97,7 +97,7 @@ class _LiquidGlassCalcButtonState extends State<LiquidGlassCalcButton> {
     if (widget.isActive) {
       return _GlassButtonStyle(
         role: GlassSurfaceRole.primary,
-        foregroundColor: isDark ? cs.onPrimaryContainer : cs.onPrimary,
+        foregroundColor: cs.onPrimaryContainer,
         fontSize: 18,
         fontWeight: FontWeight.w700,
       );
@@ -114,7 +114,7 @@ class _LiquidGlassCalcButtonState extends State<LiquidGlassCalcButton> {
       case ButtonType.operator:
         return _GlassButtonStyle(
           role: GlassSurfaceRole.primary,
-          foregroundColor: isDark ? cs.onPrimaryContainer : cs.onPrimary,
+          foregroundColor: cs.onPrimaryContainer,
           fontSize: widget.text == 'mod' ? 18 : 24,
           fontWeight: FontWeight.w700,
         );
@@ -124,28 +124,28 @@ class _LiquidGlassCalcButtonState extends State<LiquidGlassCalcButton> {
           role: GlassSurfaceRole.accent,
           foregroundColor: widget.isActive
               ? cs.onTertiaryContainer
-              : cs.tertiary,
+              : (isDark ? cs.onTertiaryContainer : cs.tertiary),
           fontSize: 20,
           fontWeight: FontWeight.w600,
         );
       case ButtonType.clear:
         return _GlassButtonStyle(
           role: GlassSurfaceRole.destructive,
-          foregroundColor: isDark ? cs.onErrorContainer : cs.error,
+          foregroundColor: cs.onErrorContainer,
           fontSize: 20,
           fontWeight: FontWeight.w700,
         );
       case ButtonType.backspace:
         return _GlassButtonStyle(
           role: GlassSurfaceRole.accent,
-          foregroundColor: cs.tertiary,
+          foregroundColor: isDark ? cs.onTertiaryContainer : cs.tertiary,
           fontSize: 20,
           fontWeight: FontWeight.w600,
         );
       case ButtonType.equals:
         return _GlassButtonStyle(
           role: GlassSurfaceRole.primary,
-          foregroundColor: isDark ? cs.onPrimaryContainer : cs.onPrimary,
+          foregroundColor: cs.onPrimaryContainer,
           fontSize: 30,
           fontWeight: FontWeight.bold,
         );

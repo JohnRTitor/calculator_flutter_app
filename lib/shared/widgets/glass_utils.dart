@@ -182,9 +182,7 @@ GlassStyle resolveGlassStyle(
         borderColor: colorScheme.primary.withValues(alpha: isDark ? 0.4 : 0.3),
         foregroundColor: isDark
             ? colorScheme.onPrimaryContainer
-            : (isSelected
-                  ? colorScheme.onPrimary
-                  : colorScheme.onPrimaryContainer),
+            : colorScheme.onPrimaryContainer,
         shadows: [
           BoxShadow(
             color: colorScheme.primary.withValues(alpha: isDark ? 0.15 : 0.12),

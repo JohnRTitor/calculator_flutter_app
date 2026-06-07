@@ -286,13 +286,7 @@ class _ThemeCard extends StatelessWidget {
   }
 
   Widget _buildCardContent([BuildContext? context]) {
-    final bool useLightSelectedText =
-        context != null &&
-        uiStyle == UiStyle.liquidGlass &&
-        Theme.of(context).brightness == Brightness.light;
-    final selectedColor = useLightSelectedText
-        ? colorScheme.onPrimary
-        : colorScheme.onPrimaryContainer;
+    final selectedColor = colorScheme.onPrimaryContainer;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -602,13 +596,7 @@ class _StyleOptionCard extends StatelessWidget {
   }
 
   Widget _buildContent([BuildContext? context]) {
-    final bool useLightSelectedText =
-        context != null &&
-        uiStyle == UiStyle.liquidGlass &&
-        Theme.of(context).brightness == Brightness.light;
-    final selectedColor = useLightSelectedText
-        ? colorScheme.onPrimary
-        : colorScheme.onPrimaryContainer;
+    final selectedColor = colorScheme.onPrimaryContainer;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
