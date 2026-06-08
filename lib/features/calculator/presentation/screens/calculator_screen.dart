@@ -11,14 +11,44 @@ class CalculatorScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return const Column(
-      children: [
-        // Display card — wraps itself with glass/material
-        DisplayPanel(),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // If the screen is very short (e.g., landscape on a small phone),
+        // we make the layout scrollable to prevent the keypad from compressing
+        // too much or overflowing.
+        if (constraints.maxHeight < 650) {
+          return const SingleChildScrollView(
+            child: Column(
+              children: [
+                DisplayPanel(),
+                SafeArea(
+                  top: false,
+                  bottom: true,
+                  child: SizedBox(
+                    height: 450, // Fixed minimum height for the keypad
+                    child: Keypad(),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
 
-        // Keypad fills remaining space
-        Expanded(child: Keypad()),
-      ],
+        // On normal/tall screens, use Expanded to fill available space dynamically
+        // and SafeArea to keep the bottom row above the system navigation bar.
+        return const Column(
+          children: [
+            DisplayPanel(),
+            Expanded(
+              child: SafeArea(
+                top: false,
+                bottom: true,
+                child: Keypad(),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
