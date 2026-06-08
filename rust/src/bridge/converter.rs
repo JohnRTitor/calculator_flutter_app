@@ -77,3 +77,65 @@ pub fn convert_standard(value: f64, from_unit: FfiUnit, to_unit: FfiUnit) -> f64
 pub fn convert_numeral(value: String, from_base: u32, to_base: u32) -> Option<String> {
     converter::convert_numeral(&value, from_base, to_base)
 }
+
+/// FFI representation of a precise date difference
+#[frb]
+pub struct DateDiffResult {
+    pub years: i32,
+    pub months: i32,
+    pub days: i32,
+    pub total_days: i32,
+}
+
+/// Calculates the difference between two timestamps (in milliseconds since epoch)
+#[frb(sync)]
+pub fn calculate_date_difference(start_timestamp_ms: i64, end_timestamp_ms: i64) -> DateDiffResult {
+    let diff_ms = (end_timestamp_ms - start_timestamp_ms).abs();
+    let total_days = (diff_ms / (1000 * 60 * 60 * 24)) as i32;
+    
+    let years = total_days / 365;
+    let remaining = total_days % 365;
+    let months = remaining / 30;
+    let days = remaining % 30;
+
+    DateDiffResult {
+        years,
+        months,
+        days,
+        total_days,
+    }
+}
+
+/// FFI representation of a Body Mass Index (BMI) calculation result.
+#[frb]
+pub struct BmiResult {
+    pub bmi: f64,
+    pub category: String,
+}
+
+/// Calculates BMI based on weight (kg) and height (m).
+#[frb(sync)]
+pub fn calculate_bmi(weight_kg: f64, height_m: f64) -> BmiResult {
+    if height_m <= 0.0 {
+        return BmiResult {
+            bmi: 0.0,
+            category: "Invalid".to_string(),
+        };
+    }
+    let bmi = weight_kg / (height_m * height_m);
+
+    let category = if bmi < 18.5 {
+        "Underweight"
+    } else if bmi >= 18.5 && bmi < 25.0 {
+        "Normal"
+    } else if bmi >= 25.0 && bmi < 30.0 {
+        "Overweight"
+    } else {
+        "Obese"
+    };
+
+    BmiResult {
+        bmi,
+        category: category.to_string(),
+    }
+}

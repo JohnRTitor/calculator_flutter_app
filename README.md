@@ -57,3 +57,7 @@ Or you can build it manually.
 ```bash
 wasm-pack build -t no-modules -d web/pkg --no-typescript --out-name rust_lib_calculator_flutter_app --dev rust
 ```
+
+## License
+
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.

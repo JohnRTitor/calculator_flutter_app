@@ -5,12 +5,11 @@ import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:toastification/toastification.dart';
-import 'package:calculator_flutter_app/features/utilities/presentation/widgets/utilities_keypad.dart';
+import 'package:calculator_flutter_app/features/currency/presentation/widgets/utilities_keypad.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/widgets/converter_result_card.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/widgets/unit_selector_bottom_sheet.dart';
 import 'package:calculator_flutter_app/generated/rust/bridge/converter.dart';
 import 'package:calculator_flutter_app/shared/widgets/screenshot_share_wrapper.dart';
-import 'package:screenshot/screenshot.dart';
 
 /// The detail screen for a specific converter category.
 ///
@@ -24,7 +23,7 @@ class ConverterDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _ConverterDetailScreenState extends ConsumerState<ConverterDetailScreen> {
-  final ScreenshotController _screenshotController = ScreenshotController();
+  final GlobalKey<ScreenshotShareWrapperState> _screenshotKey = GlobalKey<ScreenshotShareWrapperState>();
 
   @override
   Widget build(BuildContext context) {
@@ -247,10 +246,8 @@ class _ConverterDetailScreenState extends ConsumerState<ConverterDetailScreen> {
             child: IconButton(
               icon: const Icon(Icons.ios_share),
               onPressed: () {
-                captureAndShareScreenshot(
-                  context: context,
-                  screenshotController: _screenshotController,
-                  subject: '${category.name} Result',
+                _screenshotKey.currentState?.captureAndShare(
+                  subject: 'Check out this conversion!',
                   text: 'Check out this ${category.name} calculation from the Calculator app!',
                 );
               },
@@ -260,7 +257,7 @@ class _ConverterDetailScreenState extends ConsumerState<ConverterDetailScreen> {
         ],
       ),
       body: ScreenshotShareWrapper(
-        screenshotController: _screenshotController,
+        key: _screenshotKey,
         child: Container(
           color: Theme.of(context).scaffoldBackgroundColor, // Ensure background is solid for screenshot
           child: body,

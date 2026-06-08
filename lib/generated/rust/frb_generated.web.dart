@@ -8,7 +8,7 @@
 
 import 'bridge/calculator.dart';
 import 'bridge/converter.dart';
-import 'bridge/utilities.dart';
+import 'bridge/currency.dart';
 import 'calculator/history.dart';
 import 'dart:async';
 import 'dart:convert';

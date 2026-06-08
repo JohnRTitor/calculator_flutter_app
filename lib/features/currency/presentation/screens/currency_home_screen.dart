@@ -8,35 +8,31 @@ import 'package:calculator_flutter_app/generated/rust/bridge/converter.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/providers/converter_provider.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/screens/converter_detail_screen.dart';
 
-// Import screens when they are created
-import 'package:calculator_flutter_app/features/utilities/presentation/screens/date_calculator_screen.dart';
-import 'package:calculator_flutter_app/features/utilities/presentation/screens/loan_calculator_screen.dart';
-import 'package:calculator_flutter_app/features/utilities/presentation/screens/investment_screen.dart';
-
+import 'package:calculator_flutter_app/features/currency/presentation/screens/loan_calculator_screen.dart';
+import 'package:calculator_flutter_app/features/currency/presentation/screens/investment_screen.dart';
 import 'package:toastification/toastification.dart';
 
-class UtilityItem {
+class CurrencyItem {
   final String id;
   final String name;
   final IconData icon;
 
-  const UtilityItem({
+  const CurrencyItem({
     required this.id,
     required this.name,
     required this.icon,
   });
 }
 
-class UtilitiesHomeScreen extends ConsumerWidget {
-  const UtilitiesHomeScreen({super.key});
+class CurrencyHomeScreen extends ConsumerWidget {
+  const CurrencyHomeScreen({super.key});
 
-  static const List<UtilityItem> utilities = [
-    UtilityItem(id: 'date', name: 'Date Difference', icon: Icons.calendar_month),
-    UtilityItem(id: 'loan', name: 'Loan / EMI', icon: Icons.real_estate_agent),
-    UtilityItem(id: 'investment', name: 'Investment', icon: Icons.trending_up),
-    UtilityItem(id: 'bmi', name: 'BMI', icon: Icons.monitor_weight),
-    UtilityItem(id: 'discount', name: 'Discount', icon: Icons.local_offer),
-    UtilityItem(id: 'gst', name: 'GST', icon: Icons.receipt_long),
+  static const List<CurrencyItem> items = [
+    CurrencyItem(id: 'currency', name: 'Currency', icon: Icons.currency_exchange),
+    CurrencyItem(id: 'loan', name: 'Loan / EMI', icon: Icons.real_estate_agent),
+    CurrencyItem(id: 'investment', name: 'Investment', icon: Icons.trending_up),
+    CurrencyItem(id: 'discount', name: 'Discount', icon: Icons.local_offer),
+    CurrencyItem(id: 'gst', name: 'GST', icon: Icons.receipt_long),
   ];
 
   @override
@@ -54,19 +50,14 @@ class UtilitiesHomeScreen extends ConsumerWidget {
           mainAxisSpacing: 24.0,
           childAspectRatio: 0.8,
         ),
-        itemCount: utilities.length,
+        itemCount: items.length,
         itemBuilder: (context, index) {
-          final item = utilities[index];
+          final item = items[index];
 
           return SharedSurface(
             uiStyle: uiStyle,
             onTap: () {
-              if (item.id == 'date') {
-                Navigator.push(
-                  context,
-                  FadePageRoute(page: const DateCalculatorScreen()),
-                );
-              } else if (item.id == 'loan') {
+              if (item.id == 'loan') {
                 Navigator.push(
                   context,
                   FadePageRoute(page: const LoanCalculatorScreen()),
@@ -76,13 +67,13 @@ class UtilitiesHomeScreen extends ConsumerWidget {
                   context,
                   FadePageRoute(page: const InvestmentScreen()),
                 );
-              } else if (item.id == 'bmi' || item.id == 'discount' || item.id == 'gst') {
+              } else if (item.id == 'currency' || item.id == 'discount' || item.id == 'gst') {
                 final cat = FfiConverterCategory(
                   id: item.id,
                   name: item.name,
                   iconName: '', // not strictly needed for the detail screen
                   units: [],
-                  showSwapUnitsToggler: false,
+                  showSwapUnitsToggler: item.id == 'currency',
                   showResultSection: true,
                 );
                 ref.read(converterProvider.notifier).setCategory(cat);

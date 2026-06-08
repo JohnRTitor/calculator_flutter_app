@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/generated/rust/bridge/converter.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/providers/converter_provider.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/screens/converter_detail_screen.dart';
+import 'package:calculator_flutter_app/features/converter/presentation/screens/date_calculator_screen.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
@@ -10,7 +11,7 @@ import 'package:calculator_flutter_app/app/navigation/route_transitions.dart';
 
 /// The entry point screen for the Unit Converter feature.
 ///
-/// Displays a grid of available converter categories (e.g., Length, Mass, Currency, BMI).
+/// Displays a grid of available converter categories (e.g., Length, Mass, BMI, Date Difference).
 /// Tapping a category navigates to the `ConverterDetailScreen` with that category pre-selected.
 class ConverterHomeScreen extends ConsumerStatefulWidget {
   const ConverterHomeScreen({super.key});
@@ -73,15 +74,22 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
     // Explicitly depend on Theme to ensure the grid rebuilds when theme changes
     final _ = Theme.of(context);
 
-    // Add extra items to match user request (Discount, GST, BMI, Currency)
-    // We'll create custom FfiConverterCategory objects for them since they are specialized
+    // Add extra items to match user request (Date Difference, BMI)
     final displayCategories = [
       FfiConverterCategory(
-        id: 'currency',
-        name: 'Currency',
-        iconName: 'currency_exchange',
+        id: 'date',
+        name: 'Date Difference',
+        iconName: 'calendar_month',
         units: [],
-        showSwapUnitsToggler: true,
+        showSwapUnitsToggler: false,
+        showResultSection: false,
+      ),
+      FfiConverterCategory(
+        id: 'bmi',
+        name: 'BMI',
+        iconName: 'monitor_weight',
+        units: [],
+        showSwapUnitsToggler: false,
         showResultSection: true,
       ),
       ...categories!,
@@ -100,16 +108,24 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
         itemBuilder: (context, index) {
           final cat = displayCategories[index];
           IconData iconData = _getIcon(cat.iconName);
-          if (cat.id == 'currency') iconData = Icons.currency_exchange;
+          if (cat.id == 'date') iconData = Icons.calendar_month;
+          if (cat.id == 'bmi') iconData = Icons.monitor_weight;
 
           return SharedSurface(
             uiStyle: uiStyle,
             onTap: () {
-              ref.read(converterProvider.notifier).setCategory(cat);
-              Navigator.push(
-                context,
-                FadePageRoute(page: const ConverterDetailScreen()),
-              );
+              if (cat.id == 'date') {
+                Navigator.push(
+                  context,
+                  FadePageRoute(page: const DateCalculatorScreen()),
+                );
+              } else {
+                ref.read(converterProvider.notifier).setCategory(cat);
+                Navigator.push(
+                  context,
+                  FadePageRoute(page: const ConverterDetailScreen()),
+                );
+              }
             },
             borderRadius: BorderRadius.circular(24.0),
             isInteractive: true,

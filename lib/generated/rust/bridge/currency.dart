@@ -6,21 +6,12 @@
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-/// Calculates the difference between two timestamps (in milliseconds since epoch)
-DateDiffResult calculateDateDifference({
-  required PlatformInt64 startTimestampMs,
-  required PlatformInt64 endTimestampMs,
-}) => RustLib.instance.api.crateBridgeUtilitiesCalculateDateDifference(
-  startTimestampMs: startTimestampMs,
-  endTimestampMs: endTimestampMs,
-);
-
 /// Calculates EMI and total interest for a loan
 LoanResult calculateLoanEmi({
   required double principal,
   required double annualInterestRate,
   required int tenureMonths,
-}) => RustLib.instance.api.crateBridgeUtilitiesCalculateLoanEmi(
+}) => RustLib.instance.api.crateBridgeCurrencyCalculateLoanEmi(
   principal: principal,
   annualInterestRate: annualInterestRate,
   tenureMonths: tenureMonths,
@@ -32,7 +23,7 @@ InvestmentResult calculateInvestmentOneTime({
   required double annualInterestRate,
   required double years,
   required double compoundsPerYear,
-}) => RustLib.instance.api.crateBridgeUtilitiesCalculateInvestmentOneTime(
+}) => RustLib.instance.api.crateBridgeCurrencyCalculateInvestmentOneTime(
   principal: principal,
   annualInterestRate: annualInterestRate,
   years: years,
@@ -44,7 +35,7 @@ InvestmentResult calculateInvestmentSip({
   required double monthlyContribution,
   required double annualInterestRate,
   required double years,
-}) => RustLib.instance.api.crateBridgeUtilitiesCalculateInvestmentSip(
+}) => RustLib.instance.api.crateBridgeCurrencyCalculateInvestmentSip(
   monthlyContribution: monthlyContribution,
   annualInterestRate: annualInterestRate,
   years: years,
@@ -54,7 +45,7 @@ InvestmentResult calculateInvestmentSip({
 DiscountResult calculateDiscount({
   required double originalPrice,
   required double discountPercentage,
-}) => RustLib.instance.api.crateBridgeUtilitiesCalculateDiscount(
+}) => RustLib.instance.api.crateBridgeCurrencyCalculateDiscount(
   originalPrice: originalPrice,
   discountPercentage: discountPercentage,
 );
@@ -64,66 +55,11 @@ GstResult calculateGst({
   required double amount,
   required double gstPercentage,
   required bool addGst,
-}) => RustLib.instance.api.crateBridgeUtilitiesCalculateGst(
+}) => RustLib.instance.api.crateBridgeCurrencyCalculateGst(
   amount: amount,
   gstPercentage: gstPercentage,
   addGst: addGst,
 );
-
-/// Calculates BMI based on weight (kg) and height (m).
-BmiResult calculateBmi({required double weightKg, required double heightM}) =>
-    RustLib.instance.api.crateBridgeUtilitiesCalculateBmi(
-      weightKg: weightKg,
-      heightM: heightM,
-    );
-
-/// FFI representation of a Body Mass Index (BMI) calculation result.
-class BmiResult {
-  final double bmi;
-  final String category;
-
-  const BmiResult({required this.bmi, required this.category});
-
-  @override
-  int get hashCode => bmi.hashCode ^ category.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is BmiResult &&
-          runtimeType == other.runtimeType &&
-          bmi == other.bmi &&
-          category == other.category;
-}
-
-/// FFI representation of a precise date difference
-class DateDiffResult {
-  final int years;
-  final int months;
-  final int days;
-  final int totalDays;
-
-  const DateDiffResult({
-    required this.years,
-    required this.months,
-    required this.days,
-    required this.totalDays,
-  });
-
-  @override
-  int get hashCode =>
-      years.hashCode ^ months.hashCode ^ days.hashCode ^ totalDays.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is DateDiffResult &&
-          runtimeType == other.runtimeType &&
-          years == other.years &&
-          months == other.months &&
-          days == other.days &&
-          totalDays == other.totalDays;
-}
 
 /// FFI representation of a discount calculation result.
 class DiscountResult {

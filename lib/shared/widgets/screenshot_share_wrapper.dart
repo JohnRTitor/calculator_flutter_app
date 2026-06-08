@@ -6,77 +6,102 @@ import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// A wrapper widget that allows capturing a screenshot of its child and sharing it.
-class ScreenshotShareWrapper extends StatelessWidget {
+/// It uses a temporary opaque background during capture to ensure transparency
+/// does not result in dark/black backgrounds when shared.
+class ScreenshotShareWrapper extends StatefulWidget {
   final Widget child;
-  final ScreenshotController screenshotController;
 
   const ScreenshotShareWrapper({
     super.key,
     required this.child,
-    required this.screenshotController,
   });
 
   @override
-  Widget build(BuildContext context) {
-    // The Screenshot widget wraps the content you want to capture.
-    return Screenshot(
-      controller: screenshotController,
-      child: child,
-    );
-  }
+  State<ScreenshotShareWrapper> createState() => ScreenshotShareWrapperState();
 }
 
-/// Helper method to capture a screenshot using the provided [screenshotController]
-/// and open the native share dialog.
-Future<void> captureAndShareScreenshot({
-  required BuildContext context,
-  required ScreenshotController screenshotController,
-  String subject = 'Check out this result!',
-  String text = 'Here is the result from the Calculator app.',
-}) async {
-  try {
-    // Show a loading indicator (optional but good for UX)
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Capturing screenshot...')),
-    );
+class ScreenshotShareWrapperState extends State<ScreenshotShareWrapper> {
+  final ScreenshotController _screenshotController = ScreenshotController();
+  bool _isCapturing = false;
 
-    // Capture the image with a small delay to ensure UI is fully rendered
-    final Uint8List? imageBytes = await screenshotController.capture(
-      delay: const Duration(milliseconds: 100),
-      pixelRatio: MediaQuery.of(context).devicePixelRatio,
-    );
+  /// Captures the wrapped child with an opaque background and opens the share dialog.
+  Future<void> captureAndShare({
+    String subject = 'Check out this result!',
+    String text = 'Here is the result from the Calculator app.',
+  }) async {
+    try {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Capturing screenshot...')),
+      );
 
-    if (imageBytes != null) {
-      // Save image to temporary directory
-      final directory = await getTemporaryDirectory();
-      final imagePath = '${directory.path}/screenshot_${DateTime.now().millisecondsSinceEpoch}.png';
-      final file = File(imagePath);
-      await file.writeAsBytes(imageBytes);
+      // 1. Switch to opaque background
+      setState(() {
+        _isCapturing = true;
+      });
 
-      // Hide the snackbar
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      // Allow the UI to render the opaque background
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      // 2. Capture the image
+      final Uint8List? imageBytes = await _screenshotController.capture(
+        delay: const Duration(milliseconds: 50),
+        pixelRatio: MediaQuery.of(context).devicePixelRatio,
+      );
+
+      // 3. Revert to transparent background immediately
+      if (mounted) {
+        setState(() {
+          _isCapturing = false;
+        });
       }
 
-      // Share the file
-      // ignore: deprecated_member_use
-      await Share.shareXFiles(
-        [XFile(imagePath)],
-        subject: subject,
-        text: text,
-      );
-    } else {
-      if (context.mounted) {
+      if (imageBytes != null) {
+        final directory = await getTemporaryDirectory();
+        final imagePath =
+            '${directory.path}/screenshot_${DateTime.now().millisecondsSinceEpoch}.png';
+        final file = File(imagePath);
+        await file.writeAsBytes(imageBytes);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        }
+
+        // ignore: deprecated_member_use
+        await Share.shareXFiles(
+          [XFile(imagePath)],
+          subject: subject,
+          text: text,
+        );
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to capture screenshot')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isCapturing = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to capture screenshot')),
+          SnackBar(content: Text('Error sharing screenshot: $e')),
         );
       }
     }
-  } catch (e) {
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error sharing screenshot: $e')),
-      );
-    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Screenshot(
+      controller: _screenshotController,
+      child: ColoredBox(
+        color: _isCapturing
+            ? Theme.of(context).colorScheme.surface
+            : Colors.transparent,
+        child: widget.child,
+      ),
+    );
   }
 }

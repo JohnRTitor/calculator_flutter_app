@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:calculator_flutter_app/generated/rust/bridge/utilities.dart';
+import 'package:calculator_flutter_app/generated/rust/bridge/currency.dart';
 
 enum TenureType { years, months }
 

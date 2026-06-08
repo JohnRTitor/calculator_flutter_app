@@ -5,7 +5,7 @@
 
 import 'bridge/calculator.dart';
 import 'bridge/converter.dart';
-import 'bridge/utilities.dart';
+import 'bridge/currency.dart';
 import 'calculator/history.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -67,7 +67,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => -1474348289;
+  int get rustContentHash => 459098381;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -79,41 +79,41 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
-  BmiResult crateBridgeUtilitiesCalculateBmi({
+  BmiResult crateBridgeConverterCalculateBmi({
     required double weightKg,
     required double heightM,
   });
 
-  DateDiffResult crateBridgeUtilitiesCalculateDateDifference({
+  DateDiffResult crateBridgeConverterCalculateDateDifference({
     required PlatformInt64 startTimestampMs,
     required PlatformInt64 endTimestampMs,
   });
 
-  DiscountResult crateBridgeUtilitiesCalculateDiscount({
+  DiscountResult crateBridgeCurrencyCalculateDiscount({
     required double originalPrice,
     required double discountPercentage,
   });
 
-  GstResult crateBridgeUtilitiesCalculateGst({
+  GstResult crateBridgeCurrencyCalculateGst({
     required double amount,
     required double gstPercentage,
     required bool addGst,
   });
 
-  InvestmentResult crateBridgeUtilitiesCalculateInvestmentOneTime({
+  InvestmentResult crateBridgeCurrencyCalculateInvestmentOneTime({
     required double principal,
     required double annualInterestRate,
     required double years,
     required double compoundsPerYear,
   });
 
-  InvestmentResult crateBridgeUtilitiesCalculateInvestmentSip({
+  InvestmentResult crateBridgeCurrencyCalculateInvestmentSip({
     required double monthlyContribution,
     required double annualInterestRate,
     required double years,
   });
 
-  LoanResult crateBridgeUtilitiesCalculateLoanEmi({
+  LoanResult crateBridgeCurrencyCalculateLoanEmi({
     required double principal,
     required double annualInterestRate,
     required int tenureMonths,
@@ -179,7 +179,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
-  BmiResult crateBridgeUtilitiesCalculateBmi({
+  BmiResult crateBridgeConverterCalculateBmi({
     required double weightKg,
     required double heightM,
   }) {
@@ -195,21 +195,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_bmi_result,
           decodeErrorData: null,
         ),
-        constMeta: kCrateBridgeUtilitiesCalculateBmiConstMeta,
+        constMeta: kCrateBridgeConverterCalculateBmiConstMeta,
         argValues: [weightKg, heightM],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateBridgeUtilitiesCalculateBmiConstMeta =>
+  TaskConstMeta get kCrateBridgeConverterCalculateBmiConstMeta =>
       const TaskConstMeta(
         debugName: "calculate_bmi",
         argNames: ["weightKg", "heightM"],
       );
 
   @override
-  DateDiffResult crateBridgeUtilitiesCalculateDateDifference({
+  DateDiffResult crateBridgeConverterCalculateDateDifference({
     required PlatformInt64 startTimestampMs,
     required PlatformInt64 endTimestampMs,
   }) {
@@ -225,21 +225,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_date_diff_result,
           decodeErrorData: null,
         ),
-        constMeta: kCrateBridgeUtilitiesCalculateDateDifferenceConstMeta,
+        constMeta: kCrateBridgeConverterCalculateDateDifferenceConstMeta,
         argValues: [startTimestampMs, endTimestampMs],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateBridgeUtilitiesCalculateDateDifferenceConstMeta =>
+  TaskConstMeta get kCrateBridgeConverterCalculateDateDifferenceConstMeta =>
       const TaskConstMeta(
         debugName: "calculate_date_difference",
         argNames: ["startTimestampMs", "endTimestampMs"],
       );
 
   @override
-  DiscountResult crateBridgeUtilitiesCalculateDiscount({
+  DiscountResult crateBridgeCurrencyCalculateDiscount({
     required double originalPrice,
     required double discountPercentage,
   }) {
@@ -255,21 +255,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_discount_result,
           decodeErrorData: null,
         ),
-        constMeta: kCrateBridgeUtilitiesCalculateDiscountConstMeta,
+        constMeta: kCrateBridgeCurrencyCalculateDiscountConstMeta,
         argValues: [originalPrice, discountPercentage],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateBridgeUtilitiesCalculateDiscountConstMeta =>
+  TaskConstMeta get kCrateBridgeCurrencyCalculateDiscountConstMeta =>
       const TaskConstMeta(
         debugName: "calculate_discount",
         argNames: ["originalPrice", "discountPercentage"],
       );
 
   @override
-  GstResult crateBridgeUtilitiesCalculateGst({
+  GstResult crateBridgeCurrencyCalculateGst({
     required double amount,
     required double gstPercentage,
     required bool addGst,
@@ -287,21 +287,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_gst_result,
           decodeErrorData: null,
         ),
-        constMeta: kCrateBridgeUtilitiesCalculateGstConstMeta,
+        constMeta: kCrateBridgeCurrencyCalculateGstConstMeta,
         argValues: [amount, gstPercentage, addGst],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateBridgeUtilitiesCalculateGstConstMeta =>
+  TaskConstMeta get kCrateBridgeCurrencyCalculateGstConstMeta =>
       const TaskConstMeta(
         debugName: "calculate_gst",
         argNames: ["amount", "gstPercentage", "addGst"],
       );
 
   @override
-  InvestmentResult crateBridgeUtilitiesCalculateInvestmentOneTime({
+  InvestmentResult crateBridgeCurrencyCalculateInvestmentOneTime({
     required double principal,
     required double annualInterestRate,
     required double years,
@@ -321,14 +321,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_investment_result,
           decodeErrorData: null,
         ),
-        constMeta: kCrateBridgeUtilitiesCalculateInvestmentOneTimeConstMeta,
+        constMeta: kCrateBridgeCurrencyCalculateInvestmentOneTimeConstMeta,
         argValues: [principal, annualInterestRate, years, compoundsPerYear],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateBridgeUtilitiesCalculateInvestmentOneTimeConstMeta =>
+  TaskConstMeta get kCrateBridgeCurrencyCalculateInvestmentOneTimeConstMeta =>
       const TaskConstMeta(
         debugName: "calculate_investment_one_time",
         argNames: [
@@ -340,7 +340,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  InvestmentResult crateBridgeUtilitiesCalculateInvestmentSip({
+  InvestmentResult crateBridgeCurrencyCalculateInvestmentSip({
     required double monthlyContribution,
     required double annualInterestRate,
     required double years,
@@ -358,21 +358,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_investment_result,
           decodeErrorData: null,
         ),
-        constMeta: kCrateBridgeUtilitiesCalculateInvestmentSipConstMeta,
+        constMeta: kCrateBridgeCurrencyCalculateInvestmentSipConstMeta,
         argValues: [monthlyContribution, annualInterestRate, years],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateBridgeUtilitiesCalculateInvestmentSipConstMeta =>
+  TaskConstMeta get kCrateBridgeCurrencyCalculateInvestmentSipConstMeta =>
       const TaskConstMeta(
         debugName: "calculate_investment_sip",
         argNames: ["monthlyContribution", "annualInterestRate", "years"],
       );
 
   @override
-  LoanResult crateBridgeUtilitiesCalculateLoanEmi({
+  LoanResult crateBridgeCurrencyCalculateLoanEmi({
     required double principal,
     required double annualInterestRate,
     required int tenureMonths,
@@ -390,14 +390,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_loan_result,
           decodeErrorData: null,
         ),
-        constMeta: kCrateBridgeUtilitiesCalculateLoanEmiConstMeta,
+        constMeta: kCrateBridgeCurrencyCalculateLoanEmiConstMeta,
         argValues: [principal, annualInterestRate, tenureMonths],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateBridgeUtilitiesCalculateLoanEmiConstMeta =>
+  TaskConstMeta get kCrateBridgeCurrencyCalculateLoanEmiConstMeta =>
       const TaskConstMeta(
         debugName: "calculate_loan_emi",
         argNames: ["principal", "annualInterestRate", "tenureMonths"],

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:calculator_flutter_app/features/utilities/presentation/providers/loan_calculator_provider.dart';
-import 'package:calculator_flutter_app/features/utilities/presentation/widgets/utilities_keypad.dart';
+import 'package:calculator_flutter_app/features/currency/presentation/providers/loan_calculator_provider.dart';
+import 'package:calculator_flutter_app/features/currency/presentation/widgets/utilities_keypad.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/shared/widgets/screenshot_share_wrapper.dart';
-import 'package:screenshot/screenshot.dart';
 import 'package:intl/intl.dart';
 
 class LoanCalculatorScreen extends ConsumerStatefulWidget {
@@ -17,7 +16,7 @@ class LoanCalculatorScreen extends ConsumerStatefulWidget {
 }
 
 class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
-  final ScreenshotController _screenshotController = ScreenshotController();
+  final GlobalKey<ScreenshotShareWrapperState> _screenshotKey = GlobalKey<ScreenshotShareWrapperState>();
   final NumberFormat _currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
 
   @override
@@ -49,9 +48,7 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
             child: IconButton(
               icon: const Icon(Icons.ios_share),
               onPressed: () {
-                captureAndShareScreenshot(
-                  context: context,
-                  screenshotController: _screenshotController,
+                _screenshotKey.currentState?.captureAndShare(
                   subject: 'Loan / EMI Calculation',
                   text: 'Monthly EMI: ${_currencyFormat.format(result.monthlyEmi)}\nTotal Interest: ${_currencyFormat.format(result.totalInterest)}',
                 );
@@ -67,7 +64,7 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
           Expanded(
             flex: 55,
             child: ScreenshotShareWrapper(
-              screenshotController: _screenshotController,
+              key: _screenshotKey,
               child: Container(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 child: SingleChildScrollView(

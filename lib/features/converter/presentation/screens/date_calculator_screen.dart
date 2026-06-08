@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:calculator_flutter_app/features/utilities/presentation/providers/date_calculator_provider.dart';
+import 'package:calculator_flutter_app/features/converter/presentation/providers/date_calculator_provider.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/shared/widgets/screenshot_share_wrapper.dart';
-import 'package:screenshot/screenshot.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'dart:ui' as ui;
@@ -18,7 +17,7 @@ class DateCalculatorScreen extends ConsumerStatefulWidget {
 }
 
 class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
-  final ScreenshotController _screenshotController = ScreenshotController();
+  final GlobalKey<ScreenshotShareWrapperState> _screenshotKey = GlobalKey<ScreenshotShareWrapperState>();
 
   Future<void> _selectDate(BuildContext context, DateTime initialDate, bool isFrom) async {
     final DateTime? picked = await showDatePicker(
@@ -157,9 +156,7 @@ class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
             child: IconButton(
               icon: const Icon(Icons.ios_share),
               onPressed: () {
-                captureAndShareScreenshot(
-                  context: context,
-                  screenshotController: _screenshotController,
+                _screenshotKey.currentState?.captureAndShare(
                   subject: 'Date Difference Calculation',
                   text: 'The difference between ${DateFormat.yMMMd().format(state.fromDate)} and ${DateFormat.yMMMd().format(state.toDate)} is $totalDays days.',
                 );
@@ -170,7 +167,7 @@ class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
         ],
       ),
       body: ScreenshotShareWrapper(
-        screenshotController: _screenshotController,
+        key: _screenshotKey,
         child: Container(
           color: Theme.of(context).scaffoldBackgroundColor,
           child: SafeArea(

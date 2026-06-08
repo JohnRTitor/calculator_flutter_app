@@ -34,6 +34,70 @@ String? convertNumeral({
   toBase: toBase,
 );
 
+/// Calculates the difference between two timestamps (in milliseconds since epoch)
+DateDiffResult calculateDateDifference({
+  required PlatformInt64 startTimestampMs,
+  required PlatformInt64 endTimestampMs,
+}) => RustLib.instance.api.crateBridgeConverterCalculateDateDifference(
+  startTimestampMs: startTimestampMs,
+  endTimestampMs: endTimestampMs,
+);
+
+/// Calculates BMI based on weight (kg) and height (m).
+BmiResult calculateBmi({required double weightKg, required double heightM}) =>
+    RustLib.instance.api.crateBridgeConverterCalculateBmi(
+      weightKg: weightKg,
+      heightM: heightM,
+    );
+
+/// FFI representation of a Body Mass Index (BMI) calculation result.
+class BmiResult {
+  final double bmi;
+  final String category;
+
+  const BmiResult({required this.bmi, required this.category});
+
+  @override
+  int get hashCode => bmi.hashCode ^ category.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BmiResult &&
+          runtimeType == other.runtimeType &&
+          bmi == other.bmi &&
+          category == other.category;
+}
+
+/// FFI representation of a precise date difference
+class DateDiffResult {
+  final int years;
+  final int months;
+  final int days;
+  final int totalDays;
+
+  const DateDiffResult({
+    required this.years,
+    required this.months,
+    required this.days,
+    required this.totalDays,
+  });
+
+  @override
+  int get hashCode =>
+      years.hashCode ^ months.hashCode ^ days.hashCode ^ totalDays.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DateDiffResult &&
+          runtimeType == other.runtimeType &&
+          years == other.years &&
+          months == other.months &&
+          days == other.days &&
+          totalDays == other.totalDays;
+}
+
 /// FFI representation of a category of units.
 class FfiConverterCategory {
   final String id;

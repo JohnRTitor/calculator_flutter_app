@@ -3,7 +3,7 @@ import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/screens/calculator_screen.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/screens/converter_home_screen.dart';
-import 'package:calculator_flutter_app/features/utilities/presentation/screens/utilities_home_screen.dart';
+import 'package:calculator_flutter_app/features/currency/presentation/screens/currency_home_screen.dart';
 import 'package:calculator_flutter_app/features/history/presentation/screens/history_screen.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/screens/settings_screen.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
@@ -63,7 +63,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
                 children: [
                   const CalculatorScreen(),
                   const ConverterHomeScreen(),
-                  const UtilitiesHomeScreen(),
+                  const CurrencyHomeScreen(),
                 ],
               ),
             ),
