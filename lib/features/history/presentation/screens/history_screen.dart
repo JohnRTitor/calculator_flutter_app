@@ -1,21 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/features/history/presentation/providers/history_provider.dart';
+import 'package:calculator_flutter_app/features/history/presentation/providers/function_history_provider.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/providers/calculator_provider.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/providers/function_evaluator_provider.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
+import 'package:calculator_flutter_app/shared/widgets/pill_switcher.dart';
 
 /// A screen that displays a list of past calculations.
 ///
 /// Allows users to view their calculation history, tap an entry to restore it to the
 /// calculator display, swipe to delete individual entries, or clear the entire history.
-class HistoryScreen extends ConsumerWidget {
-  const HistoryScreen({super.key});
+class HistoryScreen extends ConsumerStatefulWidget {
+  final bool initialIsFuncMode;
+
+  const HistoryScreen({super.key, this.initialIsFuncMode = false});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final historyAsync = ref.watch(historyProvider);
+  ConsumerState<HistoryScreen> createState() => _HistoryScreenState();
+}
+
+class _HistoryScreenState extends ConsumerState<HistoryScreen> {
+  late bool isFuncMode;
+
+  @override
+  void initState() {
+    super.initState();
+    isFuncMode = widget.initialIsFuncMode;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final uiStyle = ref.watch(uiStyleProvider);
+    final historyAsync = isFuncMode 
+        ? ref.watch(functionHistoryProvider)
+        : ref.watch(historyProvider);
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -26,19 +47,42 @@ class HistoryScreen extends ConsumerWidget {
             icon: const Icon(Icons.delete_sweep_outlined),
             tooltip: 'Clear all history',
             onPressed: () async {
-              final historyList = ref.read(historyProvider).value ?? [];
+              final historyList = isFuncMode
+                  ? ref.read(functionHistoryProvider).value ?? []
+                  : ref.read(historyProvider).value ?? [];
               if (historyList.isEmpty) return;
 
               final uiStyle = ref.read(uiStyleProvider);
               final confirm = await _showClearHistoryDialog(context, historyList.length, uiStyle);
               if (confirm == true) {
-                ref.read(historyProvider.notifier).clear();
+                if (isFuncMode) {
+                  ref.read(functionHistoryProvider.notifier).clear();
+                } else {
+                  ref.read(historyProvider.notifier).clear();
+                }
               }
             },
           ),
         ],
       ),
-      body: historyAsync.when(
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: PillSwitcher(
+              uiStyle: uiStyle,
+              label1: 'Calculator',
+              label2: 'Fn Evaluator',
+              isFirstSelected: !isFuncMode,
+              onChanged: (isFirst) {
+                setState(() {
+                  isFuncMode = !isFirst;
+                });
+              },
+            ),
+          ),
+          Expanded(
+            child: historyAsync.when(
         data: (history) {
           if (history.isEmpty) {
             return Center(
@@ -87,7 +131,11 @@ class HistoryScreen extends ConsumerWidget {
                   ),
                 ),
                 onDismissed: (_) {
-                  ref.read(historyProvider.notifier).delete(index);
+                  if (isFuncMode) {
+                    ref.read(functionHistoryProvider.notifier).delete(index);
+                  } else {
+                    ref.read(historyProvider.notifier).delete(index);
+                  }
                 },
                 child: Card(
                   elevation: 0,
@@ -98,11 +146,18 @@ class HistoryScreen extends ConsumerWidget {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
                     onTap: () {
-                      ref.read(calculatorProvider.notifier).clear();
-                      ref
-                          .read(calculatorProvider.notifier)
-                          .append(entry.result);
-                      Navigator.pop(context);
+                      if (isFuncMode) {
+                        ref.read(functionEvaluatorProvider.notifier).clear();
+                        ref
+                            .read(functionEvaluatorProvider.notifier)
+                            .setExpression(entry.expression);
+                      } else {
+                        ref.read(calculatorProvider.notifier).clear();
+                        ref
+                            .read(calculatorProvider.notifier)
+                            .append(entry.result);
+                      }
+                      Navigator.pop(context, isFuncMode);
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -139,6 +194,9 @@ class HistoryScreen extends ConsumerWidget {
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('Error: $err')),
+      ),
+          ),
+        ],
       ),
     );
   }

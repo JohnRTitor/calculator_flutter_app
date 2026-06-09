@@ -99,10 +99,17 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
               child: IconButton(
                 padding: EdgeInsets.zero,
                 icon: const Icon(Icons.history, size: 20),
-                onPressed: () => Navigator.push(
-                  context,
-                  FadePageRoute(page: const HistoryScreen()),
-                ),
+                onPressed: () async {
+                  final result = await Navigator.push<bool>(
+                    context,
+                    FadePageRoute(page: HistoryScreen(initialIsFuncMode: isFuncMode)),
+                  );
+                  if (result != null && result != isFuncMode) {
+                    setState(() {
+                      isFuncMode = result;
+                    });
+                  }
+                },
                 tooltip: 'History',
                 color: glassCard.foregroundColor,
               ),
@@ -114,10 +121,17 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
             child: IconButton(
               padding: EdgeInsets.zero,
               icon: const Icon(Icons.history, size: 20),
-              onPressed: () => Navigator.push(
-                context,
-                FadePageRoute(page: const HistoryScreen()),
-              ),
+              onPressed: () async {
+                final result = await Navigator.push<bool>(
+                  context,
+                  FadePageRoute(page: HistoryScreen(initialIsFuncMode: isFuncMode)),
+                );
+                if (result != null && result != isFuncMode) {
+                  setState(() {
+                    isFuncMode = result;
+                  });
+                }
+              },
               tooltip: 'History',
               color: theme.colorScheme.onSurfaceVariant,
             ),
