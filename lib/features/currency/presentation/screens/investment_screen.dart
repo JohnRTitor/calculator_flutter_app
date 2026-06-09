@@ -6,6 +6,7 @@ import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/shared/widgets/screenshot_share_wrapper.dart';
+import 'package:calculator_flutter_app/shared/layouts/responsive_keypad_layout.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -80,123 +81,117 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            flex: 60,
-            child: ScreenshotShareWrapper(
-              key: _screenshotKey,
-              child: Container(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    // One-Time Tab
-                    SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildResultChartArea(context, result, uiStyle, colorScheme, textTheme),
-                          const SizedBox(height: 24),
-                          _buildInputCard(
-                            context: context,
-                            label: 'Total Investment',
-                            value: state.principalStr.isEmpty ? '0' : state.principalStr,
-                            symbol: '\$',
-                            inputId: 'principal',
-                            isActive: state.activeInput == 'principal',
-                            onTap: () => notifier.setActiveInput('principal'),
-                            uiStyle: uiStyle,
-                            colorScheme: colorScheme,
-                          ),
-                          const SizedBox(height: 12),
-                          _buildInputCard(
-                            context: context,
-                            label: 'Expected Return Rate (p.a)',
-                            value: state.interestRateStr.isEmpty ? '0' : state.interestRateStr,
-                            symbol: '%',
-                            inputId: 'interestRate',
-                            isActive: state.activeInput == 'interestRate',
-                            onTap: () => notifier.setActiveInput('interestRate'),
-                            uiStyle: uiStyle,
-                            colorScheme: colorScheme,
-                          ),
-                          const SizedBox(height: 12),
-                          _buildInputCard(
-                            context: context,
-                            label: 'Time Period',
-                            value: state.yearsStr.isEmpty ? '0' : state.yearsStr,
-                            symbol: 'Yr',
-                            inputId: 'years',
-                            isActive: state.activeInput == 'years',
-                            onTap: () => notifier.setActiveInput('years'),
-                            uiStyle: uiStyle,
-                            colorScheme: colorScheme,
-                          ),
-                        ],
+      body: ResponsiveKeypadLayout(
+        displayFlex: 60,
+        keypadFlex: 40,
+        keypadMinHeight: 350,
+        displayArea: ScreenshotShareWrapper(
+          key: _screenshotKey,
+          child: Container(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                // One-Time Tab
+                SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildResultChartArea(context, result, uiStyle, colorScheme, textTheme),
+                      const SizedBox(height: 24),
+                      _buildInputCard(
+                        context: context,
+                        label: 'Total Investment',
+                        value: state.principalStr.isEmpty ? '0' : state.principalStr,
+                        symbol: '\$',
+                        inputId: 'principal',
+                        isActive: state.activeInput == 'principal',
+                        onTap: () => notifier.setActiveInput('principal'),
+                        uiStyle: uiStyle,
+                        colorScheme: colorScheme,
                       ),
-                    ),
-                    
-                    // SIP Tab
-                    SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildResultChartArea(context, result, uiStyle, colorScheme, textTheme),
-                          const SizedBox(height: 24),
-                          _buildInputCard(
-                            context: context,
-                            label: 'Monthly Investment',
-                            value: state.monthlyContributionStr.isEmpty ? '0' : state.monthlyContributionStr,
-                            symbol: '\$',
-                            inputId: 'monthlyContribution',
-                            isActive: state.activeInput == 'monthlyContribution',
-                            onTap: () => notifier.setActiveInput('monthlyContribution'),
-                            uiStyle: uiStyle,
-                            colorScheme: colorScheme,
-                          ),
-                          const SizedBox(height: 12),
-                          _buildInputCard(
-                            context: context,
-                            label: 'Expected Return Rate (p.a)',
-                            value: state.interestRateStr.isEmpty ? '0' : state.interestRateStr,
-                            symbol: '%',
-                            inputId: 'interestRate',
-                            isActive: state.activeInput == 'interestRate',
-                            onTap: () => notifier.setActiveInput('interestRate'),
-                            uiStyle: uiStyle,
-                            colorScheme: colorScheme,
-                          ),
-                          const SizedBox(height: 12),
-                          _buildInputCard(
-                            context: context,
-                            label: 'Time Period',
-                            value: state.yearsStr.isEmpty ? '0' : state.yearsStr,
-                            symbol: 'Yr',
-                            inputId: 'years',
-                            isActive: state.activeInput == 'years',
-                            onTap: () => notifier.setActiveInput('years'),
-                            uiStyle: uiStyle,
-                            colorScheme: colorScheme,
-                          ),
-                        ],
+                      const SizedBox(height: 12),
+                      _buildInputCard(
+                        context: context,
+                        label: 'Expected Return Rate (p.a)',
+                        value: state.interestRateStr.isEmpty ? '0' : state.interestRateStr,
+                        symbol: '%',
+                        inputId: 'interestRate',
+                        isActive: state.activeInput == 'interestRate',
+                        onTap: () => notifier.setActiveInput('interestRate'),
+                        uiStyle: uiStyle,
+                        colorScheme: colorScheme,
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 12),
+                      _buildInputCard(
+                        context: context,
+                        label: 'Time Period',
+                        value: state.yearsStr.isEmpty ? '0' : state.yearsStr,
+                        symbol: 'Yr',
+                        inputId: 'years',
+                        isActive: state.activeInput == 'years',
+                        onTap: () => notifier.setActiveInput('years'),
+                        uiStyle: uiStyle,
+                        colorScheme: colorScheme,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                
+                // SIP Tab
+                SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildResultChartArea(context, result, uiStyle, colorScheme, textTheme),
+                      const SizedBox(height: 24),
+                      _buildInputCard(
+                        context: context,
+                        label: 'Monthly Investment',
+                        value: state.monthlyContributionStr.isEmpty ? '0' : state.monthlyContributionStr,
+                        symbol: '\$',
+                        inputId: 'monthlyContribution',
+                        isActive: state.activeInput == 'monthlyContribution',
+                        onTap: () => notifier.setActiveInput('monthlyContribution'),
+                        uiStyle: uiStyle,
+                        colorScheme: colorScheme,
+                      ),
+                      const SizedBox(height: 12),
+                      _buildInputCard(
+                        context: context,
+                        label: 'Expected Return Rate (p.a)',
+                        value: state.interestRateStr.isEmpty ? '0' : state.interestRateStr,
+                        symbol: '%',
+                        inputId: 'interestRate',
+                        isActive: state.activeInput == 'interestRate',
+                        onTap: () => notifier.setActiveInput('interestRate'),
+                        uiStyle: uiStyle,
+                        colorScheme: colorScheme,
+                      ),
+                      const SizedBox(height: 12),
+                      _buildInputCard(
+                        context: context,
+                        label: 'Time Period',
+                        value: state.yearsStr.isEmpty ? '0' : state.yearsStr,
+                        symbol: 'Yr',
+                        inputId: 'years',
+                        isActive: state.activeInput == 'years',
+                        onTap: () => notifier.setActiveInput('years'),
+                        uiStyle: uiStyle,
+                        colorScheme: colorScheme,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-
-          Expanded(
-            flex: 40,
-            child: UtilitiesKeypad(
-              onKeyPressed: notifier.onKeyPressed,
-            ),
-          ),
-        ],
+        ),
+        keypad: UtilitiesKeypad(
+          onKeyPressed: notifier.onKeyPressed,
+        ),
       ),
     );
   }

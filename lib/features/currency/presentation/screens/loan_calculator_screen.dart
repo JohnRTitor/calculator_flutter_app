@@ -6,6 +6,7 @@ import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/shared/widgets/screenshot_share_wrapper.dart';
+import 'package:calculator_flutter_app/shared/layouts/responsive_keypad_layout.dart';
 import 'package:intl/intl.dart';
 
 class LoanCalculatorScreen extends ConsumerStatefulWidget {
@@ -58,128 +59,120 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Display Area
-          Expanded(
-            flex: 55,
-            child: ScreenshotShareWrapper(
-              key: _screenshotKey,
-              child: Container(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Result Card
-                      SharedSurface(
-                        uiStyle: uiStyle,
-                        glassRole: GlassSurfaceRole.primary,
-                        materialColor: colorScheme.primaryContainer,
-                        padding: const EdgeInsets.all(24),
-                        borderRadius: BorderRadius.circular(24),
-                        child: Column(
+      body: ResponsiveKeypadLayout(
+        displayFlex: 55,
+        keypadFlex: 45,
+        keypadMinHeight: 350,
+        displayArea: ScreenshotShareWrapper(
+          key: _screenshotKey,
+          child: Container(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Result Card
+                  SharedSurface(
+                    uiStyle: uiStyle,
+                    glassRole: GlassSurfaceRole.primary,
+                    materialColor: colorScheme.primaryContainer,
+                    padding: const EdgeInsets.all(24),
+                    borderRadius: BorderRadius.circular(24),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Monthly EMI',
+                          style: textTheme.titleMedium?.copyWith(
+                            color: cardTextColor.withValues(alpha: 0.8),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          _currencyFormat.format(result.monthlyEmi),
+                          style: textTheme.displayMedium?.copyWith(
+                            color: cardTextColor,
+                            fontWeight: FontWeight.bold,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const Divider(color: Colors.white24, thickness: 1),
+                        const SizedBox(height: 16),
+                        Row(
                           children: [
-                            Text(
-                              'Monthly EMI',
-                              style: textTheme.titleMedium?.copyWith(
-                                color: cardTextColor.withValues(alpha: 0.8),
+                            Expanded(
+                              child: _buildSummaryItem(
+                                'Total Interest',
+                                _currencyFormat.format(result.totalInterest),
+                                uiStyle,
+                                colorScheme,
+                                textTheme,
                               ),
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              _currencyFormat.format(result.monthlyEmi),
-                              style: textTheme.displayMedium?.copyWith(
-                                color: cardTextColor,
-                                fontWeight: FontWeight.bold,
-                                fontFeatures: const [FontFeature.tabularFigures()],
+                            Container(width: 1, height: 40, color: Colors.white24),
+                            Expanded(
+                              child: _buildSummaryItem(
+                                'Total Payment',
+                                _currencyFormat.format(result.totalPayment),
+                                uiStyle,
+                                colorScheme,
+                                textTheme,
                               ),
-                            ),
-                            const SizedBox(height: 16),
-                            const Divider(color: Colors.white24, thickness: 1),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _buildSummaryItem(
-                                    'Total Interest',
-                                    _currencyFormat.format(result.totalInterest),
-                                    uiStyle,
-                                    colorScheme,
-                                    textTheme,
-                                  ),
-                                ),
-                                Container(width: 1, height: 40, color: Colors.white24),
-                                Expanded(
-                                  child: _buildSummaryItem(
-                                    'Total Payment',
-                                    _currencyFormat.format(result.totalPayment),
-                                    uiStyle,
-                                    colorScheme,
-                                    textTheme,
-                                  ),
-                                ),
-                              ],
                             ),
                           ],
                         ),
-                      ),
-                      
-                      const SizedBox(height: 24),
-                      
-                      // Inputs
-                      _buildInputCard(
-                        context: context,
-                        label: 'Principal Amount',
-                        value: state.principalStr.isEmpty ? '0' : state.principalStr,
-                        symbol: '\$',
-                        inputId: 'principal',
-                        isActive: state.activeInput == 'principal',
-                        onTap: () => notifier.setActiveInput('principal'),
-                        uiStyle: uiStyle,
-                        colorScheme: colorScheme,
-                      ),
-                      
-                      const SizedBox(height: 12),
-                      
-                      _buildInputCard(
-                        context: context,
-                        label: 'Interest Rate (Yearly)',
-                        value: state.interestRateStr.isEmpty ? '0' : state.interestRateStr,
-                        symbol: '%',
-                        inputId: 'interestRate',
-                        isActive: state.activeInput == 'interestRate',
-                        onTap: () => notifier.setActiveInput('interestRate'),
-                        uiStyle: uiStyle,
-                        colorScheme: colorScheme,
-                      ),
-                      
-                      const SizedBox(height: 12),
-                      
-                      // Tenure Input
-                      _buildTenureInputCard(
-                        context: context,
-                        state: state,
-                        notifier: notifier,
-                        uiStyle: uiStyle,
-                        colorScheme: colorScheme,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Inputs
+                  _buildInputCard(
+                    context: context,
+                    label: 'Principal Amount',
+                    value: state.principalStr.isEmpty ? '0' : state.principalStr,
+                    symbol: '\$',
+                    inputId: 'principal',
+                    isActive: state.activeInput == 'principal',
+                    onTap: () => notifier.setActiveInput('principal'),
+                    uiStyle: uiStyle,
+                    colorScheme: colorScheme,
+                  ),
+                  
+                  const SizedBox(height: 12),
+                  
+                  _buildInputCard(
+                    context: context,
+                    label: 'Interest Rate (Yearly)',
+                    value: state.interestRateStr.isEmpty ? '0' : state.interestRateStr,
+                    symbol: '%',
+                    inputId: 'interestRate',
+                    isActive: state.activeInput == 'interestRate',
+                    onTap: () => notifier.setActiveInput('interestRate'),
+                    uiStyle: uiStyle,
+                    colorScheme: colorScheme,
+                  ),
+                  
+                  const SizedBox(height: 12),
+                  
+                  // Tenure Input
+                  _buildTenureInputCard(
+                    context: context,
+                    state: state,
+                    notifier: notifier,
+                    uiStyle: uiStyle,
+                    colorScheme: colorScheme,
+                  ),
+                ],
               ),
             ),
           ),
-
-          // Keypad
-          Expanded(
-            flex: 45,
-            child: UtilitiesKeypad(
-              onKeyPressed: notifier.onKeyPressed,
-            ),
-          ),
-        ],
+        ),
+        keypad: UtilitiesKeypad(
+          onKeyPressed: notifier.onKeyPressed,
+        ),
       ),
     );
   }

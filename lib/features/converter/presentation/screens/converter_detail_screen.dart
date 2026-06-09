@@ -10,6 +10,7 @@ import 'package:calculator_flutter_app/features/converter/presentation/widgets/c
 import 'package:calculator_flutter_app/features/converter/presentation/widgets/unit_selector_bottom_sheet.dart';
 import 'package:calculator_flutter_app/generated/rust/bridge/converter.dart';
 import 'package:calculator_flutter_app/shared/widgets/screenshot_share_wrapper.dart';
+import 'package:calculator_flutter_app/shared/layouts/responsive_keypad_layout.dart';
 
 /// The detail screen for a specific converter category.
 ///
@@ -38,45 +39,37 @@ class _ConverterDetailScreenState extends ConsumerState<ConverterDetailScreen> {
 
     Widget body = SafeArea(
       bottom: false,
-      child: Column(
-        children: [
-          // Display Area
-          Expanded(
-            flex: 55,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.only(
-                left: 24.0,
-                right: 24.0,
-                top: 16.0,
-                bottom: 16.0,
-              ),
-              child: _buildDisplayArea(
-                context,
-                ref,
-                state,
-                category,
-                colorScheme,
-                uiStyle,
-              ),
-            ),
+      child: ResponsiveKeypadLayout(
+        displayFlex: 55,
+        keypadFlex: 45,
+        keypadMinHeight: 350,
+        displayArea: SingleChildScrollView(
+          padding: const EdgeInsets.only(
+            left: 24.0,
+            right: 24.0,
+            top: 16.0,
+            bottom: 16.0,
           ),
-
-          // Keypad
-          Expanded(
-            flex: 45, 
-            child: UtilitiesKeypad(
-              onKeyPressed: (key) {
-                if (key == '⌫') {
-                  notifier.onDelete();
-                } else if (key == '.') {
-                  notifier.onDot();
-                } else {
-                  notifier.onDigit(key);
-                }
-              },
-            ),
+          child: _buildDisplayArea(
+            context,
+            ref,
+            state,
+            category,
+            colorScheme,
+            uiStyle,
           ),
-        ],
+        ),
+        keypad: UtilitiesKeypad(
+          onKeyPressed: (key) {
+            if (key == '⌫') {
+              notifier.onDelete();
+            } else if (key == '.') {
+              notifier.onDot();
+            } else {
+              notifier.onDigit(key);
+            }
+          },
+        ),
       ),
     );
 

@@ -98,8 +98,8 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
     return Scaffold(
       body: GridView.builder(
         padding: const EdgeInsets.all(24.0),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 150.0,
           crossAxisSpacing: 16.0,
           mainAxisSpacing: 24.0,
           childAspectRatio: 0.8,
