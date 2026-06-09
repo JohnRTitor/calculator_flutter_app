@@ -233,6 +233,33 @@ class _FunctionEvaluatorScreenState
 
                 const SizedBox(height: 16),
 
+                // Angle Mode Toggle
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SegmentedButton<bool>(
+                      segments: const [
+                        ButtonSegment(value: true, label: Text('DEG')),
+                        ButtonSegment(value: false, label: Text('RAD')),
+                      ],
+                      selected: {state.isDegreeMode},
+                      onSelectionChanged: (Set<bool> newSelection) {
+                        if (newSelection.first != state.isDegreeMode) {
+                          ref
+                              .read(functionEvaluatorProvider.notifier)
+                              .toggleAngleMode();
+                        }
+                      },
+                      style: SegmentedButton.styleFrom(
+                        backgroundColor: themeExt.chipBackground,
+                        selectedForegroundColor: themeExt.chipText,
+                        selectedBackgroundColor: theme.colorScheme.primaryContainer,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
                 // Evaluate Button
                 SizedBox(
                   width: double.infinity,

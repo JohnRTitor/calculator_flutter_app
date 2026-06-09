@@ -127,6 +127,14 @@ class FunctionEvaluator extends _$FunctionEvaluator {
     }
   }
 
+  void toggleAngleMode() {
+    state = state.copyWith(isDegreeMode: !state.isDegreeMode);
+    _updatePreview();
+    if (state.showResult) {
+      evaluate();
+    }
+  }
+
   void clear() {
     state = FunctionEvaluatorState(
       variables: state

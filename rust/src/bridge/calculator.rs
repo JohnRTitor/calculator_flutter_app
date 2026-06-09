@@ -252,10 +252,36 @@ pub fn extract_variables(expression: String) -> Result<Vec<String>, String> {
     if expression.trim().is_empty() {
         return Ok(Vec::new());
     }
-    let tokens = parser::tokenize(&expression).map_err(|e| e.to_string())?;
-    let mut p = parser::Parser::new(&tokens);
-    let ast = p.parse().map_err(|e| e.to_string())?;
-    let mut vars: Vec<String> = evaluator::extract_variables(&ast).into_iter().collect();
-    vars.sort(); // Sort variables alphabetically for consistent UI
+    
+    let mut vars = Vec::new();
+    let mut current_var = String::new();
+    
+    for c in expression.chars() {
+        if c.is_alphabetic() || c == '_' {
+            current_var.push(c);
+        } else {
+            if !current_var.is_empty() {
+                if is_variable(&current_var) {
+                    vars.push(current_var.clone());
+                }
+                current_var.clear();
+            }
+        }
+    }
+    if !current_var.is_empty() && is_variable(&current_var) {
+        vars.push(current_var);
+    }
+    
+    vars.sort();
+    vars.dedup();
     Ok(vars)
+}
+
+fn is_variable(ident: &str) -> bool {
+    match ident.to_lowercase().as_str() {
+        "mod" | "sin" | "cos" | "tan" | "asin" | "acos" | "atan" | 
+        "sinh" | "cosh" | "tanh" | "asinh" | "acosh" | "atanh" | 
+        "log" | "log_" | "ln" | "sqrt" | "pi" | "e" | "ans" => false,
+        _ => true,
+    }
 }
