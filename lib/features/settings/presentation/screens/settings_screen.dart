@@ -104,16 +104,6 @@ class SettingsScreen extends ConsumerWidget {
                           ref.read(uiStyleProvider.notifier).setUiStyle(style),
                     ),
 
-                    const SizedBox(height: 28),
-
-                    // ── About Section ──
-                    _SectionHeader(
-                      label: 'About',
-                      colorScheme: colorScheme,
-                      textTheme: theme.textTheme,
-                    ),
-                    const SizedBox(height: 8),
-                    _buildAboutCard(theme, colorScheme, uiStyle),
                   ]
                   .animate(interval: 50.ms)
                   .fade(duration: 400.ms)
@@ -133,58 +123,6 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAboutCard(
-    ThemeData theme,
-    ColorScheme colorScheme,
-    UiStyle uiStyle,
-  ) {
-    final content = Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Calculator',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Flutter + Rust Native Calculator.\nBuilt for performance and elegance.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'v1.0.0',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (uiStyle == UiStyle.liquidGlass) {
-      return SharedSurface(
-        uiStyle: uiStyle,
-        glassRole: GlassSurfaceRole.panel,
-        borderRadius: BorderRadius.circular(16),
-        child: content,
-      );
-    }
-
-    return Card(
-      elevation: 0,
-      margin: EdgeInsets.zero,
-      color: colorScheme.surfaceContainerHigh,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: content,
-    );
-  }
 }
 
 // ── Section Header ──

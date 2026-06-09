@@ -10,6 +10,9 @@ import 'package:calculator_flutter_app/features/settings/presentation/providers/
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/shared/widgets/app_tab_bar.dart';
 import 'package:calculator_flutter_app/app/navigation/route_transitions.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:calculator_flutter_app/shared/widgets/app_dialog.dart';
+import 'package:calculator_flutter_app/shared/widgets/app_dropdown_menu.dart';
 
 /// The primary navigation scaffold of the application.
 ///
@@ -92,13 +95,13 @@ class _MainScreenState extends ConsumerState<MainScreen>
     );
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: SizedBox(
         height: 40,
         child: Row(
           children: [
             // Empty space to balance the More Menu on the right and keep tabs centered
-            const SizedBox(width: 48),
+            const SizedBox(width: 40),
 
             const Spacer(),
 
@@ -118,60 +121,69 @@ class _MainScreenState extends ConsumerState<MainScreen>
             const Spacer(),
 
             // More Menu
-            isGlass
-                ? SharedSurface(
-                    uiStyle: uiStyle,
-                    glassRole: GlassSurfaceRole.button,
-                    frosted: true,
-                    borderRadius: BorderRadius.circular(24),
-                    child: PopupMenuButton<String>(
-                      icon: Icon(
-                        Icons.more_vert,
-                        size: 22,
-                        color: glassCard.foregroundColor,
-                      ),
-                      tooltip: 'More options',
-                      onSelected: (value) {
-                        if (value == 'settings') {
-                          Navigator.push(
-                            context,
-                            FadePageRoute(page: const SettingsScreen()),
-                          );
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(
-                          value: 'settings',
-                          child: Text('Settings'),
-                        ),
-                      ],
-                    ),
-                  )
-                : PopupMenuButton<String>(
-                    icon: Icon(
-                      Icons.more_vert,
-                      size: 22,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                    tooltip: 'More options',
-                    onSelected: (value) {
-                      if (value == 'settings') {
-                        Navigator.push(
-                          context,
-                          FadePageRoute(page: const SettingsScreen()),
-                        );
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'settings',
-                        child: Text('Settings'),
-                      ),
-                    ],
-                  ),
+            AppDropdownMenu(
+              icon: Icons.more_vert,
+              uiStyle: uiStyle,
+              tooltip: 'More options',
+              entries: [
+                AppDropdownMenuEntry(
+                  label: 'Settings',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      FadePageRoute(page: const SettingsScreen()),
+                    );
+                  },
+                ),
+                AppDropdownMenuEntry(
+                  label: 'About',
+                  onPressed: () => _showAboutDialog(context, uiStyle),
+                ),
+              ],
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showAboutDialog(BuildContext context, UiStyle uiStyle) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
+    showAppDialog(
+      context: context,
+      title: 'About',
+      icon: Icons.info_outline,
+      uiStyle: uiStyle,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Masum Reza (JohnRTitor)',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Flutter + Rust Native Calculator\nBuilt for performance and elegance.',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+      primaryButtonText: 'View Source Code',
+      onPrimaryButtonPressed: () async {
+        final url = Uri.parse('https://github.com/JohnRTitor/calculator_flutter_app');
+        if (await canLaunchUrl(url)) {
+          await launchUrl(url);
+        }
+      },
+      secondaryButtonText: 'Close',
     );
   }
 }

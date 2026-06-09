@@ -43,9 +43,6 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
               _buildHistoryButton(context, isGlass, uiStyle),
               const SizedBox(width: 8),
               _buildSegmentedToggle(uiStyle),
-              const SizedBox(
-                width: 48,
-              ), // Balance the row to keep the toggle centered
             ],
           ),
         ),

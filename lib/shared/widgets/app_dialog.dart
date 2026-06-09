@@ -10,6 +10,8 @@ Future<T?> showAppDialog<T>({
   required UiStyle uiStyle,
   String primaryButtonText = 'OK',
   VoidCallback? onPrimaryButtonPressed,
+  String? secondaryButtonText,
+  VoidCallback? onSecondaryButtonPressed,
 }) {
   final colorScheme = Theme.of(context).colorScheme;
 
@@ -79,6 +81,32 @@ Future<T?> showAppDialog<T>({
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
+                        if (secondaryButtonText != null) ...[
+                          TextButton(
+                            onPressed: () {
+                              if (onSecondaryButtonPressed != null) {
+                                onSecondaryButtonPressed();
+                              } else {
+                                Navigator.of(context).pop();
+                              }
+                            },
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 12,
+                              ),
+                              minimumSize: const Size(0, 48),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                            ),
+                            child: Text(
+                              secondaryButtonText,
+                              style: const TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
                         FilledButton(
                           onPressed: () {
                             if (onPrimaryButtonPressed != null) {
