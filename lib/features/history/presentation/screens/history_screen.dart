@@ -34,7 +34,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   @override
   Widget build(BuildContext context) {
     final uiStyle = ref.watch(uiStyleProvider);
-    final historyAsync = isFuncMode 
+    final historyAsync = isFuncMode
         ? ref.watch(functionHistoryProvider)
         : ref.watch(historyProvider);
     final theme = Theme.of(context);
@@ -53,7 +53,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               if (historyList.isEmpty) return;
 
               final uiStyle = ref.read(uiStyleProvider);
-              final confirm = await _showClearHistoryDialog(context, historyList.length, uiStyle);
+              final confirm = await _showClearHistoryDialog(
+                context,
+                historyList.length,
+                uiStyle,
+              );
               if (confirm == true) {
                 if (isFuncMode) {
                   ref.read(functionHistoryProvider.notifier).clear();
@@ -83,124 +87,135 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           ),
           Expanded(
             child: historyAsync.when(
-        data: (history) {
-          if (history.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.history,
-                    size: 48,
-                    color: theme.colorScheme.onSurfaceVariant.withValues(
-                      alpha: 0.3,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'No history yet',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant.withValues(
-                        alpha: 0.5,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-          return ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            itemCount: history.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 4),
-            itemBuilder: (context, index) {
-              final entry = history[index];
-              return Dismissible(
-                key: ValueKey(entry.expression + index.toString()),
-                direction: DismissDirection.endToStart,
-                background: Container(
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 24),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.errorContainer,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Icon(
-                    Icons.delete_outline,
-                    color: theme.colorScheme.onErrorContainer,
-                  ),
-                ),
-                onDismissed: (_) {
-                  if (isFuncMode) {
-                    ref.read(functionHistoryProvider.notifier).delete(index);
-                  } else {
-                    ref.read(historyProvider.notifier).delete(index);
-                  }
-                },
-                child: Card(
-                  elevation: 0,
-                  color: theme.colorScheme.surfaceContainerHigh,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(16),
-                    onTap: () {
-                      if (isFuncMode) {
-                        ref.read(functionEvaluatorProvider.notifier).clear();
-                        ref
-                            .read(functionEvaluatorProvider.notifier)
-                            .setExpression(entry.expression);
-                      } else {
-                        ref.read(calculatorProvider.notifier).clear();
-                        ref
-                            .read(calculatorProvider.notifier)
-                            .append(entry.result);
-                      }
-                      Navigator.pop(context, isFuncMode);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 16,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            entry.expression,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                            textAlign: TextAlign.right,
+              data: (history) {
+                if (history.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.history,
+                          size: 48,
+                          color: theme.colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.3,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '= ${entry.result}',
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              color: theme.colorScheme.primary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            textAlign: TextAlign.right,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'No history yet',
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant
+                                .withValues(alpha: 0.5),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
+                  );
+                }
+                return ListView.separated(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
                   ),
-                ),
-              );
-            },
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
-      ),
+                  itemCount: history.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 4),
+                  itemBuilder: (context, index) {
+                    final entry = history[index];
+                    return Dismissible(
+                      key: ValueKey(entry.expression + index.toString()),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 24),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.errorContainer,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Icon(
+                          Icons.delete_outline,
+                          color: theme.colorScheme.onErrorContainer,
+                        ),
+                      ),
+                      onDismissed: (_) {
+                        if (isFuncMode) {
+                          ref
+                              .read(functionHistoryProvider.notifier)
+                              .delete(index);
+                        } else {
+                          ref.read(historyProvider.notifier).delete(index);
+                        }
+                      },
+                      child: Card(
+                        elevation: 0,
+                        color: theme.colorScheme.surfaceContainerHigh,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () {
+                            if (isFuncMode) {
+                              ref
+                                  .read(functionEvaluatorProvider.notifier)
+                                  .clear();
+                              ref
+                                  .read(functionEvaluatorProvider.notifier)
+                                  .setExpression(entry.expression);
+                            } else {
+                              ref.read(calculatorProvider.notifier).clear();
+                              ref
+                                  .read(calculatorProvider.notifier)
+                                  .append(entry.result);
+                            }
+                            Navigator.pop(context, isFuncMode);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 16,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  entry.expression,
+                                  style: theme.textTheme.bodyLarge?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                  textAlign: TextAlign.right,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '= ${entry.result}',
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    color: theme.colorScheme.primary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Center(child: Text('Error: $err')),
+            ),
           ),
         ],
       ),
     );
   }
-  Future<bool?> _showClearHistoryDialog(BuildContext context, int count, UiStyle uiStyle) {
+
+  Future<bool?> _showClearHistoryDialog(
+    BuildContext context,
+    int count,
+    UiStyle uiStyle,
+  ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -226,7 +241,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             child: Dialog(
               backgroundColor: Colors.transparent,
               elevation: 0,
-              insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              insetPadding: const EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 24,
+              ),
               child: SharedSurface(
                 uiStyle: uiStyle,
                 glassRole: GlassSurfaceRole.panel,
@@ -234,106 +252,118 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 borderRadius: BorderRadius.circular(32),
                 padding: const EdgeInsets.fromLTRB(28, 28, 28, 24),
                 child: SizedBox(
-                  width: 400, // Slightly increase width while constrained by insetPadding
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Icon
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: colorScheme.errorContainer.withValues(alpha: 0.5),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.delete_outline,
-                        color: colorScheme.error,
-                        size: 28,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    // Title
-                    Text(
-                      'Clear History',
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: colorScheme.onSurface,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    // Subtitle
-                    RichText(
-                      text: TextSpan(
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                          height: 1.5,
+                  width:
+                      400, // Slightly increase width while constrained by insetPadding
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Icon
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: colorScheme.errorContainer.withValues(
+                            alpha: 0.5,
+                          ),
+                          shape: BoxShape.circle,
                         ),
+                        child: Icon(
+                          Icons.delete_outline,
+                          color: colorScheme.error,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      // Title
+                      Text(
+                        'Clear History',
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurface,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      // Subtitle
+                      RichText(
+                        text: TextSpan(
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                            height: 1.5,
+                          ),
+                          children: [
+                            const TextSpan(
+                              text: 'This action will permanently remove ',
+                            ),
+                            TextSpan(
+                              text:
+                                  '$count saved calculation${count == 1 ? '' : 's'}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: colorScheme.onSurface,
+                              ),
+                            ),
+                            const TextSpan(text: ' and cannot be undone.'),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      // Actions
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          const TextSpan(text: 'This action will permanently remove '),
-                          TextSpan(
-                            text: '$count saved calculation${count == 1 ? '' : 's'}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              color: colorScheme.onSurface,
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 12,
+                              ),
+                              minimumSize: const Size(0, 48),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                            ),
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(
+                                color: colorScheme.onSurfaceVariant,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
-                          const TextSpan(text: ' and cannot be undone.'),
+                          const SizedBox(width: 12),
+                          FilledButton.icon(
+                            onPressed: () => Navigator.pop(context, true),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: colorScheme.error,
+                              foregroundColor: colorScheme.onError,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 12,
+                              ),
+                              minimumSize: const Size(0, 48),
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                            ),
+                            icon: const Icon(Icons.delete_forever, size: 20),
+                            label: const Text(
+                              'Clear History',
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 32),
-                    // Actions
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                            minimumSize: const Size(0, 48),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                          ),
-                          child: Text(
-                            'Cancel',
-                            style: TextStyle(
-                              color: colorScheme.onSurfaceVariant,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        FilledButton.icon(
-                          onPressed: () => Navigator.pop(context, true),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: colorScheme.error,
-                            foregroundColor: colorScheme.onError,
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                            minimumSize: const Size(0, 48),
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                          ),
-                          icon: const Icon(Icons.delete_forever, size: 20),
-                          label: const Text(
-                            'Clear History',
-                            style: TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      );
-    },
-  );
+        );
+      },
+    );
   }
 }

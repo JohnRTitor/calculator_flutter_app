@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/providers/function_evaluator_state.dart';
-import 'package:calculator_flutter_app/generated/rust/bridge/calculator.dart' as rust;
+import 'package:calculator_flutter_app/generated/rust/bridge/calculator.dart'
+    as rust;
 import 'package:calculator_flutter_app/features/history/presentation/providers/function_history_provider.dart';
 
 part 'function_evaluator_provider.g.dart';
@@ -98,7 +99,10 @@ class FunctionEvaluator extends _$FunctionEvaluator {
       if (history.isEmpty ||
           history.last.expression != state.funcExpression ||
           history.last.result != newResult) {
-        rust.funcHistoryAdd(expression: state.funcExpression, result: newResult);
+        rust.funcHistoryAdd(
+          expression: state.funcExpression,
+          result: newResult,
+        );
 
         final historyNotifier = ref.read(functionHistoryProvider.notifier);
         await historyNotifier.saveHistoryToFile();
@@ -125,7 +129,8 @@ class FunctionEvaluator extends _$FunctionEvaluator {
 
   void clear() {
     state = FunctionEvaluatorState(
-      variables: state.variables, // keep variables around if user wants to use them again
+      variables: state
+          .variables, // keep variables around if user wants to use them again
     );
   }
 }

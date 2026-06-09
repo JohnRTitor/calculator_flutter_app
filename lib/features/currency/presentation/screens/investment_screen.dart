@@ -19,10 +19,15 @@ class InvestmentScreen extends ConsumerStatefulWidget {
   ConsumerState<InvestmentScreen> createState() => _InvestmentScreenState();
 }
 
-class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with SingleTickerProviderStateMixin {
+class _InvestmentScreenState extends ConsumerState<InvestmentScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final GlobalKey<ScreenshotShareWrapperState> _screenshotKey = GlobalKey<ScreenshotShareWrapperState>();
-  final NumberFormat _currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+  final GlobalKey<ScreenshotShareWrapperState> _screenshotKey =
+      GlobalKey<ScreenshotShareWrapperState>();
+  final NumberFormat _currencyFormat = NumberFormat.currency(
+    symbol: '\$',
+    decimalDigits: 0,
+  );
 
   @override
   void initState() {
@@ -30,7 +35,9 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
-        final mode = _tabController.index == 0 ? InvestmentMode.oneTime : InvestmentMode.sip;
+        final mode = _tabController.index == 0
+            ? InvestmentMode.oneTime
+            : InvestmentMode.sip;
         ref.read(investmentProvider.notifier).setMode(mode);
       }
     });
@@ -68,7 +75,8 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
               onPressed: () {
                 _screenshotKey.currentState?.captureAndShare(
                   subject: 'Investment Calculation',
-                  text: 'Expected Returns: ${_currencyFormat.format(result.futureValue)}',
+                  text:
+                      'Expected Returns: ${_currencyFormat.format(result.futureValue)}',
                 );
               },
               tooltip: 'Share result',
@@ -96,16 +104,27 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
               children: [
                 // One-Time Tab
                 SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 16.0,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _buildResultChartArea(context, result, uiStyle, colorScheme, textTheme),
+                      _buildResultChartArea(
+                        context,
+                        result,
+                        uiStyle,
+                        colorScheme,
+                        textTheme,
+                      ),
                       const SizedBox(height: 24),
                       _buildInputCard(
                         context: context,
                         label: 'Total Investment',
-                        value: state.principalStr.isEmpty ? '0' : state.principalStr,
+                        value: state.principalStr.isEmpty
+                            ? '0'
+                            : state.principalStr,
                         symbol: '\$',
                         inputId: 'principal',
                         isActive: state.activeInput == 'principal',
@@ -117,7 +136,9 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
                       _buildInputCard(
                         context: context,
                         label: 'Expected Return Rate (p.a)',
-                        value: state.interestRateStr.isEmpty ? '0' : state.interestRateStr,
+                        value: state.interestRateStr.isEmpty
+                            ? '0'
+                            : state.interestRateStr,
                         symbol: '%',
                         inputId: 'interestRate',
                         isActive: state.activeInput == 'interestRate',
@@ -140,23 +161,35 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
                     ],
                   ),
                 ),
-                
+
                 // SIP Tab
                 SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 16.0,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _buildResultChartArea(context, result, uiStyle, colorScheme, textTheme),
+                      _buildResultChartArea(
+                        context,
+                        result,
+                        uiStyle,
+                        colorScheme,
+                        textTheme,
+                      ),
                       const SizedBox(height: 24),
                       _buildInputCard(
                         context: context,
                         label: 'Monthly Investment',
-                        value: state.monthlyContributionStr.isEmpty ? '0' : state.monthlyContributionStr,
+                        value: state.monthlyContributionStr.isEmpty
+                            ? '0'
+                            : state.monthlyContributionStr,
                         symbol: '\$',
                         inputId: 'monthlyContribution',
                         isActive: state.activeInput == 'monthlyContribution',
-                        onTap: () => notifier.setActiveInput('monthlyContribution'),
+                        onTap: () =>
+                            notifier.setActiveInput('monthlyContribution'),
                         uiStyle: uiStyle,
                         colorScheme: colorScheme,
                       ),
@@ -164,7 +197,9 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
                       _buildInputCard(
                         context: context,
                         label: 'Expected Return Rate (p.a)',
-                        value: state.interestRateStr.isEmpty ? '0' : state.interestRateStr,
+                        value: state.interestRateStr.isEmpty
+                            ? '0'
+                            : state.interestRateStr,
                         symbol: '%',
                         inputId: 'interestRate',
                         isActive: state.activeInput == 'interestRate',
@@ -191,9 +226,7 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
             ),
           ),
         ),
-        keypad: UtilitiesKeypad(
-          onKeyPressed: notifier.onKeyPressed,
-        ),
+        keypad: UtilitiesKeypad(onKeyPressed: notifier.onKeyPressed),
       ),
     );
   }
@@ -209,11 +242,17 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
     );
   }
 
-  Widget _buildResultChartArea(BuildContext context, dynamic result, UiStyle uiStyle, ColorScheme colorScheme, TextTheme textTheme) {
+  Widget _buildResultChartArea(
+    BuildContext context,
+    dynamic result,
+    UiStyle uiStyle,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
     final bool hasData = result.totalInvestment > 0 || result.totalInterest > 0;
-    
+
     final themeExt = Theme.of(context).extension<AppThemeExtension>()!;
-    
+
     return SharedSurface(
       uiStyle: uiStyle,
       glassRole: GlassSurfaceRole.primary,
@@ -228,7 +267,12 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Total Value', style: textTheme.bodyMedium?.copyWith(color: themeExt.resultText.withValues(alpha: 0.8))),
+                    Text(
+                      'Total Value',
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: themeExt.resultText.withValues(alpha: 0.8),
+                      ),
+                    ),
                     Text(
                       _currencyFormat.format(result.futureValue),
                       style: textTheme.headlineSmall?.copyWith(
@@ -240,13 +284,33 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        Container(width: 12, height: 12, decoration: BoxDecoration(color: colorScheme.primary, shape: BoxShape.circle)),
+                        Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: colorScheme.primary,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
                         const SizedBox(width: 8),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Est. Returns', style: textTheme.bodySmall?.copyWith(color: themeExt.resultText.withValues(alpha: 0.8))),
-                            Text(_currencyFormat.format(result.totalInterest), style: textTheme.titleSmall?.copyWith(color: themeExt.resultText, fontWeight: FontWeight.w600)),
+                            Text(
+                              'Est. Returns',
+                              style: textTheme.bodySmall?.copyWith(
+                                color: themeExt.resultText.withValues(
+                                  alpha: 0.8,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              _currencyFormat.format(result.totalInterest),
+                              style: textTheme.titleSmall?.copyWith(
+                                color: themeExt.resultText,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -254,13 +318,33 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Container(width: 12, height: 12, decoration: BoxDecoration(color: colorScheme.tertiary, shape: BoxShape.circle)),
+                        Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: colorScheme.tertiary,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
                         const SizedBox(width: 8),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Invested Amount', style: textTheme.bodySmall?.copyWith(color: themeExt.resultText.withValues(alpha: 0.8))),
-                            Text(_currencyFormat.format(result.totalInvestment), style: textTheme.titleSmall?.copyWith(color: themeExt.resultText, fontWeight: FontWeight.w600)),
+                            Text(
+                              'Invested Amount',
+                              style: textTheme.bodySmall?.copyWith(
+                                color: themeExt.resultText.withValues(
+                                  alpha: 0.8,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              _currencyFormat.format(result.totalInvestment),
+                              style: textTheme.titleSmall?.copyWith(
+                                color: themeExt.resultText,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -271,31 +355,36 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
               SizedBox(
                 width: 120,
                 height: 120,
-                child: hasData 
-                ? PieChart(
-                    PieChartData(
-                      sectionsSpace: 2,
-                      centerSpaceRadius: 30,
-                      startDegreeOffset: -90,
-                      sections: [
-                        PieChartSectionData(
-                          color: colorScheme.primary,
-                          value: result.totalInterest,
-                          title: '',
-                          radius: 20,
+                child: hasData
+                    ? PieChart(
+                        PieChartData(
+                          sectionsSpace: 2,
+                          centerSpaceRadius: 30,
+                          startDegreeOffset: -90,
+                          sections: [
+                            PieChartSectionData(
+                              color: colorScheme.primary,
+                              value: result.totalInterest,
+                              title: '',
+                              radius: 20,
+                            ),
+                            PieChartSectionData(
+                              color: colorScheme.tertiary,
+                              value: result.totalInvestment,
+                              title: '',
+                              radius: 20,
+                            ),
+                          ],
                         ),
-                        PieChartSectionData(
-                          color: colorScheme.tertiary,
-                          value: result.totalInvestment,
-                          title: '',
-                          radius: 20,
+                      )
+                    : Center(
+                        child: Text(
+                          '0%',
+                          style: textTheme.titleMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
                         ),
-                      ],
-                    ),
-                  )
-                : Center(
-                    child: Text('0%', style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurfaceVariant)),
-                  ),
+                      ),
               ),
             ],
           ),
@@ -330,7 +419,9 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
           Text(
             label,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: isActive ? colorScheme.primary : colorScheme.onSurfaceVariant,
+              color: isActive
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
               fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
             ),
           ),
@@ -340,7 +431,9 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
                 Text(
                   symbol,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: isActive ? colorScheme.primary : colorScheme.onSurface,
+                    color: isActive
+                        ? colorScheme.primary
+                        : colorScheme.onSurface,
                   ),
                 ),
               Text(
@@ -356,7 +449,9 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
                   child: Text(
                     symbol,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: isActive ? colorScheme.primary : colorScheme.onSurfaceVariant,
+                      color: isActive
+                          ? colorScheme.primary
+                          : colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ),

@@ -22,7 +22,8 @@ class UnitSelectorBottomSheet extends StatefulWidget {
   });
 
   @override
-  State<UnitSelectorBottomSheet> createState() => _UnitSelectorBottomSheetState();
+  State<UnitSelectorBottomSheet> createState() =>
+      _UnitSelectorBottomSheetState();
 }
 
 class _UnitSelectorBottomSheetState extends State<UnitSelectorBottomSheet> {
@@ -89,10 +90,15 @@ class _UnitSelectorBottomSheetState extends State<UnitSelectorBottomSheet> {
                   decoration: InputDecoration(
                     hintText: 'Search units',
                     hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
-                    prefixIcon: Icon(Icons.search_rounded, color: colorScheme.primary),
+                    prefixIcon: Icon(
+                      Icons.search_rounded,
+                      color: colorScheme.primary,
+                    ),
                     filled: true,
-                    fillColor: isGlass 
-                        ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.5)
+                    fillColor: isGlass
+                        ? colorScheme.surfaceContainerHighest.withValues(
+                            alpha: 0.5,
+                          )
                         : colorScheme.surfaceContainerHighest,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
@@ -147,14 +153,22 @@ class _UnitSelectorBottomSheetState extends State<UnitSelectorBottomSheet> {
     final bgColor = isSelected
         ? colorScheme.primaryContainer.withValues(alpha: isGlass ? 0.7 : 1.0)
         : Colors.transparent;
-        
+
     final iconBgColor = isSelected
         ? colorScheme.primary.withValues(alpha: 0.2)
-        : colorScheme.surfaceContainerHighest.withValues(alpha: isGlass ? 0.5 : 1.0);
-        
-    final iconColor = isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant;
-    final titleColor = isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurface;
-    final subtitleColor = isSelected ? colorScheme.onPrimaryContainer.withValues(alpha: 0.8) : colorScheme.onSurfaceVariant;
+        : colorScheme.surfaceContainerHighest.withValues(
+            alpha: isGlass ? 0.5 : 1.0,
+          );
+
+    final iconColor = isSelected
+        ? colorScheme.primary
+        : colorScheme.onSurfaceVariant;
+    final titleColor = isSelected
+        ? colorScheme.onPrimaryContainer
+        : colorScheme.onSurface;
+    final subtitleColor = isSelected
+        ? colorScheme.onPrimaryContainer.withValues(alpha: 0.8)
+        : colorScheme.onSurfaceVariant;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
@@ -195,10 +209,13 @@ class _UnitSelectorBottomSheetState extends State<UnitSelectorBottomSheet> {
                     children: [
                       Text(
                         unit.name,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: titleColor,
-                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: titleColor,
+                              fontWeight: isSelected
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                            ),
                       ),
                       Text(
                         unit.symbol,

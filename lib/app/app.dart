@@ -87,9 +87,7 @@ class CalculatorApp extends ConsumerWidget {
           },
         );
 
-        return ToastificationWrapper(
-          child: materialApp,
-        );
+        return ToastificationWrapper(child: materialApp);
       },
     );
   }

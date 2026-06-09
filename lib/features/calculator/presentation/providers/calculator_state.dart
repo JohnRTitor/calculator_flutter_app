@@ -49,9 +49,6 @@ class CalculatorState {
   /// Whether the user prefers the exact fractional representation over decimals.
   final bool displayAsFraction;
 
-  /// Whether the calculator is currently in Function Mode.
-  // Removed isFuncMode, funcExpression, variables, detectedVariables
-
   /// Returns true if the memory panel is currently expanded.
   bool get isMemoryMode => expandedPanel == ExpandedPanel.memory;
 

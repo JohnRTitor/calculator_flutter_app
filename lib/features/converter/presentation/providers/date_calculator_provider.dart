@@ -5,15 +5,9 @@ class DateCalculatorState {
   final DateTime fromDate;
   final DateTime toDate;
 
-  const DateCalculatorState({
-    required this.fromDate,
-    required this.toDate,
-  });
+  const DateCalculatorState({required this.fromDate, required this.toDate});
 
-  DateCalculatorState copyWith({
-    DateTime? fromDate,
-    DateTime? toDate,
-  }) {
+  DateCalculatorState copyWith({DateTime? fromDate, DateTime? toDate}) {
     return DateCalculatorState(
       fromDate: fromDate ?? this.fromDate,
       toDate: toDate ?? this.toDate,
@@ -57,10 +51,7 @@ class DateCalculatorNotifier extends Notifier<DateCalculatorState> {
 
   void setToday() {
     final now = DateTime.now();
-    state = state.copyWith(
-      fromDate: now,
-      toDate: now,
-    );
+    state = state.copyWith(fromDate: now, toDate: now);
   }
 
   void setTomorrow() {
@@ -78,16 +69,13 @@ class DateCalculatorNotifier extends Notifier<DateCalculatorState> {
       toDate: now.subtract(const Duration(days: 1)),
     );
   }
-  
+
   void swapDates() {
-    state = state.copyWith(
-      fromDate: state.toDate,
-      toDate: state.fromDate,
-    );
+    state = state.copyWith(fromDate: state.toDate, toDate: state.fromDate);
   }
 }
 
 final dateCalculatorProvider =
     NotifierProvider<DateCalculatorNotifier, DateCalculatorState>(() {
-  return DateCalculatorNotifier();
-});
+      return DateCalculatorNotifier();
+    });

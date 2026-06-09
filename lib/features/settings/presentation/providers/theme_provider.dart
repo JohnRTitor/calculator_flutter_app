@@ -14,6 +14,10 @@ enum AppColorOption {
   blue,
   purple,
   orange,
+  red,
+  pink,
+  cyan,
+  indigo,
 }
 
 /// A Riverpod Notifier that manages and persists the selected `AppThemeMode`.

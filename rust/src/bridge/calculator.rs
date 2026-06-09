@@ -24,10 +24,10 @@ pub fn evaluate(expression: String, is_degree: bool, ans_value: f64) -> Result<C
     let tokens = parser::tokenize(&expression).map_err(|e| e.to_string())?;
     let mut p = parser::Parser::new(&tokens);
     let ast = p.parse().map_err(|e| e.to_string())?;
-    
+
     let basic_eval = evaluator::BasicEvaluator;
-    let calc_val =
-        evaluator::evaluate_expr(&ast, &basic_eval, is_degree, ans_value).map_err(|e| e.to_string())?;
+    let calc_val = evaluator::evaluate_expr(&ast, &basic_eval, is_degree, ans_value)
+        .map_err(|e| e.to_string())?;
 
     let val = calc_val.to_float();
     // Check for NaN or Inf
@@ -203,8 +203,8 @@ pub fn evaluate_with_vars(
     let ast = p.parse().map_err(|e| e.to_string())?;
 
     let func_eval = evaluator::FunctionEvaluator::new(vars);
-    let calc_val =
-        evaluator::evaluate_expr(&ast, &func_eval, is_degree, ans_value).map_err(|e| e.to_string())?;
+    let calc_val = evaluator::evaluate_expr(&ast, &func_eval, is_degree, ans_value)
+        .map_err(|e| e.to_string())?;
 
     let val = calc_val.to_float();
     if val.is_nan() || val.is_infinite() {

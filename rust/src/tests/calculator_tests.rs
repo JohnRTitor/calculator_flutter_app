@@ -1,7 +1,7 @@
 use crate::calculator::evaluator;
 use crate::calculator::parser;
-use std::f64::consts::{PI, E};
 use std::collections::HashMap;
+use std::f64::consts::{E, PI};
 
 // Base evaluation function that returns the raw Result
 fn evaluate_core(
@@ -82,9 +82,7 @@ fn test_trig_modes() {
     assert!((eval_with_state("sin(90)", true, 0.0) - 1.0).abs() < 1e-10);
     assert!((eval_with_state("sin(π/2)", false, 0.0) - 1.0).abs() < 1e-10);
     assert!((eval_with_state("asin(1)", true, 0.0) - 90.0).abs() < 1e-10);
-    assert!(
-        (eval_with_state("asin(1)", false, 0.0) - PI / 2.0).abs() < 1e-10
-    );
+    assert!((eval_with_state("asin(1)", false, 0.0) - PI / 2.0).abs() < 1e-10);
     assert!((eval_with_state("cos(180)", true, 0.0) - -1.0).abs() < 1e-10);
     assert!((eval_with_state("cos(π)", false, 0.0) - -1.0).abs() < 1e-10);
     assert!((eval_with_state("tan(45)", true, 0.0) - 1.0).abs() < 1e-10);
@@ -157,13 +155,31 @@ fn test_variables() {
 
     let func_eval = evaluator::FunctionEvaluator { vars };
 
-    let expr = parser::Parser::new(&parser::tokenize("x^2 + y^2").unwrap()).parse().unwrap();
-    assert_eq!(evaluator::evaluate_expr(&expr, &func_eval, false, 0.0).unwrap().to_float(), 34.0);
+    let expr = parser::Parser::new(&parser::tokenize("x^2 + y^2").unwrap())
+        .parse()
+        .unwrap();
+    assert_eq!(
+        evaluator::evaluate_expr(&expr, &func_eval, false, 0.0)
+            .unwrap()
+            .to_float(),
+        34.0
+    );
 
-    let expr2 = parser::Parser::new(&parser::tokenize("pi * radius^2").unwrap()).parse().unwrap();
-    assert!((evaluator::evaluate_expr(&expr2, &func_eval, false, 0.0).unwrap().to_float() - 314.159265).abs() < 1e-5);
+    let expr2 = parser::Parser::new(&parser::tokenize("pi * radius^2").unwrap())
+        .parse()
+        .unwrap();
+    assert!(
+        (evaluator::evaluate_expr(&expr2, &func_eval, false, 0.0)
+            .unwrap()
+            .to_float()
+            - 314.159265)
+            .abs()
+            < 1e-5
+    );
 
-    let expr_err = parser::Parser::new(&parser::tokenize("x + z").unwrap()).parse().unwrap();
+    let expr_err = parser::Parser::new(&parser::tokenize("x + z").unwrap())
+        .parse()
+        .unwrap();
     assert!(matches!(
         evaluator::evaluate_expr(&expr_err, &func_eval, false, 0.0),
         Err(crate::calculator::error::CalcError::InvalidExpression(_))
@@ -172,7 +188,9 @@ fn test_variables() {
 
 #[test]
 fn test_variable_extraction() {
-    let expr = parser::Parser::new(&parser::tokenize("x^2 + y^2 + sin(x) + e^z").unwrap()).parse().unwrap();
+    let expr = parser::Parser::new(&parser::tokenize("x^2 + y^2 + sin(x) + e^z").unwrap())
+        .parse()
+        .unwrap();
     let vars = evaluator::extract_variables(&expr);
     assert_eq!(vars.len(), 3);
     assert!(vars.contains("x"));

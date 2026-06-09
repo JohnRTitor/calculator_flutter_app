@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class ConverterResultData {
   final String title;
   final String primaryValue;
@@ -519,7 +518,7 @@ class ConverterNotifier extends Notifier<ConverterState> {
   void _calculateResult() {
     final catId = state.category?.id;
     if (catId == null) return;
-    
+
     final isEmptyInput = state.inputValue.isEmpty;
 
     if (catId == 'currency') {
@@ -529,7 +528,6 @@ class ConverterNotifier extends Notifier<ConverterState> {
           to != null &&
           state.currencyRates.containsKey(from) &&
           state.currencyRates.containsKey(to)) {
-        
         final isReverse = state.activeInput == 'to';
         final sourceValue = isReverse ? state.resultValue : state.inputValue;
         final isEmpty = sourceValue.isEmpty;
@@ -541,23 +539,28 @@ class ConverterNotifier extends Notifier<ConverterState> {
             resultData: ConverterResultData(
               title: isReverse ? 'Reverse Conversion Mode' : 'Result',
               primaryValue: '0 $to',
-              secondaryText: '1 $from = ${_formatResult(state.currencyRates[to]! / state.currencyRates[from]!)} $to',
+              secondaryText:
+                  '1 $from = ${_formatResult(state.currencyRates[to]! / state.currencyRates[from]!)} $to',
             ),
           );
         } else {
           final val = double.tryParse(sourceValue) ?? 0.0;
           final fromRate = state.currencyRates[from]!;
           final toRate = state.currencyRates[to]!;
-          
-          final res = isReverse ? val * (fromRate / toRate) : val * (toRate / fromRate);
+
+          final res = isReverse
+              ? val * (fromRate / toRate)
+              : val * (toRate / fromRate);
           final formattedRes = _formatResult(res);
-          
+
           state = state.copyWith(
             inputValue: isReverse ? formattedRes : state.inputValue,
             resultValue: isReverse ? state.resultValue : formattedRes,
             resultData: ConverterResultData(
               title: isReverse ? 'Reverse Conversion Mode' : 'Result',
-              primaryValue: isReverse ? '${state.resultValue} $to' : '$formattedRes $to',
+              primaryValue: isReverse
+                  ? '${state.resultValue} $to'
+                  : '$formattedRes $to',
               secondaryText:
                   '1 $from = ${_formatResult(toRate / fromRate)} $to',
             ),
@@ -692,13 +695,17 @@ class ConverterNotifier extends Notifier<ConverterState> {
             fromBase: isReverse ? toBase : fromBase,
             toBase: isReverse ? fromBase : toBase,
           );
-          
+
           state = state.copyWith(
             inputValue: isReverse ? (res ?? 'Invalid input') : state.inputValue,
-            resultValue: isReverse ? state.resultValue : (res ?? 'Invalid input'),
+            resultValue: isReverse
+                ? state.resultValue
+                : (res ?? 'Invalid input'),
             resultData: ConverterResultData(
               title: isReverse ? 'Reverse Conversion Mode' : 'Result',
-              primaryValue: isReverse ? state.resultValue : (res ?? 'Invalid input'),
+              primaryValue: isReverse
+                  ? state.resultValue
+                  : (res ?? 'Invalid input'),
               secondaryText: res != null
                   ? '= ${isReverse ? res : state.inputValue} (Base $fromBase)'
                   : '',
@@ -741,8 +748,11 @@ class ConverterNotifier extends Notifier<ConverterState> {
             resultValue: isReverse ? state.resultValue : formattedRes,
             resultData: ConverterResultData(
               title: isReverse ? 'Reverse Conversion Mode' : 'Result',
-              primaryValue: isReverse ? '${state.resultValue} ${toUnit.symbol}' : '$formattedRes ${toUnit.symbol}',
-              secondaryText: '= ${_formatResult(isReverse ? res : val)} ${fromUnit.symbol}',
+              primaryValue: isReverse
+                  ? '${state.resultValue} ${toUnit.symbol}'
+                  : '$formattedRes ${toUnit.symbol}',
+              secondaryText:
+                  '= ${_formatResult(isReverse ? res : val)} ${fromUnit.symbol}',
             ),
           );
         } else {

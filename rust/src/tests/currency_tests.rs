@@ -7,7 +7,7 @@ use crate::bridge::currency::{
 fn test_loan_emi() {
     // 100,000 principal, 10% annual interest, 12 months
     let loan = calculate_loan_emi(100_000.0, 10.0, 12);
-    
+
     // EMI ~ 8791.59
     assert!((loan.monthly_emi - 8791.59).abs() < 1.0);
     assert!((loan.total_interest - 5499.06).abs() < 1.0);
@@ -30,7 +30,7 @@ fn test_loan_emi() {
 fn test_investment_one_time() {
     // 10,000 principal, 12% return, 5 years, compounded 1 time per year (annual)
     let inv = calculate_investment_one_time(10_000.0, 12.0, 5.0, 1.0);
-    
+
     // 10000 * (1.12)^5 = 17623.4168
     assert!((inv.future_value - 17623.42).abs() < 1.0);
     assert_eq!(inv.total_investment, 10_000.0);
@@ -46,7 +46,7 @@ fn test_investment_one_time() {
 fn test_investment_sip() {
     // 1000 per month, 12% return, 5 years
     let sip = calculate_investment_sip(1000.0, 12.0, 5.0);
-    
+
     // 82486.37
     assert!((sip.future_value - 82486.37).abs() < 1.0);
     assert_eq!(sip.total_investment, 60_000.0);

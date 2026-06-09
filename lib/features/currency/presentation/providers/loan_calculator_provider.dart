@@ -149,5 +149,5 @@ class LoanCalculatorNotifier extends Notifier<LoanCalculatorState> {
 
 final loanCalculatorProvider =
     NotifierProvider<LoanCalculatorNotifier, LoanCalculatorState>(() {
-  return LoanCalculatorNotifier();
-});
+      return LoanCalculatorNotifier();
+    });

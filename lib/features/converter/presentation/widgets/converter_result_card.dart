@@ -29,13 +29,13 @@ class ConverterResultCard extends StatelessWidget {
       return FadeTransition(
         opacity: animation,
         child: SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0.0, 0.4),
-            end: Offset.zero,
-          ).animate(CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeOutCubic,
-          )),
+          position:
+              Tween<Offset>(
+                begin: const Offset(0.0, 0.4),
+                end: Offset.zero,
+              ).animate(
+                CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+              ),
           child: child,
         ),
       );
@@ -49,8 +49,12 @@ class ConverterResultCard extends StatelessWidget {
         child: SharedSurface(
           uiStyle: uiStyle,
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
-          glassRole: isActive ? GlassSurfaceRole.primary : GlassSurfaceRole.card,
-          materialColor: isActive ? colorScheme.primaryContainer : colorScheme.surfaceContainerHigh,
+          glassRole: isActive
+              ? GlassSurfaceRole.primary
+              : GlassSurfaceRole.card,
+          materialColor: isActive
+              ? colorScheme.primaryContainer
+              : colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(32.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

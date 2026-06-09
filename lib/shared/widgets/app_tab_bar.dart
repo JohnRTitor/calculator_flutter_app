@@ -29,7 +29,7 @@ class AppTabBar extends StatelessWidget {
     final textTheme = theme.textTheme;
     final brightness = theme.brightness;
     final isGlass = uiStyle == UiStyle.liquidGlass;
-    
+
     if (!isGlass) {
       return SizedBox(
         width: width,
@@ -84,10 +84,7 @@ class AppTabBar extends StatelessWidget {
           indicatorSize: TabBarIndicatorSize.tab,
           indicator: BoxDecoration(
             borderRadius: BorderRadius.circular(borderRadius.topLeft.x * 0.85),
-            border: Border.all(
-              color: glassPrimary.borderColor,
-              width: 1.0,
-            ),
+            border: Border.all(color: glassPrimary.borderColor, width: 1.0),
             boxShadow: glassPrimary.shadows,
             gradient: LinearGradient(
               begin: Alignment.topLeft,
@@ -109,12 +106,16 @@ class AppTabBar extends StatelessWidget {
             ),
           ),
           labelColor: glassPrimary.foregroundColor,
-          unselectedLabelColor: glassCard.foregroundColor.withValues(alpha: 0.72),
+          unselectedLabelColor: glassCard.foregroundColor.withValues(
+            alpha: 0.72,
+          ),
           labelStyle: textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.bold,
           ),
           unselectedLabelStyle: textTheme.titleSmall,
-          splashBorderRadius: BorderRadius.circular(borderRadius.topLeft.x * 0.85),
+          splashBorderRadius: BorderRadius.circular(
+            borderRadius.topLeft.x * 0.85,
+          ),
           tabs: tabs,
         ),
       ),

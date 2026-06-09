@@ -28,7 +28,11 @@ class CurrencyHomeScreen extends ConsumerWidget {
   const CurrencyHomeScreen({super.key});
 
   static const List<CurrencyItem> items = [
-    CurrencyItem(id: 'currency', name: 'Currency', icon: Icons.currency_exchange),
+    CurrencyItem(
+      id: 'currency',
+      name: 'Currency',
+      icon: Icons.currency_exchange,
+    ),
     CurrencyItem(id: 'loan', name: 'Loan / EMI', icon: Icons.real_estate_agent),
     CurrencyItem(id: 'investment', name: 'Investment', icon: Icons.trending_up),
     CurrencyItem(id: 'discount', name: 'Discount', icon: Icons.local_offer),
@@ -67,7 +71,9 @@ class CurrencyHomeScreen extends ConsumerWidget {
                   context,
                   FadePageRoute(page: const InvestmentScreen()),
                 );
-              } else if (item.id == 'currency' || item.id == 'discount' || item.id == 'gst') {
+              } else if (item.id == 'currency' ||
+                  item.id == 'discount' ||
+                  item.id == 'gst') {
                 final cat = FfiConverterCategory(
                   id: item.id,
                   name: item.name,
@@ -91,8 +97,14 @@ class CurrencyHomeScreen extends ConsumerWidget {
                       uiStyle: uiStyle,
                       glassRole: GlassSurfaceRole.panel,
                       frosted: true,
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       borderRadius: BorderRadius.circular(16),
                       child: Text(
                         '${item.name} Coming Soon',
@@ -116,7 +128,9 @@ class CurrencyHomeScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
                     color: uiStyle == UiStyle.liquidGlass
-                        ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.12)
+                        ? Theme.of(
+                            context,
+                          ).colorScheme.primaryContainer.withValues(alpha: 0.12)
                         : Theme.of(context).colorScheme.surfaceContainerHighest,
                     shape: BoxShape.circle,
                   ),

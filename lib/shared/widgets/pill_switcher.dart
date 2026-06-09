@@ -103,7 +103,9 @@ class PillSwitcher extends StatelessWidget {
     final theme = Theme.of(context);
     final themeExt = theme.extension<AppThemeExtension>()!;
     final bgColor = isSelected ? themeExt.chipBackground : Colors.transparent;
-    final fgColor = isSelected ? themeExt.chipText : theme.colorScheme.onSurfaceVariant;
+    final fgColor = isSelected
+        ? themeExt.chipText
+        : theme.colorScheme.onSurfaceVariant;
 
     return Material(
       color: bgColor,

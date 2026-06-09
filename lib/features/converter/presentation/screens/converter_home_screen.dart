@@ -113,62 +113,68 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
           if (cat.id == 'bmi') iconData = Icons.monitor_weight;
 
           return SharedSurface(
-            uiStyle: uiStyle,
-            onTap: () {
-              if (cat.id == 'date') {
-                Navigator.push(
-                  context,
-                  FadePageRoute(page: const DateCalculatorScreen()),
-                );
-              } else {
-                ref.read(converterProvider.notifier).setCategory(cat);
-                Navigator.push(
-                  context,
-                  FadePageRoute(page: const ConverterDetailScreen()),
-                );
-              }
-            },
-            borderRadius: BorderRadius.circular(24.0),
-            isInteractive: true,
-            glassRole: GlassSurfaceRole.card,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: uiStyle == UiStyle.liquidGlass
-                        ? Theme.of(
-                            context,
-                          ).colorScheme.primaryContainer.withValues(alpha: 0.12)
-                        : Theme.of(context).colorScheme.surfaceContainerHighest,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    iconData,
-                    size: 32,
-                    color: uiStyle == UiStyle.liquidGlass
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                uiStyle: uiStyle,
+                onTap: () {
+                  if (cat.id == 'date') {
+                    Navigator.push(
+                      context,
+                      FadePageRoute(page: const DateCalculatorScreen()),
+                    );
+                  } else {
+                    ref.read(converterProvider.notifier).setCategory(cat);
+                    Navigator.push(
+                      context,
+                      FadePageRoute(page: const ConverterDetailScreen()),
+                    );
+                  }
+                },
+                borderRadius: BorderRadius.circular(24.0),
+                isInteractive: true,
+                glassRole: GlassSurfaceRole.card,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: uiStyle == UiStyle.liquidGlass
+                            ? Theme.of(context).colorScheme.primaryContainer
+                                  .withValues(alpha: 0.12)
+                            : Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        iconData,
+                        size: 32,
+                        color: uiStyle == UiStyle.liquidGlass
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 8.0),
+                    Text(
+                      cat.name,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8.0),
-                Text(
-                  cat.name,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          )
-          .animate()
-          .fade(duration: 400.ms, delay: (index * 50).ms)
-          .slideY(begin: 0.2, end: 0, duration: 400.ms, curve: Curves.easeOutQuart);
+              )
+              .animate()
+              .fade(duration: 400.ms, delay: (index * 50).ms)
+              .slideY(
+                begin: 0.2,
+                end: 0,
+                duration: 400.ms,
+                curve: Curves.easeOutQuart,
+              );
         },
       ),
     );

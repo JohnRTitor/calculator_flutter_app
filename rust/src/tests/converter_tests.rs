@@ -1,5 +1,5 @@
-use crate::converter::converter::{get_all_categories, convert_standard, convert_numeral};
 use crate::bridge::converter::{calculate_bmi, calculate_date_difference};
+use crate::converter::converter::{convert_numeral, convert_standard, get_all_categories};
 
 #[test]
 fn test_length_conversion() {
@@ -110,7 +110,7 @@ fn test_date_difference() {
     // Basic difference: 2023-01-01 to 2024-01-01
     // Timestamps in ms
     let start_ts = 1672531200000; // 2023-01-01T00:00:00Z
-    let end_ts = 1704067200000;   // 2024-01-01T00:00:00Z
+    let end_ts = 1704067200000; // 2024-01-01T00:00:00Z
 
     let diff = calculate_date_difference(start_ts, end_ts);
     assert_eq!(diff.years, 1);

@@ -42,7 +42,8 @@ class Calculator extends _$Calculator {
     } else {
       final newTokens = List<String>.from(state.tokens);
 
-      if (state.cursorIndex < newTokens.length && newTokens[state.cursorIndex] == '□') {
+      if (state.cursorIndex < newTokens.length &&
+          newTokens[state.cursorIndex] == '□') {
         newTokens[state.cursorIndex] = text;
         state = state.copyWith(
           tokens: newTokens,
@@ -50,7 +51,8 @@ class Calculator extends _$Calculator {
           clearError: true,
           clearExactResult: true,
         );
-      } else if (state.cursorIndex > 0 && newTokens[state.cursorIndex - 1] == '□') {
+      } else if (state.cursorIndex > 0 &&
+          newTokens[state.cursorIndex - 1] == '□') {
         newTokens[state.cursorIndex - 1] = text;
         state = state.copyWith(
           tokens: newTokens,
@@ -239,7 +241,6 @@ class Calculator extends _$Calculator {
   }
 
   /// Toggles Function mode.
-
 
   /// Toggles the scientific mode, expanding or collapsing the advanced keypad.
   void toggleScientificMode() {

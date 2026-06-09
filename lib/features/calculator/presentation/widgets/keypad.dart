@@ -25,298 +25,308 @@ class Keypad extends ConsumerWidget {
     return RepaintBoundary(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(6, 0, 6, 4),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final double maxHeight = constraints.maxHeight.isFinite ? constraints.maxHeight : 400.0;
-          final fixedHeight = 48.0 + (expanded != ExpandedPanel.none ? 40.0 : 0.0);
-          final availableHeight = maxHeight - fixedHeight;
-          final sciRowHeight = (availableHeight * (60.0 / 480.0)).clamp(0.0, double.infinity);
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final double maxHeight = constraints.maxHeight.isFinite
+                ? constraints.maxHeight
+                : 400.0;
+            final fixedHeight =
+                48.0 + (expanded != ExpandedPanel.none ? 40.0 : 0.0);
+            final availableHeight = maxHeight - fixedHeight;
+            final sciRowHeight = (availableHeight * (60.0 / 480.0)).clamp(
+              0.0,
+              double.infinity,
+            );
 
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-            // === Dropdown chip row: [▾] [Trig ∨] [Log ∨] [Mem ∨] ===
-            _DropdownChipRow(
-              isSci: isSci,
-              expanded: state.expandedPanel,
-              ref: ref,
-              uiStyle: uiStyle,
-            ),
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                // === Dropdown chip row: [▾] [Trig ∨] [Log ∨] [Mem ∨] ===
+                _DropdownChipRow(
+                  isSci: isSci,
+                  expanded: state.expandedPanel,
+                  ref: ref,
+                  uiStyle: uiStyle,
+                ),
 
-            // === Expanded panel content (animated) ===
-            AnimatedSize(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeInOut,
-              alignment: Alignment.topCenter,
-              child: _buildExpandedContent(ref, state, expanded, uiStyle),
-            ),
+                // === Expanded panel content (animated) ===
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  alignment: Alignment.topCenter,
+                  child: _buildExpandedContent(ref, state, expanded, uiStyle),
+                ),
 
-            // === Scientific utility row: √ ^ ! π ===
-            ClipRect(
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
-                height: isSci ? sciRowHeight : 0.0,
-                child: SingleChildScrollView(
-                physics: const NeverScrollableScrollPhysics(),
-                child: SizedBox(
-                  height: sciRowHeight,
+                // === Scientific utility row: √ ^ ! π ===
+                ClipRect(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                    height: isSci ? sciRowHeight : 0.0,
+                    child: SingleChildScrollView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      child: SizedBox(
+                        height: sciRowHeight,
+                        child: Row(
+                          children: [
+                            _btn(ref, '√', ButtonType.scientific, () {
+                              ref
+                                  .read(calculatorProvider.notifier)
+                                  .appendFunctionTemplate('sqrt');
+                              return true;
+                            }, uiStyle: uiStyle),
+                            _btn(
+                              ref,
+                              '^',
+                              ButtonType.scientific,
+                              () => ref
+                                  .read(calculatorProvider.notifier)
+                                  .append('^'),
+                              uiStyle: uiStyle,
+                            ),
+                            _btn(
+                              ref,
+                              '!',
+                              ButtonType.scientific,
+                              () => ref
+                                  .read(calculatorProvider.notifier)
+                                  .append('!'),
+                              uiStyle: uiStyle,
+                            ),
+                            _btn(
+                              ref,
+                              'π',
+                              ButtonType.scientific,
+                              () => ref
+                                  .read(calculatorProvider.notifier)
+                                  .append('π'),
+                              uiStyle: uiStyle,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // === ( ) % / ===
+                Expanded(
+                  flex: 60,
                   child: Row(
                     children: [
                       _btn(
                         ref,
-                        '√',
-                        ButtonType.scientific,
-                        () {
-                          ref.read(calculatorProvider.notifier).appendFunctionTemplate('sqrt');
-                          return true;
-                        },
+                        '(',
+                        ButtonType.action,
+                        () => ref.read(calculatorProvider.notifier).append('('),
                         uiStyle: uiStyle,
                       ),
                       _btn(
                         ref,
-                        '^',
-                        ButtonType.scientific,
-                        () => ref.read(calculatorProvider.notifier).append('^'),
+                        ')',
+                        ButtonType.action,
+                        () => ref.read(calculatorProvider.notifier).append(')'),
                         uiStyle: uiStyle,
                       ),
                       _btn(
                         ref,
-                        '!',
-                        ButtonType.scientific,
-                        () => ref.read(calculatorProvider.notifier).append('!'),
+                        '%',
+                        ButtonType.action,
+                        () => ref.read(calculatorProvider.notifier).append('%'),
+                        tooltip: 'Percentage',
                         uiStyle: uiStyle,
                       ),
                       _btn(
                         ref,
-                        'π',
-                        ButtonType.scientific,
-                        () => ref.read(calculatorProvider.notifier).append('π'),
+                        '/',
+                        ButtonType.action,
+                        () => ref.read(calculatorProvider.notifier).append('/'),
+                        tooltip: 'Fraction',
                         uiStyle: uiStyle,
                       ),
                     ],
                   ),
                 ),
-              ),
-            ),
-            ),
 
-            // === ( ) % / ===
-            Expanded(
-              flex: 60,
-              child: Row(
-                children: [
-                  _btn(
-                    ref,
-                    '(',
-                    ButtonType.action,
-                    () => ref.read(calculatorProvider.notifier).append('('),
-                    uiStyle: uiStyle,
+                // === Number grid + operators ===
+                // 7 8 9 ÷
+                Expanded(
+                  flex: 72,
+                  child: Row(
+                    children: [
+                      _btn(
+                        ref,
+                        '7',
+                        ButtonType.number,
+                        () => ref.read(calculatorProvider.notifier).append('7'),
+                        uiStyle: uiStyle,
+                      ),
+                      _btn(
+                        ref,
+                        '8',
+                        ButtonType.number,
+                        () => ref.read(calculatorProvider.notifier).append('8'),
+                        uiStyle: uiStyle,
+                      ),
+                      _btn(
+                        ref,
+                        '9',
+                        ButtonType.number,
+                        () => ref.read(calculatorProvider.notifier).append('9'),
+                        uiStyle: uiStyle,
+                      ),
+                      _btn(
+                        ref,
+                        '÷',
+                        ButtonType.operator,
+                        () => ref.read(calculatorProvider.notifier).append('÷'),
+                        uiStyle: uiStyle,
+                      ),
+                    ],
                   ),
-                  _btn(
-                    ref,
-                    ')',
-                    ButtonType.action,
-                    () => ref.read(calculatorProvider.notifier).append(')'),
-                    uiStyle: uiStyle,
+                ),
+                // 4 5 6 ×
+                Expanded(
+                  flex: 72,
+                  child: Row(
+                    children: [
+                      _btn(
+                        ref,
+                        '4',
+                        ButtonType.number,
+                        () => ref.read(calculatorProvider.notifier).append('4'),
+                        uiStyle: uiStyle,
+                      ),
+                      _btn(
+                        ref,
+                        '5',
+                        ButtonType.number,
+                        () => ref.read(calculatorProvider.notifier).append('5'),
+                        uiStyle: uiStyle,
+                      ),
+                      _btn(
+                        ref,
+                        '6',
+                        ButtonType.number,
+                        () => ref.read(calculatorProvider.notifier).append('6'),
+                        uiStyle: uiStyle,
+                      ),
+                      _btn(
+                        ref,
+                        '×',
+                        ButtonType.operator,
+                        () => ref.read(calculatorProvider.notifier).append('×'),
+                        uiStyle: uiStyle,
+                      ),
+                    ],
                   ),
-                  _btn(
-                    ref,
-                    '%',
-                    ButtonType.action,
-                    () => ref.read(calculatorProvider.notifier).append('%'),
-                    tooltip: 'Percentage',
-                    uiStyle: uiStyle,
+                ),
+                // 1 2 3 −
+                Expanded(
+                  flex: 72,
+                  child: Row(
+                    children: [
+                      _btn(
+                        ref,
+                        '1',
+                        ButtonType.number,
+                        () => ref.read(calculatorProvider.notifier).append('1'),
+                        uiStyle: uiStyle,
+                      ),
+                      _btn(
+                        ref,
+                        '2',
+                        ButtonType.number,
+                        () => ref.read(calculatorProvider.notifier).append('2'),
+                        uiStyle: uiStyle,
+                      ),
+                      _btn(
+                        ref,
+                        '3',
+                        ButtonType.number,
+                        () => ref.read(calculatorProvider.notifier).append('3'),
+                        uiStyle: uiStyle,
+                      ),
+                      _btn(
+                        ref,
+                        '−',
+                        ButtonType.operator,
+                        () => ref.read(calculatorProvider.notifier).append('−'),
+                        uiStyle: uiStyle,
+                      ),
+                    ],
                   ),
-                  _btn(
-                    ref,
-                    '/',
-                    ButtonType.action,
-                    () => ref.read(calculatorProvider.notifier).append('/'),
-                    tooltip: 'Fraction',
-                    uiStyle: uiStyle,
+                ),
+                // 0 . mod +
+                Expanded(
+                  flex: 72,
+                  child: Row(
+                    children: [
+                      _btn(
+                        ref,
+                        '0',
+                        ButtonType.number,
+                        () => ref.read(calculatorProvider.notifier).append('0'),
+                        uiStyle: uiStyle,
+                      ),
+                      _btn(
+                        ref,
+                        '.',
+                        ButtonType.number,
+                        () => ref.read(calculatorProvider.notifier).append('.'),
+                        uiStyle: uiStyle,
+                      ),
+                      _btn(
+                        ref,
+                        'MOD',
+                        ButtonType.scientific,
+                        () =>
+                            ref.read(calculatorProvider.notifier).append('mod'),
+                        tooltip: 'Remainder after division',
+                        uiStyle: uiStyle,
+                      ),
+                      _btn(
+                        ref,
+                        '+',
+                        ButtonType.operator,
+                        () => ref.read(calculatorProvider.notifier).append('+'),
+                        uiStyle: uiStyle,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-
-            // === Number grid + operators ===
-            // 7 8 9 ÷
-            Expanded(
-              flex: 72,
-              child: Row(
-                children: [
-                  _btn(
-                    ref,
-                    '7',
-                    ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('7'),
-                    uiStyle: uiStyle,
+                ),
+                // AC ANS ⌫ =
+                Expanded(
+                  flex: 72,
+                  child: Row(
+                    children: [
+                      _btn(ref, 'AC', ButtonType.clear, () {
+                        ref.read(calculatorProvider.notifier).clear();
+                        return true;
+                      }, uiStyle: uiStyle),
+                      _btn(
+                        ref,
+                        'ANS',
+                        ButtonType.action,
+                        () =>
+                            ref.read(calculatorProvider.notifier).append('Ans'),
+                        tooltip: 'Last Answer',
+                        uiStyle: uiStyle,
+                      ),
+                      _buildBackspaceButton(ref, uiStyle),
+                      Expanded(
+                        child: AnimatedEqualsButton(
+                          onEvaluate: () =>
+                              ref.read(calculatorProvider.notifier).evaluate(),
+                        ),
+                      ),
+                    ],
                   ),
-                  _btn(
-                    ref,
-                    '8',
-                    ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('8'),
-                    uiStyle: uiStyle,
-                  ),
-                  _btn(
-                    ref,
-                    '9',
-                    ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('9'),
-                    uiStyle: uiStyle,
-                  ),
-                  _btn(
-                    ref,
-                    '÷',
-                    ButtonType.operator,
-                    () => ref.read(calculatorProvider.notifier).append('÷'),
-                    uiStyle: uiStyle,
-                  ),
-                ],
-              ),
-            ),
-            // 4 5 6 ×
-            Expanded(
-              flex: 72,
-              child: Row(
-                children: [
-                  _btn(
-                    ref,
-                    '4',
-                    ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('4'),
-                    uiStyle: uiStyle,
-                  ),
-                  _btn(
-                    ref,
-                    '5',
-                    ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('5'),
-                    uiStyle: uiStyle,
-                  ),
-                  _btn(
-                    ref,
-                    '6',
-                    ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('6'),
-                    uiStyle: uiStyle,
-                  ),
-                  _btn(
-                    ref,
-                    '×',
-                    ButtonType.operator,
-                    () => ref.read(calculatorProvider.notifier).append('×'),
-                    uiStyle: uiStyle,
-                  ),
-                ],
-              ),
-            ),
-            // 1 2 3 −
-            Expanded(
-              flex: 72,
-              child: Row(
-                children: [
-                  _btn(
-                    ref,
-                    '1',
-                    ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('1'),
-                    uiStyle: uiStyle,
-                  ),
-                  _btn(
-                    ref,
-                    '2',
-                    ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('2'),
-                    uiStyle: uiStyle,
-                  ),
-                  _btn(
-                    ref,
-                    '3',
-                    ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('3'),
-                    uiStyle: uiStyle,
-                  ),
-                  _btn(
-                    ref,
-                    '−',
-                    ButtonType.operator,
-                    () => ref.read(calculatorProvider.notifier).append('−'),
-                    uiStyle: uiStyle,
-                  ),
-                ],
-              ),
-            ),
-            // 0 . mod +
-            Expanded(
-              flex: 72,
-              child: Row(
-                children: [
-                  _btn(
-                    ref,
-                    '0',
-                    ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('0'),
-                    uiStyle: uiStyle,
-                  ),
-                  _btn(
-                    ref,
-                    '.',
-                    ButtonType.number,
-                    () => ref.read(calculatorProvider.notifier).append('.'),
-                    uiStyle: uiStyle,
-                  ),
-                  _btn(
-                    ref,
-                    'MOD',
-                    ButtonType.scientific,
-                    () => ref.read(calculatorProvider.notifier).append('mod'),
-                    tooltip: 'Remainder after division',
-                    uiStyle: uiStyle,
-                  ),
-                  _btn(
-                    ref,
-                    '+',
-                    ButtonType.operator,
-                    () => ref.read(calculatorProvider.notifier).append('+'),
-                    uiStyle: uiStyle,
-                  ),
-                ],
-              ),
-            ),
-            // AC ANS ⌫ =
-            Expanded(
-              flex: 72,
-              child: Row(
-                children: [
-                  _btn(ref, 'AC', ButtonType.clear, () {
-                    ref.read(calculatorProvider.notifier).clear();
-                    return true;
-                  }, uiStyle: uiStyle),
-                  _btn(
-                    ref,
-                    'ANS',
-                    ButtonType.action,
-                    () => ref.read(calculatorProvider.notifier).append('Ans'),
-                    tooltip: 'Last Answer',
-                    uiStyle: uiStyle,
-                  ),
-                  _buildBackspaceButton(ref, uiStyle),
-                  Expanded(
-                    child: AnimatedEqualsButton(
-                      onEvaluate: () =>
-                          ref.read(calculatorProvider.notifier).evaluate(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        );
-        },
-      ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -369,7 +379,9 @@ class Keypad extends ConsumerWidget {
                   final funcName = state.isInvMode
                       ? (state.isHypMode ? 'asinh' : 'asin')
                       : (state.isHypMode ? 'sinh' : 'sin');
-                  ref.read(calculatorProvider.notifier).appendFunctionTemplate(funcName);
+                  ref
+                      .read(calculatorProvider.notifier)
+                      .appendFunctionTemplate(funcName);
                   return true;
                 },
                 uiStyle: uiStyle,
@@ -384,7 +396,9 @@ class Keypad extends ConsumerWidget {
                   final funcName = state.isInvMode
                       ? (state.isHypMode ? 'acosh' : 'acos')
                       : (state.isHypMode ? 'cosh' : 'cos');
-                  ref.read(calculatorProvider.notifier).appendFunctionTemplate(funcName);
+                  ref
+                      .read(calculatorProvider.notifier)
+                      .appendFunctionTemplate(funcName);
                   return true;
                 },
                 uiStyle: uiStyle,
@@ -399,7 +413,9 @@ class Keypad extends ConsumerWidget {
                   final funcName = state.isInvMode
                       ? (state.isHypMode ? 'atanh' : 'atan')
                       : (state.isHypMode ? 'tanh' : 'tan');
-                  ref.read(calculatorProvider.notifier).appendFunctionTemplate(funcName);
+                  ref
+                      .read(calculatorProvider.notifier)
+                      .appendFunctionTemplate(funcName);
                   return true;
                 },
                 uiStyle: uiStyle,
@@ -423,36 +439,22 @@ class Keypad extends ConsumerWidget {
           height: 40,
           child: Row(
             children: [
-              _btn(
-                ref,
-                'log₁₀',
-                ButtonType.scientific,
-                () {
-                  ref.read(calculatorProvider.notifier).appendFunctionTemplate('log');
-                  return true;
-                },
-                uiStyle: uiStyle,
-              ),
-              _btn(
-                ref,
-                'ln',
-                ButtonType.scientific,
-                () {
-                  ref.read(calculatorProvider.notifier).appendFunctionTemplate('ln');
-                  return true;
-                },
-                uiStyle: uiStyle,
-              ),
-              _btn(
-                ref,
-                'logₙ',
-                ButtonType.scientific,
-                () {
-                  ref.read(calculatorProvider.notifier).appendLogTemplate();
-                  return true;
-                },
-                uiStyle: uiStyle,
-              ),
+              _btn(ref, 'log₁₀', ButtonType.scientific, () {
+                ref
+                    .read(calculatorProvider.notifier)
+                    .appendFunctionTemplate('log');
+                return true;
+              }, uiStyle: uiStyle),
+              _btn(ref, 'ln', ButtonType.scientific, () {
+                ref
+                    .read(calculatorProvider.notifier)
+                    .appendFunctionTemplate('ln');
+                return true;
+              }, uiStyle: uiStyle),
+              _btn(ref, 'logₙ', ButtonType.scientific, () {
+                ref.read(calculatorProvider.notifier).appendLogTemplate();
+                return true;
+              }, uiStyle: uiStyle),
               _btn(
                 ref,
                 'e',
@@ -575,8 +577,9 @@ class _DropdownChipRow extends StatelessWidget {
                 fgColor: isSci
                     ? colorScheme.onSecondaryContainer
                     : colorScheme.onSurfaceVariant,
-                onTap: () =>
-                    ref.read(calculatorProvider.notifier).toggleScientificMode(),
+                onTap: () => ref
+                    .read(calculatorProvider.notifier)
+                    .toggleScientificMode(),
                 isExpanded: isSci,
               ),
 

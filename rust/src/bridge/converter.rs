@@ -29,8 +29,7 @@ pub struct FfiConverterCategory {
 pub fn get_converter_categories() -> Vec<FfiConverterCategory> {
     converter::get_all_categories()
         .into_iter()
-        .map(|c| {
-            FfiConverterCategory {
+        .map(|c| FfiConverterCategory {
             id: c.id,
             name: c.name,
             icon_name: c.icon_name,
@@ -47,7 +46,7 @@ pub fn get_converter_categories() -> Vec<FfiConverterCategory> {
                 .collect(),
             show_swap_units_toggler: true,
             show_result_section: true,
-        }})
+        })
         .collect()
 }
 
@@ -71,7 +70,6 @@ pub fn convert_standard(value: f64, from_unit: FfiUnit, to_unit: FfiUnit) -> f64
     converter::convert_standard(value, &from, &to)
 }
 
-
 /// Converts a string representing a numeral from one base to another.
 #[frb(sync)]
 pub fn convert_numeral(value: String, from_base: u32, to_base: u32) -> Option<String> {
@@ -92,7 +90,7 @@ pub struct DateDiffResult {
 pub fn calculate_date_difference(start_timestamp_ms: i64, end_timestamp_ms: i64) -> DateDiffResult {
     let diff_ms = (end_timestamp_ms - start_timestamp_ms).abs();
     let total_days = (diff_ms / (1000 * 60 * 60 * 24)) as i32;
-    
+
     let years = total_days / 365;
     let remaining = total_days % 365;
     let months = remaining / 30;

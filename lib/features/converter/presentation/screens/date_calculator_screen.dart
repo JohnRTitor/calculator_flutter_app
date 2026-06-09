@@ -14,13 +14,19 @@ class DateCalculatorScreen extends ConsumerStatefulWidget {
   const DateCalculatorScreen({super.key});
 
   @override
-  ConsumerState<DateCalculatorScreen> createState() => _DateCalculatorScreenState();
+  ConsumerState<DateCalculatorScreen> createState() =>
+      _DateCalculatorScreenState();
 }
 
 class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
-  final GlobalKey<ScreenshotShareWrapperState> _screenshotKey = GlobalKey<ScreenshotShareWrapperState>();
+  final GlobalKey<ScreenshotShareWrapperState> _screenshotKey =
+      GlobalKey<ScreenshotShareWrapperState>();
 
-  Future<void> _selectDate(BuildContext context, DateTime initialDate, bool isFrom) async {
+  Future<void> _selectDate(
+    BuildContext context,
+    DateTime initialDate,
+    bool isFrom,
+  ) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: initialDate,
@@ -30,21 +36,24 @@ class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
         final uiStyle = ref.watch(uiStyleProvider);
         final colorScheme = Theme.of(context).colorScheme;
         final textTheme = Theme.of(context).textTheme;
-        
+
         final baseTheme = Theme.of(context);
         final bool isLiquid = uiStyle == UiStyle.liquidGlass;
-        
+
         final customizedTheme = Theme(
           data: baseTheme.copyWith(
             datePickerTheme: DatePickerThemeData(
-              backgroundColor: isLiquid 
-                  ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.7) 
+              backgroundColor: isLiquid
+                  ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.7)
                   : colorScheme.surfaceContainerHighest,
               elevation: isLiquid ? 0 : 8,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(28),
-                side: isLiquid 
-                    ? BorderSide(color: Colors.white.withValues(alpha: 0.2), width: 1) 
+                side: isLiquid
+                    ? BorderSide(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        width: 1,
+                      )
                     : BorderSide.none,
               ),
               headerBackgroundColor: Colors.transparent,
@@ -57,7 +66,9 @@ class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
                 fontWeight: FontWeight.w600,
                 letterSpacing: 1.2,
               ),
-              dayStyle: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+              dayStyle: textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
               yearStyle: textTheme.bodyLarge,
               todayForegroundColor: WidgetStateProperty.resolveWith((states) {
                 if (states.contains(WidgetState.selected)) {
@@ -80,7 +91,9 @@ class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
                 }
                 return Colors.transparent;
               }),
-              dayOverlayColor: WidgetStateProperty.all(colorScheme.primary.withValues(alpha: 0.1)),
+              dayOverlayColor: WidgetStateProperty.all(
+                colorScheme.primary.withValues(alpha: 0.1),
+              ),
               yearForegroundColor: WidgetStateProperty.resolveWith((states) {
                 if (states.contains(WidgetState.selected)) {
                   return colorScheme.onPrimary;
@@ -98,7 +111,10 @@ class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
               style: TextButton.styleFrom(
                 foregroundColor: colorScheme.onPrimaryContainer,
                 backgroundColor: colorScheme.primaryContainer,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -118,11 +134,11 @@ class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
             child: customizedTheme,
           );
         }
-        
+
         return customizedTheme;
       },
     );
-    
+
     if (picked != null) {
       if (isFrom) {
         ref.read(dateCalculatorProvider.notifier).setFromDate(picked);
@@ -139,7 +155,7 @@ class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final themeExt = Theme.of(context).extension<AppThemeExtension>()!;
-    
+
     final cardTextColor = themeExt.resultText;
 
     final diff = state.preciseDifference;
@@ -157,7 +173,8 @@ class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
               onPressed: () {
                 _screenshotKey.currentState?.captureAndShare(
                   subject: 'Date Difference Calculation',
-                  text: 'The difference between ${DateFormat.yMMMd().format(state.fromDate)} and ${DateFormat.yMMMd().format(state.toDate)} is $totalDays days.',
+                  text:
+                      'The difference between ${DateFormat.yMMMd().format(state.fromDate)} and ${DateFormat.yMMMd().format(state.toDate)} is $totalDays days.',
                 );
               },
               tooltip: 'Share result',
@@ -183,7 +200,8 @@ class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
                           context,
                           label: 'From',
                           date: state.fromDate,
-                          onTap: () => _selectDate(context, state.fromDate, true),
+                          onTap: () =>
+                              _selectDate(context, state.fromDate, true),
                           uiStyle: uiStyle,
                           colorScheme: colorScheme,
                         ),
@@ -192,7 +210,9 @@ class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: IconButton(
                           icon: const Icon(Icons.swap_horiz),
-                          onPressed: () => ref.read(dateCalculatorProvider.notifier).swapDates(),
+                          onPressed: () => ref
+                              .read(dateCalculatorProvider.notifier)
+                              .swapDates(),
                           color: colorScheme.onSurfaceVariant,
                         ),
                       ),
@@ -201,7 +221,8 @@ class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
                           context,
                           label: 'To',
                           date: state.toDate,
-                          onTap: () => _selectDate(context, state.toDate, false),
+                          onTap: () =>
+                              _selectDate(context, state.toDate, false),
                           uiStyle: uiStyle,
                           colorScheme: colorScheme,
                         ),
@@ -209,107 +230,192 @@ class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Quick Actions
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        _buildQuickAction(context, 'Today', () => ref.read(dateCalculatorProvider.notifier).setToday(), uiStyle, colorScheme),
+                        _buildQuickAction(
+                          context,
+                          'Today',
+                          () => ref
+                              .read(dateCalculatorProvider.notifier)
+                              .setToday(),
+                          uiStyle,
+                          colorScheme,
+                        ),
                         const SizedBox(width: 8),
-                        _buildQuickAction(context, 'Tomorrow', () => ref.read(dateCalculatorProvider.notifier).setTomorrow(), uiStyle, colorScheme),
+                        _buildQuickAction(
+                          context,
+                          'Tomorrow',
+                          () => ref
+                              .read(dateCalculatorProvider.notifier)
+                              .setTomorrow(),
+                          uiStyle,
+                          colorScheme,
+                        ),
                         const SizedBox(width: 8),
-                        _buildQuickAction(context, 'Yesterday', () => ref.read(dateCalculatorProvider.notifier).setYesterday(), uiStyle, colorScheme),
+                        _buildQuickAction(
+                          context,
+                          'Yesterday',
+                          () => ref
+                              .read(dateCalculatorProvider.notifier)
+                              .setYesterday(),
+                          uiStyle,
+                          colorScheme,
+                        ),
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // Result Card
                   SharedSurface(
-                    uiStyle: uiStyle,
-                    glassRole: GlassSurfaceRole.primary,
-                    materialColor: themeExt.resultCard,
-                    padding: const EdgeInsets.all(32),
-                    borderRadius: BorderRadius.circular(32),
-                    child: Column(
-                      children: [
-                        Text(
-                          isNegative ? 'Difference (Past)' : 'Difference',
-                          style: textTheme.titleMedium?.copyWith(
-                            color: cardTextColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        
-                        // Total Days display
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          textBaseline: TextBaseline.alphabetic,
+                        uiStyle: uiStyle,
+                        glassRole: GlassSurfaceRole.primary,
+                        materialColor: themeExt.resultCard,
+                        padding: const EdgeInsets.all(32),
+                        borderRadius: BorderRadius.circular(32),
+                        child: Column(
                           children: [
-                            AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 300),
-                              child: Text(
-                                '$totalDays',
-                                key: ValueKey<int>(totalDays),
-                                style: textTheme.displayLarge?.copyWith(
-                                  color: cardTextColor,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 64,
-                                  fontFeatures: const [FontFeature.tabularFigures()],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
                             Text(
-                              'Days',
-                              style: textTheme.headlineSmall?.copyWith(
-                                color: cardTextColor.withValues(alpha: 0.8),
+                              isNegative ? 'Difference (Past)' : 'Difference',
+                              style: textTheme.titleMedium?.copyWith(
+                                color: cardTextColor,
+                                fontWeight: FontWeight.w600,
                               ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Total Days display
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.baseline,
+                              textBaseline: TextBaseline.alphabetic,
+                              children: [
+                                AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 300),
+                                  child: Text(
+                                    '$totalDays',
+                                    key: ValueKey<int>(totalDays),
+                                    style: textTheme.displayLarge?.copyWith(
+                                      color: cardTextColor,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 64,
+                                      fontFeatures: const [
+                                        FontFeature.tabularFigures(),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Days',
+                                  style: textTheme.headlineSmall?.copyWith(
+                                    color: cardTextColor.withValues(alpha: 0.8),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 24),
+                            Divider(
+                              color: cardTextColor.withValues(alpha: 0.2),
+                              thickness: 1,
+                            ),
+                            const SizedBox(height: 24),
+
+                            // Precise breakdown
+                            Wrap(
+                              alignment: WrapAlignment.center,
+                              spacing: 16,
+                              runSpacing: 16,
+                              children: [
+                                if (diff.years > 0)
+                                  _buildTimeComponent(
+                                    '${diff.years}',
+                                    'Years',
+                                    uiStyle,
+                                    colorScheme,
+                                    textTheme,
+                                    cardTextColor,
+                                  ),
+                                if (diff.months > 0)
+                                  _buildTimeComponent(
+                                    '${diff.months}',
+                                    'Months',
+                                    uiStyle,
+                                    colorScheme,
+                                    textTheme,
+                                    cardTextColor,
+                                  ),
+                                if (diff.days > 0 ||
+                                    (diff.years == 0 && diff.months == 0))
+                                  _buildTimeComponent(
+                                    '${diff.days}',
+                                    'Days',
+                                    uiStyle,
+                                    colorScheme,
+                                    textTheme,
+                                    cardTextColor,
+                                  ),
+                              ],
                             ),
                           ],
                         ),
-                        
-                        const SizedBox(height: 24),
-                        Divider(color: cardTextColor.withValues(alpha: 0.2), thickness: 1),
-                        const SizedBox(height: 24),
-                        
-                        // Precise breakdown
-                        Wrap(
-                          alignment: WrapAlignment.center,
-                          spacing: 16,
-                          runSpacing: 16,
-                          children: [
-                            if (diff.years > 0) _buildTimeComponent('${diff.years}', 'Years', uiStyle, colorScheme, textTheme, cardTextColor),
-                            if (diff.months > 0) _buildTimeComponent('${diff.months}', 'Months', uiStyle, colorScheme, textTheme, cardTextColor),
-                            if (diff.days > 0 || (diff.years == 0 && diff.months == 0)) _buildTimeComponent('${diff.days}', 'Days', uiStyle, colorScheme, textTheme, cardTextColor),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.05, end: 0, duration: 400.ms, curve: Curves.easeOutQuad),
-                  
+                      )
+                      .animate()
+                      .fadeIn(duration: 400.ms)
+                      .slideY(
+                        begin: 0.05,
+                        end: 0,
+                        duration: 400.ms,
+                        curve: Curves.easeOutQuad,
+                      ),
+
                   const SizedBox(height: 24),
-                  
+
                   // Extra stats
                   SharedSurface(
-                    uiStyle: uiStyle,
-                    glassRole: GlassSurfaceRole.card,
-                    padding: const EdgeInsets.all(24),
-                    borderRadius: BorderRadius.circular(24),
-                    child: Column(
-                      children: [
-                        _buildStatRow('Total Weeks', '${state.totalWeeks.abs()} weeks, ${state.remainingDaysInWeek.abs()} days', colorScheme, textTheme),
-                        const Divider(height: 24),
-                        _buildStatRow('Total Months', '${state.totalMonths.abs().toStringAsFixed(2)} months', colorScheme, textTheme),
-                        const Divider(height: 24),
-                        _buildStatRow('Total Years', '${state.totalYears.abs().toStringAsFixed(2)} years', colorScheme, textTheme),
-                      ],
-                    ),
-                  ).animate().fadeIn(delay: 100.ms, duration: 400.ms).slideY(begin: 0.05, end: 0, duration: 400.ms, curve: Curves.easeOutQuad),
+                        uiStyle: uiStyle,
+                        glassRole: GlassSurfaceRole.card,
+                        padding: const EdgeInsets.all(24),
+                        borderRadius: BorderRadius.circular(24),
+                        child: Column(
+                          children: [
+                            _buildStatRow(
+                              'Total Weeks',
+                              '${state.totalWeeks.abs()} weeks, ${state.remainingDaysInWeek.abs()} days',
+                              colorScheme,
+                              textTheme,
+                            ),
+                            const Divider(height: 24),
+                            _buildStatRow(
+                              'Total Months',
+                              '${state.totalMonths.abs().toStringAsFixed(2)} months',
+                              colorScheme,
+                              textTheme,
+                            ),
+                            const Divider(height: 24),
+                            _buildStatRow(
+                              'Total Years',
+                              '${state.totalYears.abs().toStringAsFixed(2)} years',
+                              colorScheme,
+                              textTheme,
+                            ),
+                          ],
+                        ),
+                      )
+                      .animate()
+                      .fadeIn(delay: 100.ms, duration: 400.ms)
+                      .slideY(
+                        begin: 0.05,
+                        end: 0,
+                        duration: 400.ms,
+                        curve: Curves.easeOutQuad,
+                      ),
                 ],
               ),
             ),
@@ -415,7 +521,12 @@ class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
     );
   }
 
-  Widget _buildStatRow(String label, String value, ColorScheme colorScheme, TextTheme textTheme) {
+  Widget _buildStatRow(
+    String label,
+    String value,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

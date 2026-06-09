@@ -11,10 +11,7 @@ import 'package:path_provider/path_provider.dart';
 class ScreenshotShareWrapper extends StatefulWidget {
   final Widget child;
 
-  const ScreenshotShareWrapper({
-    super.key,
-    required this.child,
-  });
+  const ScreenshotShareWrapper({super.key, required this.child});
 
   @override
   State<ScreenshotShareWrapper> createState() => ScreenshotShareWrapperState();
@@ -31,9 +28,9 @@ class ScreenshotShareWrapperState extends State<ScreenshotShareWrapper> {
   }) async {
     try {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Capturing screenshot...')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Capturing screenshot...')));
 
       // 1. Switch to opaque background
       setState(() {
@@ -85,9 +82,9 @@ class ScreenshotShareWrapperState extends State<ScreenshotShareWrapper> {
         setState(() {
           _isCapturing = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error sharing screenshot: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error sharing screenshot: $e')));
       }
     }
   }

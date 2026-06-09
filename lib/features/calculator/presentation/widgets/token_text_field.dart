@@ -98,7 +98,7 @@ class _TokenTextFieldState extends ConsumerState<TokenTextField> {
     if (_controller.text != expectedText) {
       _controller.text = expectedText;
     }
-    
+
     _controller.tokens = state.tokens;
     _controller.baseStyle = theme.textTheme.headlineLarge?.copyWith(
       color: theme.colorScheme.onSurfaceVariant,
@@ -151,16 +151,25 @@ class _TemplateTextEditingController extends TextEditingController {
   TextStyle? basePlaceholderStyle;
 
   @override
-  TextSpan buildTextSpan({required BuildContext context, TextStyle? style, required bool withComposing}) {
+  TextSpan buildTextSpan({
+    required BuildContext context,
+    TextStyle? style,
+    required bool withComposing,
+  }) {
     final children = <InlineSpan>[];
-    
+
     int i = 0;
     while (i < tokens.length) {
       if (tokens[i] == 'log_') {
         children.add(TextSpan(text: 'log', style: style));
-        children.add(const TextSpan(text: '_', style: TextStyle(fontSize: 0, color: Colors.transparent)));
+        children.add(
+          const TextSpan(
+            text: '_',
+            style: TextStyle(fontSize: 0, color: Colors.transparent),
+          ),
+        );
         i++;
-        
+
         while (i < tokens.length && tokens[i] != '(') {
           if (tokens[i] == '□') {
             children.add(TextSpan(text: '□', style: basePlaceholderStyle));
@@ -177,7 +186,7 @@ class _TemplateTextEditingController extends TextEditingController {
         i++;
       }
     }
-    
+
     return TextSpan(style: style, children: children);
   }
 }

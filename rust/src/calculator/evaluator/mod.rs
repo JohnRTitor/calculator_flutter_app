@@ -168,16 +168,24 @@ pub fn evaluate_expr(
             }))
         }
         Expr::Sinh(e) => Ok(CalcValue::Float(
-            evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float().sinh(),
+            evaluate_expr(e, evaluator, is_degree, ans_value)?
+                .to_float()
+                .sinh(),
         )),
         Expr::Cosh(e) => Ok(CalcValue::Float(
-            evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float().cosh(),
+            evaluate_expr(e, evaluator, is_degree, ans_value)?
+                .to_float()
+                .cosh(),
         )),
         Expr::Tanh(e) => Ok(CalcValue::Float(
-            evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float().tanh(),
+            evaluate_expr(e, evaluator, is_degree, ans_value)?
+                .to_float()
+                .tanh(),
         )),
         Expr::Asinh(e) => Ok(CalcValue::Float(
-            evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float().asinh(),
+            evaluate_expr(e, evaluator, is_degree, ans_value)?
+                .to_float()
+                .asinh(),
         )),
         Expr::Acosh(e) => {
             let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
@@ -210,9 +218,7 @@ pub fn evaluate_expr(
             let b = evaluate_expr(base, evaluator, is_degree, ans_value)?.to_float();
             let v = evaluate_expr(value, evaluator, is_degree, ans_value)?.to_float();
             if b <= 0.0 || b == 1.0 {
-                return Err(CalcError::DomainError(
-                    "Invalid logarithm base".to_string(),
-                ));
+                return Err(CalcError::DomainError("Invalid logarithm base".to_string()));
             }
             if v <= 0.0 {
                 return Err(CalcError::DomainError(

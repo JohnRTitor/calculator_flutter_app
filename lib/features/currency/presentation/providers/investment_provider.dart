@@ -5,16 +5,16 @@ enum InvestmentMode { oneTime, sip }
 
 class InvestmentState {
   final InvestmentMode mode;
-  
+
   // Inputs as strings for keypad support
   final String principalStr; // for oneTime
   final String monthlyContributionStr; // for SIP
   final String interestRateStr;
   final String yearsStr;
-  
+
   // Advanced options
   final double compoundsPerYear; // 1, 2, 4, 12, 365
-  
+
   final String activeInput;
 
   const InvestmentState({
@@ -39,7 +39,8 @@ class InvestmentState {
     return InvestmentState(
       mode: mode ?? this.mode,
       principalStr: principalStr ?? this.principalStr,
-      monthlyContributionStr: monthlyContributionStr ?? this.monthlyContributionStr,
+      monthlyContributionStr:
+          monthlyContributionStr ?? this.monthlyContributionStr,
       interestRateStr: interestRateStr ?? this.interestRateStr,
       yearsStr: yearsStr ?? this.yearsStr,
       compoundsPerYear: compoundsPerYear ?? this.compoundsPerYear,
@@ -48,7 +49,8 @@ class InvestmentState {
   }
 
   double get principal => double.tryParse(principalStr) ?? 0.0;
-  double get monthlyContribution => double.tryParse(monthlyContributionStr) ?? 0.0;
+  double get monthlyContribution =>
+      double.tryParse(monthlyContributionStr) ?? 0.0;
   double get interestRate => double.tryParse(interestRateStr) ?? 0.0;
   double get years => double.tryParse(yearsStr) ?? 0.0;
 
@@ -87,7 +89,9 @@ class InvestmentNotifier extends Notifier<InvestmentState> {
   void setMode(InvestmentMode mode) {
     state = state.copyWith(
       mode: mode,
-      activeInput: mode == InvestmentMode.oneTime ? 'principal' : 'monthlyContribution',
+      activeInput: mode == InvestmentMode.oneTime
+          ? 'principal'
+          : 'monthlyContribution',
     );
   }
 
@@ -173,12 +177,14 @@ class InvestmentNotifier extends Notifier<InvestmentState> {
       interestRateStr: '',
       yearsStr: '',
       compoundsPerYear: 1.0,
-      activeInput: state.mode == InvestmentMode.oneTime ? 'principal' : 'monthlyContribution',
+      activeInput: state.mode == InvestmentMode.oneTime
+          ? 'principal'
+          : 'monthlyContribution',
     );
   }
 }
 
 final investmentProvider =
     NotifierProvider<InvestmentNotifier, InvestmentState>(() {
-  return InvestmentNotifier();
-});
+      return InvestmentNotifier();
+    });

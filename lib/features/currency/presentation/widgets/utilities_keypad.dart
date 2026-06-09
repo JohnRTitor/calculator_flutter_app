@@ -8,10 +8,7 @@ import 'package:flutter/services.dart';
 class UtilitiesKeypad extends ConsumerWidget {
   final void Function(String) onKeyPressed;
 
-  const UtilitiesKeypad({
-    super.key,
-    required this.onKeyPressed,
-  });
+  const UtilitiesKeypad({super.key, required this.onKeyPressed});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -43,7 +40,9 @@ class UtilitiesKeypad extends ConsumerWidget {
         child: BackdropFilter(
           filter: isGlass
               ? ColorFilter.mode(
-                  Colors.black.withValues(alpha: 0.1), BlendMode.srcOver)
+                  Colors.black.withValues(alpha: 0.1),
+                  BlendMode.srcOver,
+                )
               : const ColorFilter.mode(Colors.transparent, BlendMode.srcOver),
           child: SafeArea(
             top: false,
@@ -84,9 +83,11 @@ class UtilitiesKeypad extends ConsumerWidget {
     return SharedSurface(
       uiStyle: uiStyle,
       isInteractive: true,
-      glassRole: isAction ? GlassSurfaceRole.destructive : GlassSurfaceRole.button,
-      materialColor: isAction 
-          ? colorScheme.tertiaryContainer 
+      glassRole: isAction
+          ? GlassSurfaceRole.destructive
+          : GlassSurfaceRole.button,
+      materialColor: isAction
+          ? colorScheme.tertiaryContainer
           : colorScheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(24.0),
       onTap: () {

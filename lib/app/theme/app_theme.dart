@@ -37,6 +37,18 @@ class AppTheme {
       case AppColorOption.orange:
         seedColor = Colors.orange;
         break;
+      case AppColorOption.red:
+        seedColor = Colors.red;
+        break;
+      case AppColorOption.pink:
+        seedColor = Colors.pink;
+        break;
+      case AppColorOption.cyan:
+        seedColor = Colors.cyan;
+        break;
+      case AppColorOption.indigo:
+        seedColor = Colors.indigo;
+        break;
       case AppColorOption.defaultColor:
       case AppColorOption.materialYou:
         seedColor = fallbackSeedColor;

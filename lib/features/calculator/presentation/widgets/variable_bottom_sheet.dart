@@ -26,7 +26,10 @@ class VariableBottomSheet extends ConsumerWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 16.0,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,7 +39,9 @@ class VariableBottomSheet extends ConsumerWidget {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                      color: theme.colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.4,
+                      ),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -44,7 +49,9 @@ class VariableBottomSheet extends ConsumerWidget {
                 const SizedBox(height: 24),
                 Text(
                   'Variables (${state.detectedVariables.length})',
-                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 ...state.detectedVariables.map((variable) {
@@ -70,12 +77,16 @@ class VariableBottomSheet extends ConsumerWidget {
                         Expanded(
                           child: TextFormField(
                             initialValue: displayVal,
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                              signed: true,
+                            ),
                             style: theme.textTheme.titleMedium,
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: isGlass 
-                                  ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                              fillColor: isGlass
+                                  ? theme.colorScheme.surfaceContainerHighest
+                                        .withValues(alpha: 0.3)
                                   : theme.colorScheme.surfaceContainerHighest,
                               isDense: true,
                               border: OutlineInputBorder(
@@ -85,7 +96,9 @@ class VariableBottomSheet extends ConsumerWidget {
                             ),
                             onChanged: (val) {
                               final doubleValue = double.tryParse(val) ?? 0.0;
-                              ref.read(functionEvaluatorProvider.notifier).setVariable(variable, doubleValue);
+                              ref
+                                  .read(functionEvaluatorProvider.notifier)
+                                  .setVariable(variable, doubleValue);
                             },
                           ),
                         ),

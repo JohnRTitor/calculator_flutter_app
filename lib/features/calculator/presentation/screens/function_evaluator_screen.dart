@@ -13,10 +13,12 @@ class FunctionEvaluatorScreen extends ConsumerStatefulWidget {
   const FunctionEvaluatorScreen({super.key});
 
   @override
-  ConsumerState<FunctionEvaluatorScreen> createState() => _FunctionEvaluatorScreenState();
+  ConsumerState<FunctionEvaluatorScreen> createState() =>
+      _FunctionEvaluatorScreenState();
 }
 
-class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScreen> {
+class _FunctionEvaluatorScreenState
+    extends ConsumerState<FunctionEvaluatorScreen> {
   late TextEditingController _controller;
 
   @override
@@ -44,7 +46,7 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
   void _showFunctionsDialog(BuildContext context) {
     final theme = Theme.of(context);
     final isGlass = ref.read(uiStyleProvider) == UiStyle.liquidGlass;
-    
+
     showAppDialog(
       context: context,
       uiStyle: ref.read(uiStyleProvider),
@@ -54,23 +56,49 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('The following mathematical functions and constants are supported by the evaluator:'),
+          const Text(
+            'The following mathematical functions and constants are supported by the evaluator:',
+          ),
           const SizedBox(height: 16),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: [
-              'sin(x)', 'cos(x)', 'tan(x)',
-              'asin(x)', 'acos(x)', 'atan(x)',
-              'sinh(x)', 'cosh(x)', 'tanh(x)',
-              'asinh(x)', 'acosh(x)', 'atanh(x)',
-              'log(x)', 'log_(base, val)', 'ln(x)',
-              'sqrt(x)', 'x mod y', 'x % y', 'x!', 'ans', 'pi (π)', 'e',
-            ].map((f) => Chip(
-              label: Text(f),
-              backgroundColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: isGlass ? 0.3 : 1.0),
-              side: BorderSide.none,
-            )).toList(),
+            children:
+                [
+                      'sin(x)',
+                      'cos(x)',
+                      'tan(x)',
+                      'asin(x)',
+                      'acos(x)',
+                      'atan(x)',
+                      'sinh(x)',
+                      'cosh(x)',
+                      'tanh(x)',
+                      'asinh(x)',
+                      'acosh(x)',
+                      'atanh(x)',
+                      'log(x)',
+                      'log_(base, val)',
+                      'ln(x)',
+                      'sqrt(x)',
+                      'x mod y',
+                      'x % y',
+                      'x!',
+                      'ans',
+                      'pi (π)',
+                      'e',
+                    ]
+                    .map(
+                      (f) => Chip(
+                        label: Text(f),
+                        backgroundColor: theme
+                            .colorScheme
+                            .surfaceContainerHighest
+                            .withValues(alpha: isGlass ? 0.3 : 1.0),
+                        side: BorderSide.none,
+                      ),
+                    )
+                    .toList(),
           ),
         ],
       ),
@@ -110,12 +138,18 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
                           border: InputBorder.none,
                           hintText: 'f(x, y, z) = x^2 + y^2 + z^2',
                           hintStyle: theme.textTheme.headlineSmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.3,
+                            ),
                           ),
-                          contentPadding: const EdgeInsets.only(right: 40), // leave space for info icon
+                          contentPadding: const EdgeInsets.only(
+                            right: 40,
+                          ), // leave space for info icon
                         ),
                         onChanged: (val) {
-                          ref.read(functionEvaluatorProvider.notifier).setExpression(val);
+                          ref
+                              .read(functionEvaluatorProvider.notifier)
+                              .setExpression(val);
                         },
                       ),
                       Positioned(
@@ -132,7 +166,7 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Chips Area
                 if (state.detectedVariables.isNotEmpty) ...[
                   Align(
@@ -142,7 +176,9 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
                       runSpacing: 8,
                       children: state.detectedVariables.map((variable) {
                         final val = state.variables[variable] ?? 0.0;
-                        final displayVal = val == val.truncateToDouble() ? val.toInt().toString() : val.toString();
+                        final displayVal = val == val.truncateToDouble()
+                            ? val.toInt().toString()
+                            : val.toString();
                         return ActionChip(
                           label: Text('[$variable = $displayVal]'),
                           onPressed: _showBottomSheet,
@@ -159,7 +195,7 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
                   ),
                   const SizedBox(height: 16),
                 ],
-                
+
                 const Spacer(),
 
                 // Result Area
@@ -180,7 +216,7 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        state.showResult 
+                        state.showResult
                             ? (state.exactResult ?? state.result)
                             : (state.preview.isEmpty ? '0' : state.preview),
                         style: theme.textTheme.displayMedium?.copyWith(
@@ -209,7 +245,9 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
                           glassRole: GlassSurfaceRole.primary,
                           borderRadius: BorderRadius.circular(16),
                           onTap: () {
-                            ref.read(functionEvaluatorProvider.notifier).evaluate();
+                            ref
+                                .read(functionEvaluatorProvider.notifier)
+                                .evaluate();
                             FocusScope.of(context).unfocus();
                           },
                           child: Center(
@@ -227,7 +265,9 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
                         )
                       : FilledButton(
                           onPressed: () {
-                            ref.read(functionEvaluatorProvider.notifier).evaluate();
+                            ref
+                                .read(functionEvaluatorProvider.notifier)
+                                .evaluate();
                             FocusScope.of(context).unfocus();
                           },
                           style: FilledButton.styleFrom(
@@ -239,7 +279,10 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
                           ),
                           child: const Text(
                             'Evaluate',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                 ),

@@ -63,7 +63,9 @@ class _AppCalcButtonState extends State<AppCalcButton>
   }
 
   void _handlePressDown() {
-    setState(() => _scale = widget.uiStyle == UiStyle.liquidGlass ? 0.97 : 0.94);
+    setState(
+      () => _scale = widget.uiStyle == UiStyle.liquidGlass ? 0.97 : 0.94,
+    );
   }
 
   void _handlePressUp() {
@@ -93,7 +95,8 @@ class _AppCalcButtonState extends State<AppCalcButton>
       final style = _resolveGlassStyle(colorScheme, theme.brightness);
       final label = IconTheme(
         data: IconThemeData(color: style.foregroundColor),
-        child: widget.icon ??
+        child:
+            widget.icon ??
             Text(
               widget.text,
               style: TextStyle(
@@ -114,7 +117,8 @@ class _AppCalcButtonState extends State<AppCalcButton>
           isInteractive: true,
           isSelected: widget.isActive,
           glassRole: style.role,
-          frosted: style.role == GlassSurfaceRole.primary ||
+          frosted:
+              style.role == GlassSurfaceRole.primary ||
               style.role == GlassSurfaceRole.destructive ||
               widget.isActive,
           borderRadius: BorderRadius.circular(28),
@@ -123,7 +127,8 @@ class _AppCalcButtonState extends State<AppCalcButton>
       );
     } else {
       final (bg, fg, fontSize, fontWeight) = _getMaterialStyle(colorScheme);
-      final label = widget.icon ??
+      final label =
+          widget.icon ??
           Text(
             widget.text,
             style: TextStyle(fontSize: fontSize, fontWeight: fontWeight),
@@ -151,14 +156,15 @@ class _AppCalcButtonState extends State<AppCalcButton>
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 6.0),
-      child: AnimatedScale(
-        scale: _scale,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOutBack,
-        child: SizedBox.expand(child: buttonChild),
-      )
-      .animate(controller: _shakeController, autoPlay: false)
-      .shakeX(hz: 4, amount: 4),
+      child:
+          AnimatedScale(
+                scale: _scale,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutBack,
+                child: SizedBox.expand(child: buttonChild),
+              )
+              .animate(controller: _shakeController, autoPlay: false)
+              .shakeX(hz: 4, amount: 4),
     );
   }
 
@@ -223,9 +229,8 @@ class _AppCalcButtonState extends State<AppCalcButton>
     }
   }
 
-  (Color bg, Color fg, double fontSize, FontWeight fontWeight) _getMaterialStyle(
-    ColorScheme cs,
-  ) {
+  (Color bg, Color fg, double fontSize, FontWeight fontWeight)
+  _getMaterialStyle(ColorScheme cs) {
     if (widget.isActive) {
       return (
         cs.tertiaryContainer,

@@ -224,8 +224,6 @@ pub fn convert_standard(value: f64, from_unit: &Unit, to_unit: &Unit) -> f64 {
     (base_value / to_unit.multiplier) - to_unit.offset
 }
 
-
-
 /// Converts a numeral string from one base (radix) to another.
 /// Returns `None` if the input string is invalid for the given `from_base`.
 pub fn convert_numeral(value: &str, from_base: u32, to_base: u32) -> Option<String> {

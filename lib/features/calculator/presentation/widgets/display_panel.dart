@@ -27,13 +27,13 @@ class DisplayPanel extends ConsumerWidget {
       return FadeTransition(
         opacity: animation,
         child: SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0.0, 0.3),
-            end: Offset.zero,
-          ).animate(CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeOutCubic,
-          )),
+          position:
+              Tween<Offset>(
+                begin: const Offset(0.0, 0.3),
+                end: Offset.zero,
+              ).animate(
+                CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+              ),
           child: child,
         ),
       );
@@ -46,10 +46,15 @@ class DisplayPanel extends ConsumerWidget {
       children: [
         // Expression input
         Align(
-          alignment: Alignment.bottomRight, 
+          alignment: Alignment.bottomRight,
           child: const TokenTextField()
-            .animate(key: ValueKey(state.expression))
-            .scaleXY(begin: 1.02, end: 1.0, duration: 150.ms, curve: Curves.easeOut),
+              .animate(key: ValueKey(state.expression))
+              .scaleXY(
+                begin: 1.02,
+                end: 1.0,
+                duration: 150.ms,
+                curve: Curves.easeOut,
+              ),
         ),
         const SizedBox(height: 8),
 
@@ -59,15 +64,13 @@ class DisplayPanel extends ConsumerWidget {
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
             transitionBuilder: slideFadeTransition,
-            layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
-              return Stack(
-                alignment: Alignment.bottomRight,
-                children: <Widget>[
-                  ...previousChildren,
-                  ?currentChild,
-                ],
-              );
-            },
+            layoutBuilder:
+                (Widget? currentChild, List<Widget> previousChildren) {
+                  return Stack(
+                    alignment: Alignment.bottomRight,
+                    children: <Widget>[...previousChildren, ?currentChild],
+                  );
+                },
             child: () {
               if (state.error != null) {
                 return Text(
@@ -118,7 +121,9 @@ class DisplayPanel extends ConsumerWidget {
                         state.displayAsFraction && state.exactResult != null
                             ? state.exactResult!
                             : (state.result.isEmpty ? '0' : state.result),
-                        key: ValueKey('result_${state.result}_${state.exactResult}'),
+                        key: ValueKey(
+                          'result_${state.result}_${state.exactResult}',
+                        ),
                         style: theme.textTheme.displayLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: colorScheme.onSurface,

@@ -21,11 +21,13 @@ class ConverterDetailScreen extends ConsumerStatefulWidget {
   const ConverterDetailScreen({super.key});
 
   @override
-  ConsumerState<ConverterDetailScreen> createState() => _ConverterDetailScreenState();
+  ConsumerState<ConverterDetailScreen> createState() =>
+      _ConverterDetailScreenState();
 }
 
 class _ConverterDetailScreenState extends ConsumerState<ConverterDetailScreen> {
-  final GlobalKey<ScreenshotShareWrapperState> _screenshotKey = GlobalKey<ScreenshotShareWrapperState>();
+  final GlobalKey<ScreenshotShareWrapperState> _screenshotKey =
+      GlobalKey<ScreenshotShareWrapperState>();
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +163,8 @@ class _ConverterDetailScreenState extends ConsumerState<ConverterDetailScreen> {
               onPressed: () {
                 _screenshotKey.currentState?.captureAndShare(
                   subject: 'Check out this conversion!',
-                  text: 'Check out this ${category.name} calculation from the Calculator app!',
+                  text:
+                      'Check out this ${category.name} calculation from the Calculator app!',
                 );
               },
               tooltip: 'Share screenshot',
@@ -172,7 +175,9 @@ class _ConverterDetailScreenState extends ConsumerState<ConverterDetailScreen> {
       body: ScreenshotShareWrapper(
         key: _screenshotKey,
         child: Container(
-          color: Theme.of(context).scaffoldBackgroundColor, // Ensure background is solid for screenshot
+          color: Theme.of(
+            context,
+          ).scaffoldBackgroundColor, // Ensure background is solid for screenshot
           child: body,
         ),
       ),
@@ -192,10 +197,10 @@ class _ConverterDetailScreenState extends ConsumerState<ConverterDetailScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-            _buildCompactInputCard(
-              context,
-              ref,
-              label: state.bmiWeightUnit?.name ?? 'Weight',
+          _buildCompactInputCard(
+            context,
+            ref,
+            label: state.bmiWeightUnit?.name ?? 'Weight',
             value: state.bmiWeight.isEmpty ? '0' : state.bmiWeight,
             symbol: state.bmiWeightUnit?.symbol ?? '',
             inputId: 'bmiWeight',
@@ -388,7 +393,10 @@ class _ConverterDetailScreenState extends ConsumerState<ConverterDetailScreen> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Icon(Icons.keyboard_arrow_down_rounded, color: colorScheme.onSurfaceVariant),
+          Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: colorScheme.onSurfaceVariant,
+          ),
         ],
       ),
     );
@@ -451,8 +459,6 @@ class _ConverterDetailScreenState extends ConsumerState<ConverterDetailScreen> {
     );
   }
 
-
-
   Widget _buildCompactInputCard(
     BuildContext context,
     WidgetRef ref, {
@@ -503,7 +509,10 @@ class _ConverterDetailScreenState extends ConsumerState<ConverterDetailScreen> {
                     ),
                     if (isSelectable) ...[
                       const SizedBox(width: 8),
-                      Icon(Icons.keyboard_arrow_down_rounded, color: secondaryTextColor),
+                      Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: secondaryTextColor,
+                      ),
                     ],
                   ],
                 ),
@@ -521,22 +530,26 @@ class _ConverterDetailScreenState extends ConsumerState<ConverterDetailScreen> {
                       child: Text(
                         isActive ? '$value|' : value,
                         key: ValueKey<String>('${value}_$isActive'),
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: valueColor,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 32,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(
+                              color: valueColor,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 32,
+                              fontFeatures: const [
+                                FontFeature.tabularFigures(),
+                              ],
+                            ),
                       ),
                     ),
                     if (symbol.isNotEmpty) ...[
                       const SizedBox(width: 6),
                       Text(
                         symbol,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: secondaryTextColor,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: secondaryTextColor,
+                              fontWeight: FontWeight.w500,
+                            ),
                       ),
                     ],
                   ],

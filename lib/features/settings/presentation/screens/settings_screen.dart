@@ -35,83 +35,94 @@ class SettingsScreen extends ConsumerWidget {
 
         Widget body = ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          children: [
-            // ── Theme Section ──
-            _SectionHeader(
-              label: 'Theme',
-              colorScheme: colorScheme,
-              textTheme: theme.textTheme,
-            ),
-            const SizedBox(height: 8),
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: 2.5,
-              children: AppThemeMode.values.map((mode) {
-                final (label, icon) = _themeLabels[mode]!;
-                final isSelected = themeMode == mode;
-                return _ThemeCard(
-                  label: label,
-                  icon: icon,
-                  isSelected: isSelected,
-                  uiStyle: uiStyle,
-                  colorScheme: colorScheme,
-                  onTap: () =>
-                      ref.read(themeModeProvider.notifier).setThemeMode(mode),
-                );
-              }).toList(),
-            ),
+          children:
+              [
+                    // ── Theme Section ──
+                    _SectionHeader(
+                      label: 'Theme',
+                      colorScheme: colorScheme,
+                      textTheme: theme.textTheme,
+                    ),
+                    const SizedBox(height: 8),
+                    GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 2.5,
+                      children: AppThemeMode.values.map((mode) {
+                        final (label, icon) = _themeLabels[mode]!;
+                        final isSelected = themeMode == mode;
+                        return _ThemeCard(
+                          label: label,
+                          icon: icon,
+                          isSelected: isSelected,
+                          uiStyle: uiStyle,
+                          colorScheme: colorScheme,
+                          onTap: () => ref
+                              .read(themeModeProvider.notifier)
+                              .setThemeMode(mode),
+                        );
+                      }).toList(),
+                    ),
 
-            const SizedBox(height: 28),
+                    const SizedBox(height: 28),
 
-            // ── Colors Section ──
-            _SectionHeader(
-              label: 'Colors',
-              colorScheme: colorScheme,
-              textTheme: theme.textTheme,
-            ),
-            const SizedBox(height: 8),
-            _ColorsSelector(
-              uiStyle: uiStyle,
-              colorScheme: colorScheme,
-              theme: theme,
-              selectedOption: colorOption,
-              isDynamicColorSupported: isDynamicColorSupported,
-              onColorOptionChanged: (option) =>
-                  ref.read(appColorProvider.notifier).setAppColorOption(option),
-            ),
+                    // ── Colors Section ──
+                    _SectionHeader(
+                      label: 'Colors',
+                      colorScheme: colorScheme,
+                      textTheme: theme.textTheme,
+                    ),
+                    const SizedBox(height: 8),
+                    _ColorsSelector(
+                      uiStyle: uiStyle,
+                      colorScheme: colorScheme,
+                      theme: theme,
+                      selectedOption: colorOption,
+                      isDynamicColorSupported: isDynamicColorSupported,
+                      onColorOptionChanged: (option) => ref
+                          .read(appColorProvider.notifier)
+                          .setAppColorOption(option),
+                    ),
 
-            const SizedBox(height: 28),
+                    const SizedBox(height: 28),
 
-            // ── Style Section ──
-            _SectionHeader(
-              label: 'Visual Style',
-              colorScheme: colorScheme,
-              textTheme: theme.textTheme,
-            ),
-            const SizedBox(height: 8),
-            _StyleSelector(
-              uiStyle: uiStyle,
-              colorScheme: colorScheme,
-              theme: theme,
-              onStyleChanged: (style) =>
-                  ref.read(uiStyleProvider.notifier).setUiStyle(style),
-            ),
+                    // ── Style Section ──
+                    _SectionHeader(
+                      label: 'Visual Style',
+                      colorScheme: colorScheme,
+                      textTheme: theme.textTheme,
+                    ),
+                    const SizedBox(height: 8),
+                    _StyleSelector(
+                      uiStyle: uiStyle,
+                      colorScheme: colorScheme,
+                      theme: theme,
+                      onStyleChanged: (style) =>
+                          ref.read(uiStyleProvider.notifier).setUiStyle(style),
+                    ),
 
-            const SizedBox(height: 28),
+                    const SizedBox(height: 28),
 
-            // ── About Section ──
-            _SectionHeader(
-              label: 'About',
-              colorScheme: colorScheme,
-              textTheme: theme.textTheme,
-            ),
-            const SizedBox(height: 8),
-            _buildAboutCard(theme, colorScheme, uiStyle),
-          ].animate(interval: 50.ms).fade(duration: 400.ms).slideY(begin: 0.1, end: 0, duration: 400.ms, curve: Curves.easeOutQuart),
+                    // ── About Section ──
+                    _SectionHeader(
+                      label: 'About',
+                      colorScheme: colorScheme,
+                      textTheme: theme.textTheme,
+                    ),
+                    const SizedBox(height: 8),
+                    _buildAboutCard(theme, colorScheme, uiStyle),
+                  ]
+                  .animate(interval: 50.ms)
+                  .fade(duration: 400.ms)
+                  .slideY(
+                    begin: 0.1,
+                    end: 0,
+                    duration: 400.ms,
+                    curve: Curves.easeOutQuart,
+                  ),
         );
 
         return Scaffold(
@@ -399,6 +410,30 @@ class _ColorsSelector extends StatelessWidget {
                 color: Colors.orange,
                 isSelected: selectedOption == AppColorOption.orange,
                 onTap: () => onColorOptionChanged(AppColorOption.orange),
+              ),
+              const SizedBox(width: 12),
+              _ColorSwatch(
+                color: Colors.red,
+                isSelected: selectedOption == AppColorOption.red,
+                onTap: () => onColorOptionChanged(AppColorOption.red),
+              ),
+              const SizedBox(width: 12),
+              _ColorSwatch(
+                color: Colors.pink,
+                isSelected: selectedOption == AppColorOption.pink,
+                onTap: () => onColorOptionChanged(AppColorOption.pink),
+              ),
+              const SizedBox(width: 12),
+              _ColorSwatch(
+                color: Colors.cyan,
+                isSelected: selectedOption == AppColorOption.cyan,
+                onTap: () => onColorOptionChanged(AppColorOption.cyan),
+              ),
+              const SizedBox(width: 12),
+              _ColorSwatch(
+                color: Colors.indigo,
+                isSelected: selectedOption == AppColorOption.indigo,
+                onTap: () => onColorOptionChanged(AppColorOption.indigo),
               ),
             ],
           ),

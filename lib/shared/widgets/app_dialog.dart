@@ -21,12 +21,14 @@ Future<T?> showAppDialog<T>({
     transitionDuration: const Duration(milliseconds: 300),
     pageBuilder: (context, animation, secondaryAnimation) => const SizedBox(),
     transitionBuilder: (context, animation, secondaryAnimation, child) {
-      final scaleAnimation = Tween<double>(begin: 0.9, end: 1.0).animate(
-        CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-      );
-      final fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-      );
+      final scaleAnimation = Tween<double>(
+        begin: 0.9,
+        end: 1.0,
+      ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic));
+      final fadeAnimation = Tween<double>(
+        begin: 0.0,
+        end: 1.0,
+      ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic));
 
       return ScaleTransition(
         scale: scaleAnimation,
@@ -35,7 +37,10 @@ Future<T?> showAppDialog<T>({
           child: Dialog(
             backgroundColor: Colors.transparent,
             elevation: 0,
-            insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+            insetPadding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 24,
+            ),
             child: SharedSurface(
               uiStyle: uiStyle,
               glassRole: GlassSurfaceRole.panel,
@@ -51,30 +56,25 @@ Future<T?> showAppDialog<T>({
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer.withValues(alpha: 0.5),
+                        color: colorScheme.primaryContainer.withValues(
+                          alpha: 0.5,
+                        ),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
-                        icon,
-                        color: colorScheme.primary,
-                        size: 28,
-                      ),
+                      child: Icon(icon, color: colorScheme.primary, size: 28),
                     ),
                     const SizedBox(height: 20),
                     Text(
                       title,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: colorScheme.onSurface,
-                        letterSpacing: -0.5,
-                      ),
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: colorScheme.onSurface,
+                            letterSpacing: -0.5,
+                          ),
                     ),
                     const SizedBox(height: 12),
-                    Flexible(
-                      child: SingleChildScrollView(
-                        child: content,
-                      ),
-                    ),
+                    Flexible(child: SingleChildScrollView(child: content)),
                     const SizedBox(height: 32),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -88,7 +88,10 @@ Future<T?> showAppDialog<T>({
                             }
                           },
                           style: FilledButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
                             minimumSize: const Size(0, 48),
                             elevation: 0,
                             shape: RoundedRectangleBorder(

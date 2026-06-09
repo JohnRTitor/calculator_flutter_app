@@ -14,12 +14,17 @@ class LoanCalculatorScreen extends ConsumerStatefulWidget {
   const LoanCalculatorScreen({super.key});
 
   @override
-  ConsumerState<LoanCalculatorScreen> createState() => _LoanCalculatorScreenState();
+  ConsumerState<LoanCalculatorScreen> createState() =>
+      _LoanCalculatorScreenState();
 }
 
 class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
-  final GlobalKey<ScreenshotShareWrapperState> _screenshotKey = GlobalKey<ScreenshotShareWrapperState>();
-  final NumberFormat _currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
+  final GlobalKey<ScreenshotShareWrapperState> _screenshotKey =
+      GlobalKey<ScreenshotShareWrapperState>();
+  final NumberFormat _currencyFormat = NumberFormat.currency(
+    symbol: '\$',
+    decimalDigits: 2,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +34,7 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final themeExt = Theme.of(context).extension<AppThemeExtension>()!;
-    
+
     final cardTextColor = themeExt.resultText;
 
     final result = state.result;
@@ -50,7 +55,8 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
               onPressed: () {
                 _screenshotKey.currentState?.captureAndShare(
                   subject: 'Loan / EMI Calculation',
-                  text: 'Monthly EMI: ${_currencyFormat.format(result.monthlyEmi)}\nTotal Interest: ${_currencyFormat.format(result.totalInterest)}',
+                  text:
+                      'Monthly EMI: ${_currencyFormat.format(result.monthlyEmi)}\nTotal Interest: ${_currencyFormat.format(result.totalInterest)}',
                 );
               },
               tooltip: 'Share result',
@@ -67,7 +73,10 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
           child: Container(
             color: Theme.of(context).scaffoldBackgroundColor,
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 16.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -96,40 +105,53 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        Divider(color: cardTextColor.withValues(alpha: 0.2), thickness: 1),
+                        Divider(
+                          color: cardTextColor.withValues(alpha: 0.2),
+                          thickness: 1,
+                        ),
                         const SizedBox(height: 16),
                         Row(
                           children: [
                             Expanded(
-                                child: _buildSummaryItem(
-                                  context: context,
-                                  label: 'Total Interest',
-                                  value: _currencyFormat.format(result.totalInterest),
-                                  textTheme: textTheme,
+                              child: _buildSummaryItem(
+                                context: context,
+                                label: 'Total Interest',
+                                value: _currencyFormat.format(
+                                  result.totalInterest,
                                 ),
+                                textTheme: textTheme,
+                              ),
                             ),
-                            Container(width: 1, height: 40, color: cardTextColor.withValues(alpha: 0.2)),
+                            Container(
+                              width: 1,
+                              height: 40,
+                              color: cardTextColor.withValues(alpha: 0.2),
+                            ),
                             Expanded(
-                                child: _buildSummaryItem(
-                                  context: context,
-                                  label: 'Total Payment',
-                                  value: _currencyFormat.format(result.totalPayment),
-                                  textTheme: textTheme,
+                              child: _buildSummaryItem(
+                                context: context,
+                                label: 'Total Payment',
+                                value: _currencyFormat.format(
+                                  result.totalPayment,
                                 ),
+                                textTheme: textTheme,
+                              ),
                             ),
                           ],
                         ),
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Inputs
                   _buildInputCard(
                     context: context,
                     label: 'Principal Amount',
-                    value: state.principalStr.isEmpty ? '0' : state.principalStr,
+                    value: state.principalStr.isEmpty
+                        ? '0'
+                        : state.principalStr,
                     symbol: '\$',
                     inputId: 'principal',
                     isActive: state.activeInput == 'principal',
@@ -137,13 +159,15 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
                     uiStyle: uiStyle,
                     colorScheme: colorScheme,
                   ),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   _buildInputCard(
                     context: context,
                     label: 'Interest Rate (Yearly)',
-                    value: state.interestRateStr.isEmpty ? '0' : state.interestRateStr,
+                    value: state.interestRateStr.isEmpty
+                        ? '0'
+                        : state.interestRateStr,
                     symbol: '%',
                     inputId: 'interestRate',
                     isActive: state.activeInput == 'interestRate',
@@ -151,9 +175,9 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
                     uiStyle: uiStyle,
                     colorScheme: colorScheme,
                   ),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   // Tenure Input
                   _buildTenureInputCard(
                     context: context,
@@ -167,14 +191,17 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
             ),
           ),
         ),
-        keypad: UtilitiesKeypad(
-          onKeyPressed: notifier.onKeyPressed,
-        ),
+        keypad: UtilitiesKeypad(onKeyPressed: notifier.onKeyPressed),
       ),
     );
   }
 
-  Widget _buildSummaryItem({required BuildContext context, required String label, required String value, required TextTheme textTheme}) {
+  Widget _buildSummaryItem({
+    required BuildContext context,
+    required String label,
+    required String value,
+    required TextTheme textTheme,
+  }) {
     final themeExt = Theme.of(context).extension<AppThemeExtension>()!;
     final textColor = themeExt.resultText;
     return Column(
@@ -224,7 +251,9 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
           Text(
             label,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: isActive ? colorScheme.primary : colorScheme.onSurfaceVariant,
+              color: isActive
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
               fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
             ),
           ),
@@ -234,7 +263,9 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
                 Text(
                   symbol,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: isActive ? colorScheme.primary : colorScheme.onSurface,
+                    color: isActive
+                        ? colorScheme.primary
+                        : colorScheme.onSurface,
                   ),
                 ),
               Text(
@@ -248,7 +279,9 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
                 Text(
                   symbol,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: isActive ? colorScheme.primary : colorScheme.onSurface,
+                    color: isActive
+                        ? colorScheme.primary
+                        : colorScheme.onSurface,
                   ),
                 ),
             ],
@@ -266,7 +299,7 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
     required ColorScheme colorScheme,
   }) {
     final isActive = state.activeInput == 'tenure';
-    
+
     final themeExt = Theme.of(context).extension<AppThemeExtension>()!;
     return SharedSurface(
       uiStyle: uiStyle,
@@ -281,7 +314,9 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
           Text(
             'Loan Tenure',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: isActive ? colorScheme.primary : colorScheme.onSurfaceVariant,
+              color: isActive
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
               fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
             ),
           ),
@@ -326,7 +361,7 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
       ),
     );
   }
-  
+
   Widget _buildTenureToggle(
     BuildContext context, {
     required String label,
@@ -341,15 +376,13 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected 
-              ? themeExt.chipBackground
-              : Colors.transparent,
+          color: isSelected ? themeExt.chipBackground : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: isSelected 
+            color: isSelected
                 ? themeExt.chipText
                 : colorScheme.onSurfaceVariant,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,

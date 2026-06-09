@@ -1,6 +1,6 @@
 use crate::calculator::error::CalcError;
-use crate::calculator::rational::{CalcValue, Rational};
 use crate::calculator::evaluator::Evaluator;
+use crate::calculator::rational::{CalcValue, Rational};
 use std::collections::HashMap;
 
 use flutter_rust_bridge::frb;
@@ -28,7 +28,10 @@ impl Evaluator for FunctionEvaluator {
                 Ok(CalcValue::Float(val))
             }
         } else {
-            Err(CalcError::InvalidExpression(format!("Undefined variable: {}", name)))
+            Err(CalcError::InvalidExpression(format!(
+                "Undefined variable: {}",
+                name
+            )))
         }
     }
 }

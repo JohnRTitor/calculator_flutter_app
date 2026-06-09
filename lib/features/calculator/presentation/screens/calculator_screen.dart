@@ -102,7 +102,9 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
                 onPressed: () async {
                   final result = await Navigator.push<bool>(
                     context,
-                    FadePageRoute(page: HistoryScreen(initialIsFuncMode: isFuncMode)),
+                    FadePageRoute(
+                      page: HistoryScreen(initialIsFuncMode: isFuncMode),
+                    ),
                   );
                   if (result != null && result != isFuncMode) {
                     setState(() {
@@ -124,7 +126,9 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
               onPressed: () async {
                 final result = await Navigator.push<bool>(
                   context,
-                  FadePageRoute(page: HistoryScreen(initialIsFuncMode: isFuncMode)),
+                  FadePageRoute(
+                    page: HistoryScreen(initialIsFuncMode: isFuncMode),
+                  ),
                 );
                 if (result != null && result != isFuncMode) {
                   setState(() {

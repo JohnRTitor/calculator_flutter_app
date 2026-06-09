@@ -537,7 +537,10 @@ impl<'a> Parser<'a> {
                     self.consume();
                 }
                 let value = self.parse_primary_arg()?;
-                Ok(Expr::Log { base: Box::new(base), value: Box::new(value) })
+                Ok(Expr::Log {
+                    base: Box::new(base),
+                    value: Box::new(value),
+                })
             }
             Token::Ln => {
                 let expr = self.parse_primary_arg()?;
