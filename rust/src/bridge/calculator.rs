@@ -148,6 +148,40 @@ pub fn history_load(path: String) -> Result<(), String> {
     history::load(&path).map_err(|e| e.to_string())
 }
 
+/// Adds a func history entry from Flutter.
+#[frb(sync)]
+pub fn func_history_add(expression: String, result: String) {
+    history::func_history_add(expression, result);
+}
+
+/// Retrieves all func history entries to display in Flutter.
+#[frb(sync)]
+pub fn func_history_get_all() -> Vec<history::HistoryEntry> {
+    history::func_history_get_all()
+}
+
+/// Clears all func history entries.
+#[frb(sync)]
+pub fn func_history_clear() {
+    history::func_history_clear();
+}
+
+/// Deletes a specific func history entry.
+#[frb(sync)]
+pub fn func_history_delete(index: usize) {
+    history::func_history_delete(index);
+}
+
+/// Saves the func history to a file path provided by Flutter.
+pub fn func_history_save(path: String) -> Result<(), String> {
+    history::func_history_save(&path).map_err(|e| e.to_string())
+}
+
+/// Loads the func history from a file path provided by Flutter.
+pub fn func_history_load(path: String) -> Result<(), String> {
+    history::func_history_load(&path).map_err(|e| e.to_string())
+}
+
 /// Evaluates a mathematical expression string with variables from Flutter and returns the result.
 #[frb(sync)]
 pub fn evaluate_with_vars(

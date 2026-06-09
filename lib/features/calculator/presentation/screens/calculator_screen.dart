@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/widgets/display_panel.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/widgets/keypad.dart';
 import 'package:calculator_flutter_app/shared/layouts/responsive_keypad_layout.dart';
-import 'package:calculator_flutter_app/features/calculator/presentation/providers/calculator_provider.dart';
+
 import 'package:calculator_flutter_app/features/calculator/presentation/screens/function_evaluator_screen.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
@@ -13,12 +13,18 @@ import 'package:calculator_flutter_app/app/theme/app_theme_extension.dart';
 /// The main screen for the calculator functionality.
 ///
 /// Lays out the display panel at the top and the keypad filling the rest of the vertical space.
-class CalculatorScreen extends ConsumerWidget {
+class CalculatorScreen extends ConsumerStatefulWidget {
   const CalculatorScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isFuncMode = ref.watch(calculatorProvider.select((state) => state.isFuncMode));
+  ConsumerState<CalculatorScreen> createState() => _CalculatorScreenState();
+}
+
+class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
+  bool isFuncMode = false;
+
+  @override
+  Widget build(BuildContext context) {
     final uiStyle = ref.watch(uiStyleProvider);
     final isGlass = uiStyle == UiStyle.liquidGlass;
 
@@ -26,7 +32,7 @@ class CalculatorScreen extends ConsumerWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
-          child: _buildSegmentedToggle(context, ref, isFuncMode, isGlass, uiStyle),
+          child: _buildSegmentedToggle(context, ref, isGlass, uiStyle),
         ),
         Expanded(
           child: AnimatedSwitcher(
@@ -41,7 +47,7 @@ class CalculatorScreen extends ConsumerWidget {
   }
 
   Widget _buildSegmentedToggle(
-      BuildContext context, WidgetRef ref, bool isFuncMode, bool isGlass, UiStyle uiStyle) {
+      BuildContext context, WidgetRef ref, bool isGlass, UiStyle uiStyle) {
     final theme = Theme.of(context);
     final glassPrimary = resolveGlassStyle(
       theme.colorScheme,
@@ -70,7 +76,11 @@ class CalculatorScreen extends ConsumerWidget {
                 glassPrimary: glassPrimary,
                 theme: theme,
                 onTap: () {
-                  if (isFuncMode) ref.read(calculatorProvider.notifier).toggleFuncMode();
+                  if (isFuncMode) {
+                    setState(() {
+                      isFuncMode = false;
+                    });
+                  }
                 },
               ),
             ),
@@ -84,7 +94,11 @@ class CalculatorScreen extends ConsumerWidget {
                 glassPrimary: glassPrimary,
                 theme: theme,
                 onTap: () {
-                  if (!isFuncMode) ref.read(calculatorProvider.notifier).toggleFuncMode();
+                  if (!isFuncMode) {
+                    setState(() {
+                      isFuncMode = true;
+                    });
+                  }
                 },
               ),
             ),

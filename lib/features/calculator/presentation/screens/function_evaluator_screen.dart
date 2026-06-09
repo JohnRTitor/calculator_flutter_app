@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:calculator_flutter_app/features/calculator/presentation/providers/calculator_provider.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/providers/function_evaluator_provider.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/widgets/variable_bottom_sheet.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
-import 'package:calculator_flutter_app/app/theme/ui_style.dart';
+
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:calculator_flutter_app/app/theme/app_theme_extension.dart';
 
@@ -20,7 +20,7 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
   @override
   void initState() {
     super.initState();
-    final initialText = ref.read(calculatorProvider).funcExpression;
+    final initialText = ref.read(functionEvaluatorProvider).funcExpression;
     _controller = TextEditingController(text: initialText);
   }
 
@@ -41,10 +41,9 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(calculatorProvider);
+    final state = ref.watch(functionEvaluatorProvider);
     final uiStyle = ref.watch(uiStyleProvider);
     final theme = Theme.of(context);
-    final isGlass = uiStyle == UiStyle.liquidGlass;
     final themeExt = theme.extension<AppThemeExtension>()!;
 
     return CustomScrollView(
@@ -75,7 +74,7 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
                       ),
                     ),
                     onChanged: (val) {
-                      ref.read(calculatorProvider.notifier).setExpression(val);
+                      ref.read(functionEvaluatorProvider.notifier).setExpression(val);
                     },
                   ),
                 ),
@@ -151,7 +150,7 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
                   height: 56,
                   child: FilledButton(
                     onPressed: () {
-                      ref.read(calculatorProvider.notifier).evaluate();
+                      ref.read(functionEvaluatorProvider.notifier).evaluate();
                       FocusScope.of(context).unfocus();
                     },
                     style: FilledButton.styleFrom(

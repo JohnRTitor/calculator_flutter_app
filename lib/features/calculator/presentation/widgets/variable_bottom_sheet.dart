@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:calculator_flutter_app/features/calculator/presentation/providers/calculator_provider.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/providers/function_evaluator_provider.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
@@ -10,7 +10,7 @@ class VariableBottomSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(calculatorProvider);
+    final state = ref.watch(functionEvaluatorProvider);
     final uiStyle = ref.watch(uiStyleProvider);
     final theme = Theme.of(context);
     final isGlass = uiStyle == UiStyle.liquidGlass;
@@ -85,7 +85,7 @@ class VariableBottomSheet extends ConsumerWidget {
                             ),
                             onChanged: (val) {
                               final doubleValue = double.tryParse(val) ?? 0.0;
-                              ref.read(calculatorProvider.notifier).setVariable(variable, doubleValue);
+                              ref.read(functionEvaluatorProvider.notifier).setVariable(variable, doubleValue);
                             },
                           ),
                         ),

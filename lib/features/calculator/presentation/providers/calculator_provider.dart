@@ -67,7 +67,6 @@ class Calculator extends _$Calculator {
         );
       }
     }
-    _updateDetectedVariables();
     _updatePreview();
     return true;
   }
@@ -218,7 +217,6 @@ class Calculator extends _$Calculator {
         cursorIndex: state.cursorIndex - 1,
         clearError: true,
       );
-      _updateDetectedVariables();
       _updatePreview();
     }
   }
@@ -237,58 +235,11 @@ class Calculator extends _$Calculator {
       isScientificMode: state.isScientificMode,
       expandedPanel: state.expandedPanel,
       hasMemory: state.hasMemory,
-      isFuncMode: state.isFuncMode,
-      variables: state.variables,
     );
   }
 
   /// Toggles Function mode.
-  void toggleFuncMode() {
-    state = state.copyWith(
-      isFuncMode: !state.isFuncMode,
-      expandedPanel: ExpandedPanel.none,
-      isScientificMode: false,
-    );
-    _updateDetectedVariables();
-    _updatePreview();
-  }
 
-  /// Sets a variable value in Function Mode.
-  void setVariable(String name, double value) {
-    final newVars = Map<String, double>.from(state.variables);
-    newVars[name] = value;
-    state = state.copyWith(variables: newVars);
-    _updatePreview();
-  }
-
-  void _updateDetectedVariables() {
-    final currentExpression = state.isFuncMode ? state.funcExpression : state.expression;
-    if (!state.isFuncMode || currentExpression.isEmpty) {
-      if (state.detectedVariables.isNotEmpty) {
-        state = state.copyWith(detectedVariables: const []);
-      }
-      return;
-    }
-    try {
-      final exprToParse = state.isFuncMode ? state.evaluatedExpression : state.expression;
-      final vars = rust.extractVariables(expression: exprToParse);
-      state = state.copyWith(detectedVariables: vars);
-    } catch (_) {
-      // Ignore parsing errors while typing
-    }
-  }
-
-  /// Sets the expression directly (used by Function Evaluator)
-  void setExpression(String text) {
-    state = state.copyWith(
-      funcExpression: text,
-      clearError: true,
-      clearExactResult: true,
-      showResult: false,
-    );
-    _updateDetectedVariables();
-    _updatePreview();
-  }
 
   /// Toggles the scientific mode, expanding or collapsing the advanced keypad.
   void toggleScientificMode() {
@@ -328,25 +279,17 @@ class Calculator extends _$Calculator {
   }
 
   void _updatePreview() {
-    final currentExpression = state.isFuncMode ? state.funcExpression : state.expression;
+    final currentExpression = state.expression;
     if (currentExpression.isEmpty) {
       state = state.copyWith(preview: '');
       return;
     }
     try {
-      final exprToEvaluate = state.isFuncMode ? state.evaluatedExpression : state.expression;
-      final res = state.isFuncMode
-          ? rust.evaluateWithVars(
-              expression: exprToEvaluate,
-              vars: state.variables,
-              isDegree: state.isDegreeMode,
-              ansValue: state.ansValue,
-            )
-          : rust.evaluate(
-              expression: exprToEvaluate,
-              isDegree: state.isDegreeMode,
-              ansValue: state.ansValue,
-            );
+      final res = rust.evaluate(
+        expression: currentExpression,
+        isDegree: state.isDegreeMode,
+        ansValue: state.ansValue,
+      );
 
       state = state.copyWith(preview: res.formatted, clearError: true);
     } catch (e) {
@@ -365,10 +308,10 @@ class Calculator extends _$Calculator {
       return false;
     }
 
-    final currentExpression = state.isFuncMode ? state.funcExpression : state.expression;
+    final currentExpression = state.expression;
     if (currentExpression.isEmpty) return false;
 
-    if (!state.isFuncMode && state.tokens.isNotEmpty) {
+    if (state.tokens.isNotEmpty) {
       final lastToken = state.tokens.last;
       if (['+', '−', '×', '÷', '%', 'mod', '^', '/'].contains(lastToken)) {
         return false;
@@ -376,9 +319,8 @@ class Calculator extends _$Calculator {
     }
 
     try {
-      final exprToEvaluate = state.isFuncMode ? state.evaluatedExpression : state.expression;
       final res = rust.evaluate(
-        expression: exprToEvaluate,
+        expression: currentExpression,
         isDegree: state.isDegreeMode,
         ansValue: state.ansValue,
       );
@@ -426,26 +368,16 @@ class Calculator extends _$Calculator {
   }
 
   double? _getCurrentValue() {
-    final currentExpression = state.isFuncMode ? state.funcExpression : state.expression;
+    final currentExpression = state.expression;
     if (currentExpression.isEmpty) return null;
     try {
-      final exprToEvaluate = state.isFuncMode ? state.evaluatedExpression : state.expression;
-      return state.isFuncMode
-          ? rust
-              .evaluateWithVars(
-                expression: exprToEvaluate,
-                vars: state.variables,
-                isDegree: state.isDegreeMode,
-                ansValue: state.ansValue,
-              )
-              .value
-          : rust
-              .evaluate(
-                expression: exprToEvaluate,
-                isDegree: state.isDegreeMode,
-                ansValue: state.ansValue,
-              )
-              .value;
+      return rust
+          .evaluate(
+            expression: currentExpression,
+            isDegree: state.isDegreeMode,
+            ansValue: state.ansValue,
+          )
+          .value;
     } catch (_) {
       return null;
     }
