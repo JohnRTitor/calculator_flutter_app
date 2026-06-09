@@ -6,6 +6,7 @@ import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:calculator_flutter_app/app/theme/app_theme_extension.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
+import 'package:calculator_flutter_app/shared/widgets/app_tab_bar.dart';
 import 'package:calculator_flutter_app/shared/widgets/screenshot_share_wrapper.dart';
 import 'package:calculator_flutter_app/shared/layouts/responsive_keypad_layout.dart';
 import 'package:intl/intl.dart';
@@ -78,7 +79,7 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
           preferredSize: const Size.fromHeight(60),
           child: Padding(
             padding: const EdgeInsets.only(bottom: 12.0),
-            child: _buildPillSwitcher(context, uiStyle, colorScheme, textTheme),
+            child: _buildPillSwitcher(uiStyle),
           ),
         ),
       ),
@@ -197,82 +198,14 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
     );
   }
 
-  Widget _buildPillSwitcher(BuildContext context, UiStyle uiStyle, ColorScheme colorScheme, TextTheme textTheme) {
-    final brightness = Theme.of(context).brightness;
-    final isGlass = uiStyle == UiStyle.liquidGlass;
-    final glassPrimary = resolveGlassStyle(
-      colorScheme,
-      brightness: brightness,
-      role: GlassSurfaceRole.primary,
-      isSelected: true,
-    );
-    final glassCard = resolveGlassStyle(
-      colorScheme,
-      brightness: brightness,
-      role: GlassSurfaceRole.card,
-    );
-
-    return SharedSurface(
+  Widget _buildPillSwitcher(UiStyle uiStyle) {
+    return AppTabBar(
+      controller: _tabController,
       uiStyle: uiStyle,
-      borderRadius: BorderRadius.circular(24),
-      glassRole: GlassSurfaceRole.card,
-      frosted: true,
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      child: SizedBox(
-        width: 240, // Slightly wider for text
-        height: 36,
-        child: TabBar(
-          controller: _tabController,
-          dividerColor: Colors.transparent,
-          indicatorSize: TabBarIndicatorSize.tab,
-          indicator: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: isGlass ? null : colorScheme.primary,
-            border: isGlass
-                ? Border.all(
-                    color: glassPrimary.borderColor,
-                    width: 1.0,
-                  )
-                : null,
-            boxShadow: isGlass ? glassPrimary.shadows : null,
-            gradient: isGlass
-                ? LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color.lerp(
-                        glassPrimary.fillColor,
-                        Colors.white,
-                        brightness == Brightness.light ? 0.2 : 0.1,
-                      )!,
-                      glassPrimary.fillColor,
-                      Color.lerp(
-                        glassPrimary.fillColor,
-                        Colors.black,
-                        brightness == Brightness.light ? 0.05 : 0.15,
-                      )!,
-                    ],
-                    stops: const [0.0, 0.4, 1.0],
-                  )
-                : null,
-          ),
-          labelColor: isGlass
-              ? glassPrimary.foregroundColor
-              : colorScheme.onPrimary,
-          unselectedLabelColor: isGlass
-              ? glassCard.foregroundColor.withValues(alpha: 0.72)
-              : colorScheme.onSurfaceVariant,
-          labelStyle: textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-          unselectedLabelStyle: textTheme.titleSmall,
-          splashBorderRadius: BorderRadius.circular(20),
-          tabs: const [
-            Tab(text: 'One-Time'),
-            Tab(text: 'SIP'),
-          ],
-        ),
-      ),
+      tabs: const [
+        Tab(text: 'One-Time'),
+        Tab(text: 'SIP'),
+      ],
     );
   }
 

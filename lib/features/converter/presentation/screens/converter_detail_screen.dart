@@ -11,6 +11,7 @@ import 'package:calculator_flutter_app/features/converter/presentation/widgets/u
 import 'package:calculator_flutter_app/generated/rust/bridge/converter.dart';
 import 'package:calculator_flutter_app/shared/widgets/screenshot_share_wrapper.dart';
 import 'package:calculator_flutter_app/shared/layouts/responsive_keypad_layout.dart';
+import 'package:calculator_flutter_app/shared/widgets/app_dialog.dart';
 
 /// The detail screen for a specific converter category.
 ///
@@ -109,99 +110,18 @@ class _ConverterDetailScreenState extends ConsumerState<ConverterDetailScreen> {
     }
 
     void showInfoDialog() {
-      showGeneralDialog(
+      showAppDialog(
         context: context,
-        barrierDismissible: true,
-        barrierLabel: 'Dismiss',
-        barrierColor: Colors.black.withValues(alpha: 0.5),
-        transitionDuration: const Duration(milliseconds: 300),
-        pageBuilder: (context, animation, secondaryAnimation) => const SizedBox(),
-        transitionBuilder: (context, animation, secondaryAnimation, child) {
-          final scaleAnimation = Tween<double>(begin: 0.9, end: 1.0).animate(
-            CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-          );
-          final fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-            CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-          );
-
-          return ScaleTransition(
-            scale: scaleAnimation,
-            child: FadeTransition(
-              opacity: fadeAnimation,
-              child: Dialog(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                child: SharedSurface(
-                  uiStyle: uiStyle,
-                  glassRole: GlassSurfaceRole.panel,
-                  frosted: true,
-                  borderRadius: BorderRadius.circular(32),
-                  padding: const EdgeInsets.fromLTRB(28, 28, 28, 24),
-                  child: SizedBox(
-                    width: 400,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: colorScheme.primaryContainer.withValues(alpha: 0.5),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.info_outline,
-                            color: colorScheme.primary,
-                            size: 28,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'Exchange Rates',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: colorScheme.onSurface,
-                            letterSpacing: -0.5,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Exchange rates are provided by Frankfurter API.',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                            height: 1.5,
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            FilledButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              style: FilledButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                                minimumSize: const Size(0, 48),
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                              ),
-                              child: const Text(
-                                'OK',
-                                style: TextStyle(fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
+        uiStyle: uiStyle,
+        title: 'Exchange Rates',
+        icon: Icons.info_outline,
+        content: Text(
+          'Exchange rates are provided by Frankfurter API.',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+            height: 1.5,
+          ),
+        ),
       );
     }
 

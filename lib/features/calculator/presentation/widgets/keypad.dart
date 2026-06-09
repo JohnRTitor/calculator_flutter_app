@@ -4,8 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/providers/calculator_provider.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/providers/calculator_state.dart';
-import 'package:calculator_flutter_app/features/calculator/presentation/widgets/calculator_button.dart';
-import 'package:calculator_flutter_app/shared/widgets/glass_button.dart';
+import 'package:calculator_flutter_app/shared/widgets/app_button.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/widgets/animated_equals_button.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 
@@ -323,21 +322,8 @@ class Keypad extends ConsumerWidget {
   }
 
   Widget _buildBackspaceButton(WidgetRef ref, UiStyle uiStyle) {
-    if (uiStyle == UiStyle.liquidGlass) {
-      return Expanded(
-        child: LiquidGlassCalcButton(
-          text: '',
-          icon: const Icon(Icons.backspace_outlined, size: 20),
-          type: ButtonType.backspace,
-          onPressed: () {
-            ref.read(calculatorProvider.notifier).delete();
-            return true;
-          },
-        ),
-      );
-    }
     return Expanded(
-      child: CalculatorButton(
+      child: AppCalcButton(
         text: '',
         icon: const Icon(Icons.backspace_outlined, size: 20),
         type: ButtonType.backspace,
@@ -345,6 +331,7 @@ class Keypad extends ConsumerWidget {
           ref.read(calculatorProvider.notifier).delete();
           return true;
         },
+        uiStyle: uiStyle,
       ),
     );
   }
@@ -530,22 +517,13 @@ class Keypad extends ConsumerWidget {
     String? tooltip,
     required UiStyle uiStyle,
   }) {
-    Widget btn;
-    if (uiStyle == UiStyle.liquidGlass) {
-      btn = LiquidGlassCalcButton(
-        text: text,
-        type: type,
-        onPressed: onPressed,
-        isActive: isActive,
-      );
-    } else {
-      btn = CalculatorButton(
-        text: text,
-        type: type,
-        onPressed: onPressed,
-        isActive: isActive,
-      );
-    }
+    Widget btn = AppCalcButton(
+      text: text,
+      type: type,
+      onPressed: onPressed,
+      isActive: isActive,
+      uiStyle: uiStyle,
+    );
     if (tooltip != null) {
       btn = Tooltip(
         message: tooltip,

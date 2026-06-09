@@ -4,10 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/screens/calculator_screen.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/screens/converter_home_screen.dart';
 import 'package:calculator_flutter_app/features/currency/presentation/screens/currency_home_screen.dart';
-import 'package:calculator_flutter_app/features/history/presentation/screens/history_screen.dart';
+
 import 'package:calculator_flutter_app/features/settings/presentation/screens/settings_screen.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
+import 'package:calculator_flutter_app/shared/widgets/app_tab_bar.dart';
 import 'package:calculator_flutter_app/app/navigation/route_transitions.dart';
 
 /// The primary navigation scaffold of the application.
@@ -83,17 +84,10 @@ class _MainScreenState extends ConsumerState<MainScreen>
     TextTheme textTheme,
     UiStyle uiStyle,
   ) {
-    final brightness = Theme.of(context).brightness;
     final isGlass = uiStyle == UiStyle.liquidGlass;
-    final glassPrimary = resolveGlassStyle(
-      colorScheme,
-      brightness: brightness,
-      role: GlassSurfaceRole.primary,
-      isSelected: true,
-    );
     final glassCard = resolveGlassStyle(
       colorScheme,
-      brightness: brightness,
+      brightness: Theme.of(context).brightness,
       role: GlassSurfaceRole.card,
     );
 
@@ -103,98 +97,22 @@ class _MainScreenState extends ConsumerState<MainScreen>
         height: 40,
         child: Row(
           children: [
-            // History Icon
-            isGlass
-                ? SharedSurface(
-                    uiStyle: uiStyle,
-                    glassRole: GlassSurfaceRole.button,
-                    frosted: true,
-                    borderRadius: BorderRadius.circular(24),
-                    child: IconButton(
-                      icon: const Icon(Icons.history, size: 22),
-                      onPressed: () => Navigator.push(
-                        context,
-                        FadePageRoute(page: const HistoryScreen()),
-                      ),
-                      tooltip: 'History',
-                      color: glassCard.foregroundColor,
-                    ),
-                  )
-                : IconButton(
-                    icon: const Icon(Icons.history, size: 22),
-                    onPressed: () => Navigator.push(
-                      context,
-                      FadePageRoute(page: const HistoryScreen()),
-                    ),
-                    tooltip: 'History',
-                    color: colorScheme.onSurfaceVariant,
-                  ),
+            // Empty space to balance the More Menu on the right and keep tabs centered
+            const SizedBox(width: 48),
 
             const Spacer(),
 
             // TabBar (Pill Switcher)
-            SharedSurface(
+            AppTabBar(
+              controller: _tabController,
               uiStyle: uiStyle,
-              borderRadius: BorderRadius.circular(24),
-              glassRole: GlassSurfaceRole.card,
-              frosted: true,
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              child: SizedBox(
-                width: 200,
-                height: 36,
-                child: TabBar(
-                  controller: _tabController,
-                  dividerColor: Colors.transparent,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  indicator: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: isGlass ? null : colorScheme.primary,
-                    border: isGlass
-                        ? Border.all(
-                            color: glassPrimary.borderColor,
-                            width: 1.0,
-                          )
-                        : null,
-                    boxShadow: isGlass ? glassPrimary.shadows : null,
-                    gradient: isGlass
-                        ? LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Color.lerp(
-                                glassPrimary.fillColor,
-                                Colors.white,
-                                brightness == Brightness.light ? 0.2 : 0.1,
-                              )!,
-                              glassPrimary.fillColor,
-                              Color.lerp(
-                                glassPrimary.fillColor,
-                                Colors.black,
-                                brightness == Brightness.light ? 0.05 : 0.15,
-                              )!,
-                            ],
-                            stops: const [0.0, 0.4, 1.0],
-                          )
-                        : null,
-                  ),
-                  labelColor: isGlass
-                      ? glassPrimary.foregroundColor
-                      : colorScheme.onPrimary,
-                  unselectedLabelColor: isGlass
-                      ? glassCard.foregroundColor.withValues(alpha: 0.72)
-                      : colorScheme.onSurfaceVariant,
-                  labelStyle: textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  unselectedLabelStyle: textTheme.titleSmall,
-                  splashBorderRadius: BorderRadius.circular(20),
-                  tabs: const [
-                    Tab(icon: Icon(Icons.calculate_outlined, size: 20)),
-                    Tab(icon: Icon(Icons.swap_horiz_outlined, size: 20)),
-                    Tab(icon: Icon(Icons.attach_money_outlined, size: 20)),
-                  ],
-                ),
-              ),
+              width: 200,
+              height: 36,
+              tabs: const [
+                Tab(icon: Icon(Icons.calculate_outlined, size: 20)),
+                Tab(icon: Icon(Icons.swap_horiz_outlined, size: 20)),
+                Tab(icon: Icon(Icons.attach_money_outlined, size: 20)),
+              ],
             ),
 
             const Spacer(),

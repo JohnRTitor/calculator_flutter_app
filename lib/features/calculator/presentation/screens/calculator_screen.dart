@@ -5,10 +5,12 @@ import 'package:calculator_flutter_app/features/calculator/presentation/widgets/
 import 'package:calculator_flutter_app/shared/layouts/responsive_keypad_layout.dart';
 
 import 'package:calculator_flutter_app/features/calculator/presentation/screens/function_evaluator_screen.dart';
+import 'package:calculator_flutter_app/features/history/presentation/screens/history_screen.dart';
+import 'package:calculator_flutter_app/app/navigation/route_transitions.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
-import 'package:calculator_flutter_app/app/theme/app_theme_extension.dart';
+import 'package:calculator_flutter_app/shared/widgets/pill_switcher.dart';
 
 /// The main screen for the calculator functionality.
 ///
@@ -31,8 +33,21 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
-          child: _buildSegmentedToggle(context, ref, isGlass, uiStyle),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16.0,
+            vertical: 4.0,
+          ).copyWith(top: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildHistoryButton(context, isGlass, uiStyle),
+              const SizedBox(width: 8),
+              _buildSegmentedToggle(uiStyle),
+              const SizedBox(
+                width: 48,
+              ), // Balance the row to keep the toggle centered
+            ],
+          ),
         ),
         Expanded(
           child: AnimatedSwitcher(
@@ -46,102 +61,67 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
     );
   }
 
-  Widget _buildSegmentedToggle(
-      BuildContext context, WidgetRef ref, bool isGlass, UiStyle uiStyle) {
-    final theme = Theme.of(context);
-    final glassPrimary = resolveGlassStyle(
-      theme.colorScheme,
-      brightness: theme.brightness,
-      role: GlassSurfaceRole.primary,
-      isSelected: true,
-    );
-
-    return SharedSurface(
+  Widget _buildSegmentedToggle(UiStyle uiStyle) {
+    return PillSwitcher(
       uiStyle: uiStyle,
-      borderRadius: BorderRadius.circular(24),
-      glassRole: GlassSurfaceRole.card,
-      frosted: true,
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-      child: SizedBox(
-        width: 260,
-        height: 40,
-        child: Row(
-          children: [
-            Expanded(
-              child: _buildToggleChip(
-                context: context,
-                label: 'Calculator',
-                isSelected: !isFuncMode,
-                isGlass: isGlass,
-                glassPrimary: glassPrimary,
-                theme: theme,
-                onTap: () {
-                  if (isFuncMode) {
-                    setState(() {
-                      isFuncMode = false;
-                    });
-                  }
-                },
-              ),
-            ),
-            const SizedBox(width: 4),
-            Expanded(
-              child: _buildToggleChip(
-                context: context,
-                label: 'Fn Evaluator',
-                isSelected: isFuncMode,
-                isGlass: isGlass,
-                glassPrimary: glassPrimary,
-                theme: theme,
-                onTap: () {
-                  if (!isFuncMode) {
-                    setState(() {
-                      isFuncMode = true;
-                    });
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
+      label1: 'Calculator',
+      label2: 'Fn Evaluator',
+      isFirstSelected: !isFuncMode,
+      onChanged: (isFirst) {
+        setState(() {
+          isFuncMode = !isFirst;
+        });
+      },
     );
   }
 
-  Widget _buildToggleChip({
-    required BuildContext context,
-    required String label,
-    required bool isSelected,
-    required bool isGlass,
-    required GlassStyle glassPrimary,
-    required ThemeData theme,
-    required VoidCallback onTap,
-  }) {
-    final themeExt = theme.extension<AppThemeExtension>()!;
-    final bgColor = isSelected
-        ? themeExt.chipBackground
-        : Colors.transparent;
-    final fgColor = isSelected
-        ? themeExt.chipText
-        : theme.colorScheme.onSurfaceVariant;
-
-    return Material(
-      color: bgColor,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Center(
-          child: Text(
-            label,
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: fgColor,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-        ),
-      ),
+  Widget _buildHistoryButton(
+    BuildContext context,
+    bool isGlass,
+    UiStyle uiStyle,
+  ) {
+    final theme = Theme.of(context);
+    final glassCard = resolveGlassStyle(
+      theme.colorScheme,
+      brightness: theme.brightness,
+      role: GlassSurfaceRole.card,
     );
+
+    return isGlass
+        ? SharedSurface(
+            uiStyle: uiStyle,
+            glassRole: GlassSurfaceRole.button,
+            frosted: true,
+            borderRadius: BorderRadius.circular(20),
+            child: SizedBox(
+              width: 40,
+              height: 40,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                icon: const Icon(Icons.history, size: 20),
+                onPressed: () => Navigator.push(
+                  context,
+                  FadePageRoute(page: const HistoryScreen()),
+                ),
+                tooltip: 'History',
+                color: glassCard.foregroundColor,
+              ),
+            ),
+          )
+        : SizedBox(
+            width: 40,
+            height: 40,
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              icon: const Icon(Icons.history, size: 20),
+              onPressed: () => Navigator.push(
+                context,
+                FadePageRoute(page: const HistoryScreen()),
+              ),
+              tooltip: 'History',
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          );
   }
 }
 
@@ -154,9 +134,7 @@ class _ScientificLayout extends StatelessWidget {
       displayArea: DisplayPanel(),
       keypad: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          Expanded(child: Keypad()),
-        ],
+        children: [Expanded(child: Keypad())],
       ),
       keypadMinHeight: 450,
     );

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/providers/function_evaluator_provider.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/widgets/variable_bottom_sheet.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
+import 'package:calculator_flutter_app/app/theme/ui_style.dart';
+import 'package:calculator_flutter_app/shared/widgets/app_dialog.dart';
 
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:calculator_flutter_app/app/theme/app_theme_extension.dart';
@@ -39,6 +41,42 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
     );
   }
 
+  void _showFunctionsDialog(BuildContext context) {
+    final theme = Theme.of(context);
+    final isGlass = ref.read(uiStyleProvider) == UiStyle.liquidGlass;
+    
+    showAppDialog(
+      context: context,
+      uiStyle: ref.read(uiStyleProvider),
+      title: 'Supported Functions',
+      icon: Icons.functions,
+      primaryButtonText: 'OK',
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('The following mathematical functions and constants are supported by the evaluator:'),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              'sin(x)', 'cos(x)', 'tan(x)',
+              'asin(x)', 'acos(x)', 'atan(x)',
+              'sinh(x)', 'cosh(x)', 'tanh(x)',
+              'asinh(x)', 'acosh(x)', 'atanh(x)',
+              'log(x)', 'log_(base, val)', 'ln(x)',
+              'sqrt(x)', 'x mod y', 'x % y', 'x!', 'ans', 'pi (π)', 'e',
+            ].map((f) => Chip(
+              label: Text(f),
+              backgroundColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: isGlass ? 0.3 : 1.0),
+              side: BorderSide.none,
+            )).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(functionEvaluatorProvider);
@@ -61,21 +99,36 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
                   frosted: true,
                   borderRadius: BorderRadius.circular(20),
                   padding: const EdgeInsets.all(16),
-                  child: TextField(
-                    controller: _controller,
-                    maxLines: 4,
-                    minLines: 2,
-                    style: theme.textTheme.headlineSmall,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'f(x, y, z) = x^2 + y^2 + z^2',
-                      hintStyle: theme.textTheme.headlineSmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                  child: Stack(
+                    children: [
+                      TextField(
+                        controller: _controller,
+                        maxLines: 4,
+                        minLines: 2,
+                        style: theme.textTheme.headlineSmall,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'f(x, y, z) = x^2 + y^2 + z^2',
+                          hintStyle: theme.textTheme.headlineSmall?.copyWith(
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                          ),
+                          contentPadding: const EdgeInsets.only(right: 40), // leave space for info icon
+                        ),
+                        onChanged: (val) {
+                          ref.read(functionEvaluatorProvider.notifier).setExpression(val);
+                        },
                       ),
-                    ),
-                    onChanged: (val) {
-                      ref.read(functionEvaluatorProvider.notifier).setExpression(val);
-                    },
+                      Positioned(
+                        top: -8,
+                        right: -8,
+                        child: IconButton(
+                          icon: const Icon(Icons.info_outline),
+                          onPressed: () => _showFunctionsDialog(context),
+                          tooltip: 'Supported Functions',
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -148,23 +201,47 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
                 SizedBox(
                   width: double.infinity,
                   height: 56,
-                  child: FilledButton(
-                    onPressed: () {
-                      ref.read(functionEvaluatorProvider.notifier).evaluate();
-                      FocusScope.of(context).unfocus();
-                    },
-                    style: FilledButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Text(
-                      'Evaluate',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ),
+                  child: uiStyle == UiStyle.liquidGlass
+                      ? SharedSurface(
+                          uiStyle: uiStyle,
+                          isInteractive: true,
+                          isSelected: true,
+                          glassRole: GlassSurfaceRole.primary,
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () {
+                            ref.read(functionEvaluatorProvider.notifier).evaluate();
+                            FocusScope.of(context).unfocus();
+                          },
+                          child: Center(
+                            child: Text(
+                              'Evaluate',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: theme.brightness == Brightness.dark
+                                    ? theme.colorScheme.onPrimaryContainer
+                                    : theme.colorScheme.onPrimary,
+                              ),
+                            ),
+                          ),
+                        )
+                      : FilledButton(
+                          onPressed: () {
+                            ref.read(functionEvaluatorProvider.notifier).evaluate();
+                            FocusScope.of(context).unfocus();
+                          },
+                          style: FilledButton.styleFrom(
+                            backgroundColor: theme.colorScheme.primary,
+                            foregroundColor: theme.colorScheme.onPrimary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: const Text(
+                            'Evaluate',
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ),
                 ),
                 const SizedBox(height: 16),
               ],
