@@ -1,9 +1,10 @@
 A modern, production-quality Android calculator application built with a **Flutter** UI and a **Rust** calculation engine.
 
 Features:
-- Native Material Design 3 UI: Uses dynamic color for full Android 12+ Material You theming and edge-to-edge transparent system bars.
-- Rust Core: A fully custom-built recursive descent parser handles all mathematical evaluations efficiently on a background thread.
-- Scientific Mode: Easily switch between standard keypad and a full scientific interface (sin, cos, tan, log, ln, sqrt, ^, !).
-- Converters: A fully-featured converter module (Currency, BMI, Length, Weight, Area, Volume, Time, Data).
-- History & Memory: Persistent on-disk calculation history and full memory functionality (MC, MR, M+, M-, MS).
+- Dual Design Systems: Choose between a native Material Design 3 UI with dynamic color, or a premium "Liquid Glass" aesthetic with expanded color profiles.
+- Rust Core Engine: A fully custom-built recursive descent parser and Function Evaluator handle all mathematical evaluations blazingly fast on a background thread.
+- Advanced Converters: A fully-featured suite including Unit Conversions (Length, Weight, Area, Volume, Time, Data, BMI), Date Calculations, Currency Exchange, Investment, and Loan calculators.
+- Scientific Mode: Easily switch between a standard keypad and a full scientific interface (sin, cos, tan, log, ln, sqrt, ^, !).
+- History & Memory: Persistent on-disk calculation and function evaluation history, alongside full memory functionality (MC, MR, M+, M-, MS).
+- Responsive Layouts: Desktop-optimized and tablet-ready UI that dynamically adapts to your screen size for maximum information density.
 - Offline First: Zero external runtime dependencies for mathematical evaluations.

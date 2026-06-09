@@ -1,1 +1,1 @@
-RustDroid Calculator
+Calculator
