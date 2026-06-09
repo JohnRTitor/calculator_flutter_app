@@ -44,27 +44,56 @@ class SettingsScreen extends ConsumerWidget {
                       textTheme: theme.textTheme,
                     ),
                     const SizedBox(height: 8),
-                    GridView.count(
-                      crossAxisCount: 2,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 2.5,
-                      children: AppThemeMode.values.map((mode) {
-                        final (label, icon) = _themeLabels[mode]!;
-                        final isSelected = themeMode == mode;
-                        return _ThemeCard(
-                          label: label,
-                          icon: icon,
-                          isSelected: isSelected,
-                          uiStyle: uiStyle,
-                          colorScheme: colorScheme,
-                          onTap: () => ref
-                              .read(themeModeProvider.notifier)
-                              .setThemeMode(mode),
-                        );
-                      }).toList(),
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildThemeCard(
+                                AppThemeMode.system,
+                                themeMode,
+                                uiStyle,
+                                colorScheme,
+                                ref,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildThemeCard(
+                                AppThemeMode.light,
+                                themeMode,
+                                uiStyle,
+                                colorScheme,
+                                ref,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildThemeCard(
+                                AppThemeMode.dark,
+                                themeMode,
+                                uiStyle,
+                                colorScheme,
+                                ref,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildThemeCard(
+                                AppThemeMode.amoled,
+                                themeMode,
+                                uiStyle,
+                                colorScheme,
+                                ref,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
 
                     const SizedBox(height: 28),
@@ -123,6 +152,42 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildThemeCard(
+    AppThemeMode mode,
+    AppThemeMode currentMode,
+    UiStyle uiStyle,
+    ColorScheme colorScheme,
+    WidgetRef ref,
+  ) {
+    final (label, icon) = _themeLabels[mode]!;
+    final isSelected = currentMode == mode;
+
+    String description;
+    switch (mode) {
+      case AppThemeMode.system:
+        description = 'Follow system';
+        break;
+      case AppThemeMode.light:
+        description = 'Light colors';
+        break;
+      case AppThemeMode.dark:
+        description = 'Dark colors';
+        break;
+      case AppThemeMode.amoled:
+        description = 'Pitch black';
+        break;
+    }
+
+    return _SettingsOptionCard(
+      label: label,
+      icon: icon,
+      description: description,
+      isSelected: isSelected,
+      uiStyle: uiStyle,
+      colorScheme: colorScheme,
+      onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(mode),
+    );
+  }
 }
 
 // ── Section Header ──
@@ -152,118 +217,7 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-// ── Theme Card ──
-class _ThemeCard extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool isSelected;
-  final UiStyle uiStyle;
-  final ColorScheme colorScheme;
-  final VoidCallback onTap;
 
-  const _ThemeCard({
-    required this.label,
-    required this.icon,
-    required this.isSelected,
-    required this.uiStyle,
-    required this.colorScheme,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (uiStyle == UiStyle.liquidGlass) {
-      return _buildGlassCard(context);
-    }
-    return _buildMaterialCard();
-  }
-
-  Widget _buildMaterialCard() {
-    return AnimatedScale(
-      scale: isSelected ? 1.02 : 0.95,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOutCubic,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
-        decoration: BoxDecoration(
-          color: isSelected
-              ? colorScheme.primaryContainer
-              : colorScheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? colorScheme.primary : Colors.transparent,
-            width: 2,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: colorScheme.primary.withValues(alpha: 0.2),
-                    blurRadius: 12,
-                    spreadRadius: 0,
-                  ),
-                ]
-              : [],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(16),
-            child: _buildCardContent(),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGlassCard(BuildContext context) {
-    return AnimatedScale(
-      scale: isSelected ? 1.02 : 0.95,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOutCubic,
-      child: SharedSurface(
-        uiStyle: uiStyle,
-        isInteractive: true,
-        isSelected: isSelected,
-        glassRole: isSelected
-            ? GlassSurfaceRole.primary
-            : GlassSurfaceRole.card,
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          child: _buildCardContent(context),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCardContent([BuildContext? context]) {
-    final selectedColor = colorScheme.onPrimaryContainer;
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          icon,
-          size: 20,
-          color: isSelected ? selectedColor : colorScheme.onSurfaceVariant,
-        ),
-        const SizedBox(width: 8),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            color: isSelected ? selectedColor : colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 // ── Colors Selector ──
 class _ColorsSelector extends StatelessWidget {
@@ -291,7 +245,7 @@ class _ColorsSelector extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: _StyleOptionCard(
+              child: _SettingsOptionCard(
                 label: 'Default',
                 icon: Icons.format_color_fill,
                 description: 'Green aesthetic',
@@ -303,7 +257,7 @@ class _ColorsSelector extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: _StyleOptionCard(
+              child: _SettingsOptionCard(
                 label: 'Material You',
                 icon: Icons.auto_awesome,
                 description: isDynamicColorSupported
@@ -451,7 +405,7 @@ class _StyleSelector extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: _StyleOptionCard(
+          child: _SettingsOptionCard(
             label: 'Material',
             icon: Icons.layers_outlined,
             description: 'Standard design',
@@ -463,7 +417,7 @@ class _StyleSelector extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: _StyleOptionCard(
+          child: _SettingsOptionCard(
             label: 'Liquid Glass',
             icon: Icons.blur_on,
             description: 'Translucent glass',
@@ -478,21 +432,21 @@ class _StyleSelector extends StatelessWidget {
   }
 }
 
-// ── Style Option Card ──
-class _StyleOptionCard extends StatelessWidget {
+// ── Settings Option Card ──
+class _SettingsOptionCard extends StatelessWidget {
   final String label;
   final IconData icon;
-  final String description;
+  final String? description;
   final bool isSelected;
   final UiStyle uiStyle;
   final ColorScheme colorScheme;
   final bool isDisabled;
   final VoidCallback onTap;
 
-  const _StyleOptionCard({
+  const _SettingsOptionCard({
     required this.label,
     required this.icon,
-    required this.description,
+    this.description,
     required this.isSelected,
     required this.uiStyle,
     required this.colorScheme,
@@ -580,8 +534,9 @@ class _StyleOptionCard extends StatelessWidget {
   Widget _buildContent([BuildContext? context]) {
     final selectedColor = colorScheme.onPrimaryContainer;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      alignment: Alignment.center,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -593,21 +548,25 @@ class _StyleOptionCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             label,
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
               color: isSelected ? selectedColor : colorScheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 2),
-          Text(
-            description,
-            style: TextStyle(
-              fontSize: 11,
-              color: (isSelected ? selectedColor : colorScheme.onSurfaceVariant)
-                  .withValues(alpha: 0.7),
+          if (description != null) ...[
+            const SizedBox(height: 2),
+            Text(
+              description!,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 11,
+                color: (isSelected ? selectedColor : colorScheme.onSurfaceVariant)
+                    .withValues(alpha: 0.7),
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );
