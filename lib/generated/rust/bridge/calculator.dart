@@ -7,7 +7,7 @@ import '../calculator/history.dart';
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `is_variable`
+// These functions are ignored because they are not marked as `pub`: `is_variable`, `perform_evaluation`
 
 /// Evaluates a mathematical expression string from Flutter and returns the result.
 /// This is a synchronous Flutter Rust Bridge function.
@@ -17,6 +17,19 @@ CalcResult evaluate({
   required double ansValue,
 }) => RustLib.instance.api.crateBridgeCalculatorEvaluate(
   expression: expression,
+  isDegree: isDegree,
+  ansValue: ansValue,
+);
+
+/// Evaluates a mathematical expression string with variables from Flutter and returns the result.
+CalcResult evaluateWithVars({
+  required String expression,
+  required Map<String, double> vars,
+  required bool isDegree,
+  required double ansValue,
+}) => RustLib.instance.api.crateBridgeCalculatorEvaluateWithVars(
+  expression: expression,
+  vars: vars,
   isDegree: isDegree,
   ansValue: ansValue,
 );
@@ -98,19 +111,6 @@ Future<void> funcHistorySave({required String path}) =>
 /// Loads the func history from a file path provided by Flutter.
 Future<void> funcHistoryLoad({required String path}) =>
     RustLib.instance.api.crateBridgeCalculatorFuncHistoryLoad(path: path);
-
-/// Evaluates a mathematical expression string with variables from Flutter and returns the result.
-CalcResult evaluateWithVars({
-  required String expression,
-  required Map<String, double> vars,
-  required bool isDegree,
-  required double ansValue,
-}) => RustLib.instance.api.crateBridgeCalculatorEvaluateWithVars(
-  expression: expression,
-  vars: vars,
-  isDegree: isDegree,
-  ansValue: ansValue,
-);
 
 /// Extracts variables from an expression string.
 List<String> extractVariables({required String expression}) => RustLib

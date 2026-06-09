@@ -56,6 +56,38 @@ impl CalcValue {
         }
     }
 
+    /// Converts this `CalcValue` into an exact fraction string, if possible.
+    pub fn to_exact_fraction_string(&self) -> Option<String> {
+        match self {
+            CalcValue::Rational(r) => {
+                if r.den != 1 {
+                    Some(format!("{}/{}", r.num, r.den))
+                } else {
+                    None
+                }
+            }
+            CalcValue::PiRational(r) => {
+                if r.num == 0 {
+                    Some("0".to_string())
+                } else {
+                    let num_str = if r.num == 1 {
+                        "π".to_string()
+                    } else if r.num == -1 {
+                        "-π".to_string()
+                    } else {
+                        format!("{}π", r.num)
+                    };
+                    if r.den == 1 {
+                        Some(num_str)
+                    } else {
+                        Some(format!("{}/{}", num_str, r.den))
+                    }
+                }
+            }
+            _ => None,
+        }
+    }
+
     /// Adds two `CalcValue`s, preserving rationality if possible.
     pub fn add(self, other: CalcValue) -> CalcValue {
         match (self, other) {
