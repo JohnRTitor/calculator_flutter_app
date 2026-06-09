@@ -39,7 +39,7 @@ class Keypad extends ConsumerWidget {
             // === Dropdown chip row: [▾] [Trig ∨] [Log ∨] [Mem ∨] ===
             _DropdownChipRow(
               isSci: isSci,
-              expanded: expanded,
+              expanded: state.expandedPanel,
               ref: ref,
               uiStyle: uiStyle,
             ),
@@ -601,6 +601,7 @@ class _DropdownChipRow extends StatelessWidget {
                     ref.read(calculatorProvider.notifier).toggleScientificMode(),
                 isExpanded: isSci,
               ),
+
               if (isSci) ...[
                 const SizedBox(width: 6),
                 Expanded(
@@ -668,7 +669,46 @@ class _DropdownChipRow extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(20),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: fgColor,
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                  AnimatedRotation(
+                    duration: const Duration(milliseconds: 200),
+                    turns: isExpanded ? 0.5 : 0.0,
+                    child: Icon(Icons.expand_more, size: 18, color: fgColor),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Material(
+      color: bgColor,
+      borderRadius: BorderRadius.circular(20),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
@@ -689,39 +729,6 @@ class _DropdownChipRow extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        ),
-      );
-    }
-
-    return Material(
-      color: bgColor,
-      borderRadius: BorderRadius.circular(20),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: fgColor,
-                ),
-              ),
-              const SizedBox(width: 2),
-              AnimatedRotation(
-                duration: const Duration(milliseconds: 200),
-                turns: isExpanded ? 0.5 : 0.0,
-                child: Icon(Icons.expand_more, size: 18, color: fgColor),
-              ),
-            ],
           ),
         ),
       ),

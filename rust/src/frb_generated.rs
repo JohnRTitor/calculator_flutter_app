@@ -38,7 +38,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
                     default_rust_auto_opaque = RustAutoOpaqueMoi,
                 );
                 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.12.0";
-                pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 459098381;
+                pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 509579401;
             
 
 // Section: executor
@@ -144,6 +144,25 @@ let api_is_degree = <bool>::sse_decode(&mut deserializer);
 let api_ans_value = <f64>::sse_decode(&mut deserializer);deserializer.end();
                 transform_result_sse::<_, String>((move || {
                      let output_ok = crate::bridge::calculator::evaluate(api_expression, api_is_degree, api_ans_value)?;   Ok(output_ok)
+                })()) })
+            }fn wire__crate__bridge__calculator__evaluate_with_vars_impl(ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,rust_vec_len_: i32,data_len_: i32) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+                FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec,_>(flutter_rust_bridge::for_generated::TaskInfo{ debug_name: "evaluate_with_vars", port: None, mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync }, move || { 
+            let message = unsafe { flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_) };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_expression = <String>::sse_decode(&mut deserializer);
+let api_vars = <std::collections::HashMap<String, f64>>::sse_decode(&mut deserializer);
+let api_is_degree = <bool>::sse_decode(&mut deserializer);
+let api_ans_value = <f64>::sse_decode(&mut deserializer);deserializer.end();
+                transform_result_sse::<_, String>((move || {
+                     let output_ok = crate::bridge::calculator::evaluate_with_vars(api_expression, api_vars, api_is_degree, api_ans_value)?;   Ok(output_ok)
+                })()) })
+            }fn wire__crate__bridge__calculator__extract_variables_impl(ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,rust_vec_len_: i32,data_len_: i32) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+                FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec,_>(flutter_rust_bridge::for_generated::TaskInfo{ debug_name: "extract_variables", port: None, mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync }, move || { 
+            let message = unsafe { flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_) };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_expression = <String>::sse_decode(&mut deserializer);deserializer.end();
+                transform_result_sse::<_, String>((move || {
+                     let output_ok = crate::bridge::calculator::extract_variables(api_expression)?;   Ok(output_ok)
                 })()) })
             }fn wire__crate__bridge__calculator__format_result_impl(ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,rust_vec_len_: i32,data_len_: i32) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
                 FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec,_>(flutter_rust_bridge::for_generated::TaskInfo{ debug_name: "format_result", port: None, mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync }, move || { 
@@ -258,6 +277,12 @@ let api_result = <String>::sse_decode(&mut deserializer);deserializer.end();
 // Section: dart2rust
 
 
+                impl SseDecode for std::collections::HashMap<String, f64> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut inner = <Vec<(String,f64,)>>::sse_decode(deserializer);
+        return inner.into_iter().collect();}
+                }
+                
                 impl SseDecode for String {
                     // Codec=Sse (Serialization based), see doc to use other codecs
                     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut inner = <Vec<u8>>::sse_decode(deserializer);
@@ -359,6 +384,14 @@ let mut var_totalInterest = <f64>::sse_decode(deserializer);
 return crate::bridge::currency::InvestmentResult{future_value: var_futureValue, total_investment: var_totalInvestment, total_interest: var_totalInterest};}
                 }
                 
+                impl SseDecode for Vec<String> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ { ans_.push(<String>::sse_decode(deserializer)); }
+        return ans_;}
+                }
+                
                 impl SseDecode for Vec<crate::bridge::converter::FfiConverterCategory> {
                     // Codec=Sse (Serialization based), see doc to use other codecs
                     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut len_ = <i32>::sse_decode(deserializer);
@@ -391,6 +424,14 @@ return crate::bridge::currency::InvestmentResult{future_value: var_futureValue, 
         return ans_;}
                 }
                 
+                impl SseDecode for Vec<(String,f64,)> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ { ans_.push(<(String,f64,)>::sse_decode(deserializer)); }
+        return ans_;}
+                }
+                
                 impl SseDecode for crate::bridge::currency::LoanResult {
                     // Codec=Sse (Serialization based), see doc to use other codecs
                     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut var_monthlyEmi = <f64>::sse_decode(deserializer);
@@ -415,6 +456,13 @@ return crate::bridge::currency::LoanResult{monthly_emi: var_monthlyEmi, total_in
             } else {
                 return None;
             }}
+                }
+                
+                impl SseDecode for (String,f64,) {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut var_field0 = <String>::sse_decode(deserializer);
+let mut var_field1 = <f64>::sse_decode(deserializer);
+return (var_field0, var_field1);}
                 }
                 
                 impl SseDecode for u32 {
@@ -445,8 +493,8 @@ return crate::bridge::currency::LoanResult{monthly_emi: var_monthlyEmi, total_in
                 )  {
                     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
                     match func_id {
-                        17 => wire__crate__bridge__calculator__history_load_impl(port, ptr, rust_vec_len, data_len),
-18 => wire__crate__bridge__calculator__history_save_impl(port, ptr, rust_vec_len, data_len),
+                        19 => wire__crate__bridge__calculator__history_load_impl(port, ptr, rust_vec_len, data_len),
+20 => wire__crate__bridge__calculator__history_save_impl(port, ptr, rust_vec_len, data_len),
                         _ => unreachable!(),
                     }
                 }
@@ -469,17 +517,19 @@ return crate::bridge::currency::LoanResult{monthly_emi: var_monthlyEmi, total_in
 8 => wire__crate__bridge__converter__convert_numeral_impl(ptr, rust_vec_len, data_len),
 9 => wire__crate__bridge__converter__convert_standard_impl(ptr, rust_vec_len, data_len),
 10 => wire__crate__bridge__calculator__evaluate_impl(ptr, rust_vec_len, data_len),
-11 => wire__crate__bridge__calculator__format_result_impl(ptr, rust_vec_len, data_len),
-12 => wire__crate__bridge__converter__get_converter_categories_impl(ptr, rust_vec_len, data_len),
-13 => wire__crate__bridge__calculator__history_add_impl(ptr, rust_vec_len, data_len),
-14 => wire__crate__bridge__calculator__history_clear_impl(ptr, rust_vec_len, data_len),
-15 => wire__crate__bridge__calculator__history_delete_impl(ptr, rust_vec_len, data_len),
-16 => wire__crate__bridge__calculator__history_get_all_impl(ptr, rust_vec_len, data_len),
-19 => wire__crate__bridge__calculator__memory_add_impl(ptr, rust_vec_len, data_len),
-20 => wire__crate__bridge__calculator__memory_clear_impl(ptr, rust_vec_len, data_len),
-21 => wire__crate__bridge__calculator__memory_recall_impl(ptr, rust_vec_len, data_len),
-22 => wire__crate__bridge__calculator__memory_store_impl(ptr, rust_vec_len, data_len),
-23 => wire__crate__bridge__calculator__memory_subtract_impl(ptr, rust_vec_len, data_len),
+11 => wire__crate__bridge__calculator__evaluate_with_vars_impl(ptr, rust_vec_len, data_len),
+12 => wire__crate__bridge__calculator__extract_variables_impl(ptr, rust_vec_len, data_len),
+13 => wire__crate__bridge__calculator__format_result_impl(ptr, rust_vec_len, data_len),
+14 => wire__crate__bridge__converter__get_converter_categories_impl(ptr, rust_vec_len, data_len),
+15 => wire__crate__bridge__calculator__history_add_impl(ptr, rust_vec_len, data_len),
+16 => wire__crate__bridge__calculator__history_clear_impl(ptr, rust_vec_len, data_len),
+17 => wire__crate__bridge__calculator__history_delete_impl(ptr, rust_vec_len, data_len),
+18 => wire__crate__bridge__calculator__history_get_all_impl(ptr, rust_vec_len, data_len),
+21 => wire__crate__bridge__calculator__memory_add_impl(ptr, rust_vec_len, data_len),
+22 => wire__crate__bridge__calculator__memory_clear_impl(ptr, rust_vec_len, data_len),
+23 => wire__crate__bridge__calculator__memory_recall_impl(ptr, rust_vec_len, data_len),
+24 => wire__crate__bridge__calculator__memory_store_impl(ptr, rust_vec_len, data_len),
+25 => wire__crate__bridge__calculator__memory_subtract_impl(ptr, rust_vec_len, data_len),
                         _ => unreachable!(),
                     }
                 }
@@ -651,6 +701,11 @@ impl flutter_rust_bridge::IntoIntoDart<crate::bridge::currency::LoanResult> for 
             }
         }
 
+                impl SseEncode for std::collections::HashMap<String, f64> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<Vec<(String,f64,)>>::sse_encode(self.into_iter().collect(), serializer);}
+                }
+                
                 impl SseEncode for String {
                     // Codec=Sse (Serialization based), see doc to use other codecs
                     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<Vec<u8>>::sse_encode(self.into_bytes(), serializer);}
@@ -742,6 +797,12 @@ impl flutter_rust_bridge::IntoIntoDart<crate::bridge::currency::LoanResult> for 
 <f64>::sse_encode(self.total_interest, serializer);}
                 }
                 
+                impl SseEncode for Vec<String> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<i32>::sse_encode(self.len() as _, serializer);
+        for item in self { <String>::sse_encode(item, serializer); }}
+                }
+                
                 impl SseEncode for Vec<crate::bridge::converter::FfiConverterCategory> {
                     // Codec=Sse (Serialization based), see doc to use other codecs
                     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<i32>::sse_encode(self.len() as _, serializer);
@@ -766,6 +827,12 @@ impl flutter_rust_bridge::IntoIntoDart<crate::bridge::currency::LoanResult> for 
         for item in self { <u8>::sse_encode(item, serializer); }}
                 }
                 
+                impl SseEncode for Vec<(String,f64,)> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<i32>::sse_encode(self.len() as _, serializer);
+        for item in self { <(String,f64,)>::sse_encode(item, serializer); }}
+                }
+                
                 impl SseEncode for crate::bridge::currency::LoanResult {
                     // Codec=Sse (Serialization based), see doc to use other codecs
                     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<f64>::sse_encode(self.monthly_emi, serializer);
@@ -787,6 +854,12 @@ impl flutter_rust_bridge::IntoIntoDart<crate::bridge::currency::LoanResult> for 
                 if let Some(value) = self {
                     <f64>::sse_encode(value, serializer);
                 }}
+                }
+                
+                impl SseEncode for (String,f64,) {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<String>::sse_encode(self.0, serializer);
+<f64>::sse_encode(self.1, serializer);}
                 }
                 
                 impl SseEncode for u32 {

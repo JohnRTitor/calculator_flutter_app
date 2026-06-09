@@ -8,12 +8,21 @@ part of 'history_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// A Riverpod Notifier that manages the history of calculations.
+///
+/// Interacts with the Rust backend to load, save, clear, and delete history entries.
 
 @ProviderFor(History)
 final historyProvider = HistoryProvider._();
 
+/// A Riverpod Notifier that manages the history of calculations.
+///
+/// Interacts with the Rust backend to load, save, clear, and delete history entries.
 final class HistoryProvider
     extends $AsyncNotifierProvider<History, List<HistoryEntry>> {
+  /// A Riverpod Notifier that manages the history of calculations.
+  ///
+  /// Interacts with the Rust backend to load, save, clear, and delete history entries.
   HistoryProvider._()
     : super(
         from: null,
@@ -34,6 +43,10 @@ final class HistoryProvider
 }
 
 String _$historyHash() => r'332da9d9b4777e84981f2f74a2b136ab305b5beb';
+
+/// A Riverpod Notifier that manages the history of calculations.
+///
+/// Interacts with the Rust backend to load, save, clear, and delete history entries.
 
 abstract class _$History extends $AsyncNotifier<List<HistoryEntry>> {
   FutureOr<List<HistoryEntry>> build();

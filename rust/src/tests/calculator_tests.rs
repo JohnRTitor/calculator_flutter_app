@@ -1,6 +1,7 @@
 use crate::calculator::evaluator;
 use crate::calculator::parser;
 use std::f64::consts::{PI, E};
+use std::collections::HashMap;
 
 // Base evaluation function that returns the raw Result
 fn evaluate_core(
@@ -11,7 +12,8 @@ fn evaluate_core(
     let tokens = parser::tokenize(expr).unwrap();
     let mut p = parser::Parser::new(&tokens);
     let ast = p.parse().unwrap();
-    evaluator::evaluate_expr(&ast, is_degree, ans_value)
+    let evaluator = evaluator::BasicEvaluator;
+    evaluator::evaluate_expr(&ast, &evaluator, is_degree, ans_value)
 }
 
 // Convenience: evaluates to f64 with default state (radians, ans = 0)
@@ -144,4 +146,38 @@ fn test_complex_expressions() {
     assert_eq!(eval("(2^3)^2"), 64.0);
     assert_eq!(eval("10+2*3-4/2"), 14.0);
     assert_eq!(eval("sqrt(144) + 5!"), 132.0);
+}
+
+#[test]
+fn test_variables() {
+    let mut vars = HashMap::new();
+    vars.insert("x".to_string(), 5.0);
+    vars.insert("y".to_string(), 3.0);
+    vars.insert("radius".to_string(), 10.0);
+
+    let func_eval = evaluator::FunctionEvaluator { vars };
+
+    let expr = parser::Parser::new(&parser::tokenize("x^2 + y^2").unwrap()).parse().unwrap();
+    assert_eq!(evaluator::evaluate_expr(&expr, &func_eval, false, 0.0).unwrap().to_float(), 34.0);
+
+    let expr2 = parser::Parser::new(&parser::tokenize("pi * radius^2").unwrap()).parse().unwrap();
+    assert!((evaluator::evaluate_expr(&expr2, &func_eval, false, 0.0).unwrap().to_float() - 314.159265).abs() < 1e-5);
+
+    let expr_err = parser::Parser::new(&parser::tokenize("x + z").unwrap()).parse().unwrap();
+    assert!(matches!(
+        evaluator::evaluate_expr(&expr_err, &func_eval, false, 0.0),
+        Err(crate::calculator::error::CalcError::InvalidExpression(_))
+    ));
+}
+
+#[test]
+fn test_variable_extraction() {
+    let expr = parser::Parser::new(&parser::tokenize("x^2 + y^2 + sin(x) + e^z").unwrap()).parse().unwrap();
+    let vars = evaluator::extract_variables(&expr);
+    assert_eq!(vars.len(), 3);
+    assert!(vars.contains("x"));
+    assert!(vars.contains("y"));
+    assert!(vars.contains("z"));
+    assert!(!vars.contains("e"));
+    assert!(!vars.contains("sin"));
 }

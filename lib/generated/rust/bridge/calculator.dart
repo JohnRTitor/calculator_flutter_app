@@ -70,6 +70,25 @@ Future<void> historySave({required String path}) =>
 Future<void> historyLoad({required String path}) =>
     RustLib.instance.api.crateBridgeCalculatorHistoryLoad(path: path);
 
+/// Evaluates a mathematical expression string with variables from Flutter and returns the result.
+CalcResult evaluateWithVars({
+  required String expression,
+  required Map<String, double> vars,
+  required bool isDegree,
+  required double ansValue,
+}) => RustLib.instance.api.crateBridgeCalculatorEvaluateWithVars(
+  expression: expression,
+  vars: vars,
+  isDegree: isDegree,
+  ansValue: ansValue,
+);
+
+/// Extracts variables from an expression string.
+List<String> extractVariables({required String expression}) => RustLib
+    .instance
+    .api
+    .crateBridgeCalculatorExtractVariables(expression: expression);
+
 /// Represents the result of a calculation to be returned to Flutter.
 class CalcResult {
   final double value;

@@ -33,6 +33,7 @@ pub enum Token {
     Pi,
     E,
     Ans,
+    Variable(String),
 }
 
 /// Converts a string representation of a mathematical expression into a sequence of tokens.
@@ -190,10 +191,7 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                     "e" => tokens.push(Token::E),
                     "ans" => tokens.push(Token::Ans),
                     _ => {
-                        return Err(CalcError::InvalidExpression(format!(
-                            "Unknown function or constant: {}",
-                            ident
-                        )));
+                        tokens.push(Token::Variable(ident));
                     }
                 }
             }
@@ -319,6 +317,7 @@ pub enum Expr {
     Ln(Box<Expr>),
     Sqrt(Box<Expr>),
     Ans,
+    Variable(String),
 }
 
 /// A parser that constructs an Abstract Syntax Tree (AST) from a sequence of `Token`s.
@@ -549,6 +548,7 @@ impl<'a> Parser<'a> {
                 Ok(Expr::Sqrt(Box::new(expr)))
             }
             Token::Ans => Ok(Expr::Ans),
+            Token::Variable(name) => Ok(Expr::Variable(name)),
             _ => Err(CalcError::InvalidExpression(format!(
                 "Unexpected token: {:?}",
                 token

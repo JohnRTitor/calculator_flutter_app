@@ -49,11 +49,33 @@ class CalculatorState {
   /// Whether the user prefers the exact fractional representation over decimals.
   final bool displayAsFraction;
 
+  /// Whether the calculator is currently in Function Mode.
+  final bool isFuncMode;
+
+  /// The raw expression string entered in Function Mode.
+  final String funcExpression;
+
+  /// Map of variables and their current values in Function Mode.
+  final Map<String, double> variables;
+
+  /// List of variables detected in the current expression.
+  final List<String> detectedVariables;
+
   /// Returns true if the memory panel is currently expanded.
   bool get isMemoryMode => expandedPanel == ExpandedPanel.memory;
 
   /// Joins all tokens into a single expression string.
   String get expression => tokens.join('');
+
+  String get evaluatedExpression {
+    if (funcExpression.contains('=')) {
+      final parts = funcExpression.split('=');
+      if (parts.length > 1) {
+        return parts.sublist(1).join('=').trim();
+      }
+    }
+    return funcExpression;
+  }
 
   const CalculatorState({
     this.tokens = const [],
@@ -71,6 +93,10 @@ class CalculatorState {
     this.error,
     this.exactResult,
     this.displayAsFraction = true,
+    this.isFuncMode = false,
+    this.funcExpression = '',
+    this.variables = const {},
+    this.detectedVariables = const [],
   });
 
   CalculatorState copyWith({
@@ -91,6 +117,10 @@ class CalculatorState {
     String? exactResult,
     bool? displayAsFraction,
     bool clearExactResult = false,
+    bool? isFuncMode,
+    String? funcExpression,
+    Map<String, double>? variables,
+    List<String>? detectedVariables,
   }) {
     return CalculatorState(
       tokens: tokens ?? this.tokens,
@@ -108,6 +138,10 @@ class CalculatorState {
       error: clearError ? null : (error ?? this.error),
       exactResult: clearExactResult ? null : (exactResult ?? this.exactResult),
       displayAsFraction: displayAsFraction ?? this.displayAsFraction,
+      isFuncMode: isFuncMode ?? this.isFuncMode,
+      funcExpression: funcExpression ?? this.funcExpression,
+      variables: variables ?? this.variables,
+      detectedVariables: detectedVariables ?? this.detectedVariables,
     );
   }
 }

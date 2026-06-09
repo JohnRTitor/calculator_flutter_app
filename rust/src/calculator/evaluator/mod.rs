@@ -1,6 +1,19 @@
+pub mod basic_evaluator;
+pub mod function_evaluator;
+
 use crate::calculator::error::CalcError;
 use crate::calculator::parser::Expr;
 use crate::calculator::rational::{CalcValue, Rational};
+use std::collections::HashSet;
+
+pub use basic_evaluator::BasicEvaluator;
+pub use function_evaluator::FunctionEvaluator;
+
+/// Defines the capabilities of an evaluator, specifically how it resolves variables.
+pub trait Evaluator {
+    /// Resolves a variable name to its value.
+    fn resolve_variable(&self, name: &str) -> Result<CalcValue, CalcError>;
+}
 
 /// Evaluates an Abstract Syntax Tree (AST) expression and returns its computed value.
 ///
@@ -9,9 +22,15 @@ use crate::calculator::rational::{CalcValue, Rational};
 ///
 /// # Arguments
 /// * `expr` - The mathematical expression (AST node) to evaluate.
+/// * `evaluator` - The evaluation context (Basic or Function mode).
 /// * `is_degree` - If true, trigonometric functions will interpret their inputs/outputs as degrees instead of radians.
 /// * `ans_value` - The result of the previous calculation, used when the `Ans` token is encountered.
-pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<CalcValue, CalcError> {
+pub fn evaluate_expr(
+    expr: &Expr,
+    evaluator: &dyn Evaluator,
+    is_degree: bool,
+    ans_value: f64,
+) -> Result<CalcValue, CalcError> {
     match expr {
         Expr::Number(n) => {
             if n.fract() == 0.0 && *n >= (i128::MIN as f64) && *n <= (i128::MAX as f64) {
@@ -32,29 +51,27 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
                 Ok(CalcValue::Float(ans_value))
             }
         }
-        Expr::Add(l, r) => Ok(
-            evaluate_expr(l, is_degree, ans_value)?.add(evaluate_expr(r, is_degree, ans_value)?)
-        ),
-        Expr::Subtract(l, r) => Ok(
-            evaluate_expr(l, is_degree, ans_value)?.sub(evaluate_expr(r, is_degree, ans_value)?)
-        ),
-        Expr::Multiply(l, r) => Ok(
-            evaluate_expr(l, is_degree, ans_value)?.mul(evaluate_expr(r, is_degree, ans_value)?)
-        ),
-        Expr::Divide(l, r) => evaluate_expr(l, is_degree, ans_value)?
-            .div(evaluate_expr(r, is_degree, ans_value)?)
+        Expr::Variable(name) => evaluator.resolve_variable(name),
+        Expr::Add(l, r) => Ok(evaluate_expr(l, evaluator, is_degree, ans_value)?
+            .add(evaluate_expr(r, evaluator, is_degree, ans_value)?)),
+        Expr::Subtract(l, r) => Ok(evaluate_expr(l, evaluator, is_degree, ans_value)?
+            .sub(evaluate_expr(r, evaluator, is_degree, ans_value)?)),
+        Expr::Multiply(l, r) => Ok(evaluate_expr(l, evaluator, is_degree, ans_value)?
+            .mul(evaluate_expr(r, evaluator, is_degree, ans_value)?)),
+        Expr::Divide(l, r) => evaluate_expr(l, evaluator, is_degree, ans_value)?
+            .div(evaluate_expr(r, evaluator, is_degree, ans_value)?)
             .map_err(|_| CalcError::DivisionByZero),
-        Expr::Modulo(l, r) => evaluate_expr(l, is_degree, ans_value)?
-            .modulo(evaluate_expr(r, is_degree, ans_value)?)
+        Expr::Modulo(l, r) => evaluate_expr(l, evaluator, is_degree, ans_value)?
+            .modulo(evaluate_expr(r, evaluator, is_degree, ans_value)?)
             .map_err(|_| CalcError::DivisionByZero),
         Expr::Power(l, r) => {
-            let left = evaluate_expr(l, is_degree, ans_value)?;
-            let right = evaluate_expr(r, is_degree, ans_value)?;
+            let left = evaluate_expr(l, evaluator, is_degree, ans_value)?;
+            let right = evaluate_expr(r, evaluator, is_degree, ans_value)?;
             Ok(left.pow(right))
         }
-        Expr::Negate(e) => Ok(evaluate_expr(e, is_degree, ans_value)?.negate()),
+        Expr::Negate(e) => Ok(evaluate_expr(e, evaluator, is_degree, ans_value)?.negate()),
         Expr::Factorial(e) => {
-            let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
+            let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
             if val < 0.0 || val.fract() != 0.0 {
                 return Err(CalcError::DomainError(
                     "Factorial is only defined for non-negative integers".to_string(),
@@ -70,12 +87,12 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
             Ok(CalcValue::Float(result))
         }
         Expr::Percentage(e) => {
-            let val = evaluate_expr(e, is_degree, ans_value)?;
+            let val = evaluate_expr(e, evaluator, is_degree, ans_value)?;
             val.div(CalcValue::Rational(Rational::new(100, 1)))
                 .map_err(|_| CalcError::DivisionByZero)
         }
         Expr::Sin(e) => {
-            let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
+            let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
             let mut res = if is_degree {
                 val.to_radians().sin()
             } else {
@@ -87,7 +104,7 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
             Ok(CalcValue::Float(res))
         }
         Expr::Cos(e) => {
-            let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
+            let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
             let mut res = if is_degree {
                 val.to_radians().cos()
             } else {
@@ -99,7 +116,7 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
             Ok(CalcValue::Float(res))
         }
         Expr::Tan(e) => {
-            let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
+            let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
             if is_degree && (val - 90.0) % 180.0 == 0.0 {
                 return Err(CalcError::DomainError("Tangent undefined".to_string()));
             }
@@ -114,7 +131,7 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
             Ok(CalcValue::Float(res))
         }
         Expr::Asin(e) => {
-            let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
+            let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
             if !(-1.0..=1.0).contains(&val) {
                 return Err(CalcError::DomainError(
                     "Asin is only defined for domain [-1, 1]".to_string(),
@@ -128,7 +145,7 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
             }))
         }
         Expr::Acos(e) => {
-            let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
+            let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
             if !(-1.0..=1.0).contains(&val) {
                 return Err(CalcError::DomainError(
                     "Acos is only defined for domain [-1, 1]".to_string(),
@@ -142,7 +159,7 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
             }))
         }
         Expr::Atan(e) => {
-            let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
+            let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
             let res = val.atan();
             Ok(CalcValue::Float(if is_degree {
                 res.to_degrees()
@@ -151,19 +168,19 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
             }))
         }
         Expr::Sinh(e) => Ok(CalcValue::Float(
-            evaluate_expr(e, is_degree, ans_value)?.to_float().sinh(),
+            evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float().sinh(),
         )),
         Expr::Cosh(e) => Ok(CalcValue::Float(
-            evaluate_expr(e, is_degree, ans_value)?.to_float().cosh(),
+            evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float().cosh(),
         )),
         Expr::Tanh(e) => Ok(CalcValue::Float(
-            evaluate_expr(e, is_degree, ans_value)?.to_float().tanh(),
+            evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float().tanh(),
         )),
         Expr::Asinh(e) => Ok(CalcValue::Float(
-            evaluate_expr(e, is_degree, ans_value)?.to_float().asinh(),
+            evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float().asinh(),
         )),
         Expr::Acosh(e) => {
-            let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
+            let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
             if val < 1.0 {
                 return Err(CalcError::DomainError(
                     "Acosh is only defined for numbers >= 1".to_string(),
@@ -172,7 +189,7 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
             Ok(CalcValue::Float(val.acosh()))
         }
         Expr::Atanh(e) => {
-            let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
+            let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
             if val <= -1.0 || val >= 1.0 {
                 return Err(CalcError::DomainError(
                     "Atanh is only defined for domain (-1, 1)".to_string(),
@@ -181,7 +198,7 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
             Ok(CalcValue::Float(val.atanh()))
         }
         Expr::Log10(e) => {
-            let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
+            let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
             if val <= 0.0 {
                 return Err(CalcError::DomainError(
                     "Log is only defined for positive numbers".to_string(),
@@ -190,8 +207,8 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
             Ok(CalcValue::Float(val.log10()))
         }
         Expr::Log { base, value } => {
-            let b = evaluate_expr(base, is_degree, ans_value)?.to_float();
-            let v = evaluate_expr(value, is_degree, ans_value)?.to_float();
+            let b = evaluate_expr(base, evaluator, is_degree, ans_value)?.to_float();
+            let v = evaluate_expr(value, evaluator, is_degree, ans_value)?.to_float();
             if b <= 0.0 || b == 1.0 {
                 return Err(CalcError::DomainError(
                     "Invalid logarithm base".to_string(),
@@ -205,7 +222,7 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
             Ok(CalcValue::Float(v.ln() / b.ln()))
         }
         Expr::Ln(e) => {
-            let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
+            let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
             if val <= 0.0 {
                 return Err(CalcError::DomainError(
                     "Ln is only defined for positive numbers".to_string(),
@@ -214,7 +231,7 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
             Ok(CalcValue::Float(val.ln()))
         }
         Expr::Sqrt(e) => {
-            let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
+            let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
             if val < 0.0 {
                 return Err(CalcError::DomainError(
                     "Square root is not defined for negative numbers".to_string(),
@@ -223,4 +240,46 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
             Ok(CalcValue::Float(val.sqrt()))
         }
     }
+}
+
+/// Recursively traverses the AST to extract all variable names.
+pub fn extract_variables(expr: &Expr) -> HashSet<String> {
+    let mut vars = HashSet::new();
+    match expr {
+        Expr::Variable(name) => {
+            vars.insert(name.clone());
+        }
+        Expr::Add(l, r)
+        | Expr::Subtract(l, r)
+        | Expr::Multiply(l, r)
+        | Expr::Divide(l, r)
+        | Expr::Modulo(l, r)
+        | Expr::Power(l, r)
+        | Expr::Log { base: l, value: r } => {
+            vars.extend(extract_variables(l));
+            vars.extend(extract_variables(r));
+        }
+        Expr::Negate(e)
+        | Expr::Factorial(e)
+        | Expr::Percentage(e)
+        | Expr::Sin(e)
+        | Expr::Cos(e)
+        | Expr::Tan(e)
+        | Expr::Asin(e)
+        | Expr::Acos(e)
+        | Expr::Atan(e)
+        | Expr::Sinh(e)
+        | Expr::Cosh(e)
+        | Expr::Tanh(e)
+        | Expr::Asinh(e)
+        | Expr::Acosh(e)
+        | Expr::Atanh(e)
+        | Expr::Log10(e)
+        | Expr::Ln(e)
+        | Expr::Sqrt(e) => {
+            vars.extend(extract_variables(e));
+        }
+        Expr::Number(_) | Expr::Pi | Expr::E | Expr::Ans => {}
+    }
+    vars
 }

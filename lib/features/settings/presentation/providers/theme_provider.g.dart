@@ -8,12 +8,15 @@ part of 'theme_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// A Riverpod Notifier that manages and persists the selected `AppThemeMode`.
 
 @ProviderFor(ThemeModeNotifier)
 final themeModeProvider = ThemeModeNotifierProvider._();
 
+/// A Riverpod Notifier that manages and persists the selected `AppThemeMode`.
 final class ThemeModeNotifierProvider
     extends $NotifierProvider<ThemeModeNotifier, AppThemeMode> {
+  /// A Riverpod Notifier that manages and persists the selected `AppThemeMode`.
   ThemeModeNotifierProvider._()
     : super(
         from: null,
@@ -43,6 +46,8 @@ final class ThemeModeNotifierProvider
 
 String _$themeModeNotifierHash() => r'938d904dceccbb32d5c157f7957b6b37378ab732';
 
+/// A Riverpod Notifier that manages and persists the selected `AppThemeMode`.
+
 abstract class _$ThemeModeNotifier extends $Notifier<AppThemeMode> {
   AppThemeMode build();
   @$mustCallSuper
@@ -61,11 +66,15 @@ abstract class _$ThemeModeNotifier extends $Notifier<AppThemeMode> {
   }
 }
 
+/// A Riverpod Notifier that manages and persists the selected `AppColorOption`.
+
 @ProviderFor(AppColorNotifier)
 final appColorProvider = AppColorNotifierProvider._();
 
+/// A Riverpod Notifier that manages and persists the selected `AppColorOption`.
 final class AppColorNotifierProvider
     extends $NotifierProvider<AppColorNotifier, AppColorOption> {
+  /// A Riverpod Notifier that manages and persists the selected `AppColorOption`.
   AppColorNotifierProvider._()
     : super(
         from: null,
@@ -95,6 +104,8 @@ final class AppColorNotifierProvider
 
 String _$appColorNotifierHash() => r'ee6b5d65ce26cdf843c201e9c946d647c6f2606d';
 
+/// A Riverpod Notifier that manages and persists the selected `AppColorOption`.
+
 abstract class _$AppColorNotifier extends $Notifier<AppColorOption> {
   AppColorOption build();
   @$mustCallSuper
@@ -113,11 +124,15 @@ abstract class _$AppColorNotifier extends $Notifier<AppColorOption> {
   }
 }
 
+/// A Riverpod Notifier that manages and persists the selected `UiStyle`.
+
 @ProviderFor(UiStyleNotifier)
 final uiStyleProvider = UiStyleNotifierProvider._();
 
+/// A Riverpod Notifier that manages and persists the selected `UiStyle`.
 final class UiStyleNotifierProvider
     extends $NotifierProvider<UiStyleNotifier, UiStyle> {
+  /// A Riverpod Notifier that manages and persists the selected `UiStyle`.
   UiStyleNotifierProvider._()
     : super(
         from: null,
@@ -146,6 +161,8 @@ final class UiStyleNotifierProvider
 }
 
 String _$uiStyleNotifierHash() => r'd2641d05ef44d02d63a4857e6ece7bdf18331138';
+
+/// A Riverpod Notifier that manages and persists the selected `UiStyle`.
 
 abstract class _$UiStyleNotifier extends $Notifier<UiStyle> {
   UiStyle build();

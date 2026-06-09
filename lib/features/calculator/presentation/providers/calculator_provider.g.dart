@@ -8,12 +8,24 @@ part of 'calculator_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// A Riverpod Notifier that manages the state of the calculator.
+///
+/// Handles expression editing, mode switching, interacting with the Rust backend
+/// for evaluation, and memory operations.
 
 @ProviderFor(Calculator)
 final calculatorProvider = CalculatorProvider._();
 
+/// A Riverpod Notifier that manages the state of the calculator.
+///
+/// Handles expression editing, mode switching, interacting with the Rust backend
+/// for evaluation, and memory operations.
 final class CalculatorProvider
     extends $NotifierProvider<Calculator, CalculatorState> {
+  /// A Riverpod Notifier that manages the state of the calculator.
+  ///
+  /// Handles expression editing, mode switching, interacting with the Rust backend
+  /// for evaluation, and memory operations.
   CalculatorProvider._()
     : super(
         from: null,
@@ -41,7 +53,12 @@ final class CalculatorProvider
   }
 }
 
-String _$calculatorHash() => r'e1982295f08fde18eaa8d119ff6049e6461a2ae2';
+String _$calculatorHash() => r'75b12b1629a2b932de92d841c60a6261fc763147';
+
+/// A Riverpod Notifier that manages the state of the calculator.
+///
+/// Handles expression editing, mode switching, interacting with the Rust backend
+/// for evaluation, and memory operations.
 
 abstract class _$Calculator extends $Notifier<CalculatorState> {
   CalculatorState build();
