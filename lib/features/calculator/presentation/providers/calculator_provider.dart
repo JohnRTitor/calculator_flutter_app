@@ -41,14 +41,31 @@ class Calculator extends _$Calculator {
       );
     } else {
       final newTokens = List<String>.from(state.tokens);
-      newTokens.insert(state.cursorIndex, text);
 
-      state = state.copyWith(
-        tokens: newTokens,
-        cursorIndex: state.cursorIndex + 1,
-        clearError: true,
-        clearExactResult: true,
-      );
+      if (state.cursorIndex < newTokens.length && newTokens[state.cursorIndex] == '□') {
+        newTokens[state.cursorIndex] = text;
+        state = state.copyWith(
+          tokens: newTokens,
+          cursorIndex: state.cursorIndex + 1,
+          clearError: true,
+          clearExactResult: true,
+        );
+      } else if (state.cursorIndex > 0 && newTokens[state.cursorIndex - 1] == '□') {
+        newTokens[state.cursorIndex - 1] = text;
+        state = state.copyWith(
+          tokens: newTokens,
+          clearError: true,
+          clearExactResult: true,
+        );
+      } else {
+        newTokens.insert(state.cursorIndex, text);
+        state = state.copyWith(
+          tokens: newTokens,
+          cursorIndex: state.cursorIndex + 1,
+          clearError: true,
+          clearExactResult: true,
+        );
+      }
     }
     _updatePreview();
     return true;
@@ -411,5 +428,54 @@ class Calculator extends _$Calculator {
   void memoryClear() {
     rust.memoryClear();
     state = state.copyWith(hasMemory: false);
+  }
+
+  /// Appends a custom logarithm template with placeholders for base and value.
+  void appendLogTemplate() {
+    if (state.showResult) {
+      state = state.copyWith(
+        tokens: ["log_", "□", "(", "□", ")"],
+        cursorIndex: 1,
+        showResult: false,
+        clearError: true,
+        preview: '',
+        clearExactResult: true,
+      );
+    } else {
+      final newTokens = List<String>.from(state.tokens);
+      newTokens.insertAll(state.cursorIndex, ["log_", "□", "(", "□", ")"]);
+      state = state.copyWith(
+        tokens: newTokens,
+        cursorIndex: state.cursorIndex + 1,
+        clearError: true,
+        clearExactResult: true,
+      );
+    }
+    _updatePreview();
+  }
+
+  /// Appends a standard function template with a placeholder for the value (e.g., sin(□)).
+  void appendFunctionTemplate(String functionName) {
+    final template = [functionName, "(", "□", ")"];
+    if (state.showResult) {
+      state = state.copyWith(
+        tokens: template,
+        cursorIndex: 2, // Right before the □
+        showResult: false,
+        clearError: true,
+        preview: '',
+        clearExactResult: true,
+      );
+    } else {
+      final newTokens = List<String>.from(state.tokens);
+      newTokens.insertAll(state.cursorIndex, template);
+      state = state.copyWith(
+        tokens: newTokens,
+        cursorIndex: state.cursorIndex + 2, // Right before the □
+        clearError: true,
+        clearExactResult: true,
+      );
+    }
+    _updatePreview();
   }
 }

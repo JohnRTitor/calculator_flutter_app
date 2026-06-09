@@ -14,13 +14,13 @@ class TokenTextField extends ConsumerStatefulWidget {
 }
 
 class _TokenTextFieldState extends ConsumerState<TokenTextField> {
-  late TextEditingController _controller;
+  late _TemplateTextEditingController _controller;
   bool _isUpdatingFromState = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
+    _controller = _TemplateTextEditingController();
     _controller.addListener(_onSelectionChanged);
   }
 
@@ -98,6 +98,21 @@ class _TokenTextFieldState extends ConsumerState<TokenTextField> {
     if (_controller.text != expectedText) {
       _controller.text = expectedText;
     }
+    
+    _controller.tokens = state.tokens;
+    _controller.baseStyle = theme.textTheme.headlineLarge?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+      fontWeight: FontWeight.w400,
+      fontSize: 20,
+    );
+    _controller.placeholderStyle = theme.textTheme.headlineLarge?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+      fontWeight: FontWeight.w400,
+      fontSize: 36,
+    );
+    _controller.basePlaceholderStyle = _controller.baseStyle?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+    );
 
     // Only update selection if it differs, to prevent interrupting user gestures unnecessarily
     if (_controller.selection.baseOffset != expectedOffset ||
@@ -126,5 +141,43 @@ class _TokenTextFieldState extends ConsumerState<TokenTextField> {
         isDense: true,
       ),
     );
+  }
+}
+
+class _TemplateTextEditingController extends TextEditingController {
+  List<String> tokens = [];
+  TextStyle? baseStyle;
+  TextStyle? placeholderStyle;
+  TextStyle? basePlaceholderStyle;
+
+  @override
+  TextSpan buildTextSpan({required BuildContext context, TextStyle? style, required bool withComposing}) {
+    final children = <InlineSpan>[];
+    
+    int i = 0;
+    while (i < tokens.length) {
+      if (tokens[i] == 'log_') {
+        children.add(TextSpan(text: 'log', style: style));
+        children.add(const TextSpan(text: '_', style: TextStyle(fontSize: 0, color: Colors.transparent)));
+        i++;
+        
+        while (i < tokens.length && tokens[i] != '(') {
+          if (tokens[i] == '□') {
+            children.add(TextSpan(text: '□', style: basePlaceholderStyle));
+          } else {
+            children.add(TextSpan(text: tokens[i], style: baseStyle));
+          }
+          i++;
+        }
+      } else if (tokens[i] == '□') {
+        children.add(TextSpan(text: '□', style: placeholderStyle));
+        i++;
+      } else {
+        children.add(TextSpan(text: tokens[i], style: style));
+        i++;
+      }
+    }
+    
+    return TextSpan(style: style, children: children);
   }
 }

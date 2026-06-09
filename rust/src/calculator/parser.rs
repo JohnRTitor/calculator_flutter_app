@@ -27,6 +27,7 @@ pub enum Token {
     Acosh,
     Atanh,
     Log,
+    LogBase,
     Ln,
     Sqrt,
     Pi,
@@ -159,7 +160,7 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
             c if c.is_alphabetic() => {
                 let mut ident = String::new();
                 while let Some(&nc) = chars.peek() {
-                    if nc.is_alphabetic() {
+                    if nc.is_alphabetic() || nc == '_' {
                         ident.push(nc);
                         chars.next();
                     } else {
@@ -182,6 +183,7 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                     "acosh" => tokens.push(Token::Acosh),
                     "atanh" => tokens.push(Token::Atanh),
                     "log" => tokens.push(Token::Log),
+                    "log_" => tokens.push(Token::LogBase),
                     "ln" => tokens.push(Token::Ln),
                     "sqrt" => tokens.push(Token::Sqrt),
                     "pi" => tokens.push(Token::Pi),
@@ -221,10 +223,10 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                     | (Token::Number(_), Token::Sinh)
                     | (Token::Number(_), Token::Cosh)
                     | (Token::Number(_), Token::Tanh)
-                    | (Token::Number(_), Token::Asinh)
                     | (Token::Number(_), Token::Acosh)
                     | (Token::Number(_), Token::Atanh)
                     | (Token::Number(_), Token::Log)
+                    | (Token::Number(_), Token::LogBase)
                     | (Token::Number(_), Token::Ln)
                     | (Token::Number(_), Token::Sqrt)
                     | (Token::Number(_), Token::Ans)
@@ -247,6 +249,7 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                     | (Token::RParen, Token::Acosh)
                     | (Token::RParen, Token::Atanh)
                     | (Token::RParen, Token::Log)
+                    | (Token::RParen, Token::LogBase)
                     | (Token::RParen, Token::Ln)
                     | (Token::RParen, Token::Sqrt)
                     | (Token::RParen, Token::E)
@@ -266,6 +269,7 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
                     | (Token::Percentage, Token::Acosh)
                     | (Token::Percentage, Token::Atanh)
                     | (Token::Percentage, Token::Log)
+                    | (Token::Percentage, Token::LogBase)
                     | (Token::Percentage, Token::Ln)
                     | (Token::Percentage, Token::Sqrt)
                     | (Token::Percentage, Token::Pi)
@@ -310,7 +314,8 @@ pub enum Expr {
     Asinh(Box<Expr>),
     Acosh(Box<Expr>),
     Atanh(Box<Expr>),
-    Log(Box<Expr>),
+    Log10(Box<Expr>),
+    Log { base: Box<Expr>, value: Box<Expr> },
     Ln(Box<Expr>),
     Sqrt(Box<Expr>),
     Ans,
@@ -524,7 +529,16 @@ impl<'a> Parser<'a> {
             }
             Token::Log => {
                 let expr = self.parse_primary_arg()?;
-                Ok(Expr::Log(Box::new(expr)))
+                Ok(Expr::Log10(Box::new(expr)))
+            }
+            Token::LogBase => {
+                let base = self.parse_power()?;
+                // Consume implicit multiplication inserted between base and value
+                if self.peek() == Some(&Token::Multiply) {
+                    self.consume();
+                }
+                let value = self.parse_primary_arg()?;
+                Ok(Expr::Log { base: Box::new(base), value: Box::new(value) })
             }
             Token::Ln => {
                 let expr = self.parse_primary_arg()?;

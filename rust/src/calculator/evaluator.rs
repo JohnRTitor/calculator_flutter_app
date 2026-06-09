@@ -180,7 +180,7 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
             }
             Ok(CalcValue::Float(val.atanh()))
         }
-        Expr::Log(e) => {
+        Expr::Log10(e) => {
             let val = evaluate_expr(e, is_degree, ans_value)?.to_float();
             if val <= 0.0 {
                 return Err(CalcError::DomainError(
@@ -188,6 +188,21 @@ pub fn evaluate_expr(expr: &Expr, is_degree: bool, ans_value: f64) -> Result<Cal
                 ));
             }
             Ok(CalcValue::Float(val.log10()))
+        }
+        Expr::Log { base, value } => {
+            let b = evaluate_expr(base, is_degree, ans_value)?.to_float();
+            let v = evaluate_expr(value, is_degree, ans_value)?.to_float();
+            if b <= 0.0 || b == 1.0 {
+                return Err(CalcError::DomainError(
+                    "Invalid logarithm base".to_string(),
+                ));
+            }
+            if v <= 0.0 {
+                return Err(CalcError::DomainError(
+                    "Logarithm value must be positive".to_string(),
+                ));
+            }
+            Ok(CalcValue::Float(v.ln() / b.ln()))
         }
         Expr::Ln(e) => {
             let val = evaluate_expr(e, is_degree, ans_value)?.to_float();

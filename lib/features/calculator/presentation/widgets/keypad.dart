@@ -55,8 +55,10 @@ class Keypad extends ConsumerWidget {
                       ref,
                       '√',
                       ButtonType.scientific,
-                      () =>
-                          ref.read(calculatorProvider.notifier).append('sqrt('),
+                      () {
+                        ref.read(calculatorProvider.notifier).appendFunctionTemplate('sqrt');
+                        return true;
+                      },
                       uiStyle: uiStyle,
                     ),
                     _btn(
@@ -358,13 +360,13 @@ class Keypad extends ConsumerWidget {
                     ? (state.isHypMode ? 'asinh' : 'asin')
                     : (state.isHypMode ? 'sinh' : 'sin'),
                 ButtonType.scientific,
-                () => ref
-                    .read(calculatorProvider.notifier)
-                    .append(
-                      state.isInvMode
-                          ? (state.isHypMode ? 'asinh(' : 'asin(')
-                          : (state.isHypMode ? 'sinh(' : 'sin('),
-                    ),
+                () {
+                  final funcName = state.isInvMode
+                      ? (state.isHypMode ? 'asinh' : 'asin')
+                      : (state.isHypMode ? 'sinh' : 'sin');
+                  ref.read(calculatorProvider.notifier).appendFunctionTemplate(funcName);
+                  return true;
+                },
                 uiStyle: uiStyle,
               ),
               _btn(
@@ -373,13 +375,13 @@ class Keypad extends ConsumerWidget {
                     ? (state.isHypMode ? 'acosh' : 'acos')
                     : (state.isHypMode ? 'cosh' : 'cos'),
                 ButtonType.scientific,
-                () => ref
-                    .read(calculatorProvider.notifier)
-                    .append(
-                      state.isInvMode
-                          ? (state.isHypMode ? 'acosh(' : 'acos(')
-                          : (state.isHypMode ? 'cosh(' : 'cos('),
-                    ),
+                () {
+                  final funcName = state.isInvMode
+                      ? (state.isHypMode ? 'acosh' : 'acos')
+                      : (state.isHypMode ? 'cosh' : 'cos');
+                  ref.read(calculatorProvider.notifier).appendFunctionTemplate(funcName);
+                  return true;
+                },
                 uiStyle: uiStyle,
               ),
               _btn(
@@ -388,13 +390,13 @@ class Keypad extends ConsumerWidget {
                     ? (state.isHypMode ? 'atanh' : 'atan')
                     : (state.isHypMode ? 'tanh' : 'tan'),
                 ButtonType.scientific,
-                () => ref
-                    .read(calculatorProvider.notifier)
-                    .append(
-                      state.isInvMode
-                          ? (state.isHypMode ? 'atanh(' : 'atan(')
-                          : (state.isHypMode ? 'tanh(' : 'tan('),
-                    ),
+                () {
+                  final funcName = state.isInvMode
+                      ? (state.isHypMode ? 'atanh' : 'atan')
+                      : (state.isHypMode ? 'tanh' : 'tan');
+                  ref.read(calculatorProvider.notifier).appendFunctionTemplate(funcName);
+                  return true;
+                },
                 uiStyle: uiStyle,
               ),
               _btn(
@@ -418,23 +420,32 @@ class Keypad extends ConsumerWidget {
             children: [
               _btn(
                 ref,
-                'log',
+                'log₁₀',
                 ButtonType.scientific,
-                () => ref.read(calculatorProvider.notifier).append('log('),
+                () {
+                  ref.read(calculatorProvider.notifier).appendFunctionTemplate('log');
+                  return true;
+                },
                 uiStyle: uiStyle,
               ),
               _btn(
                 ref,
                 'ln',
                 ButtonType.scientific,
-                () => ref.read(calculatorProvider.notifier).append('ln('),
+                () {
+                  ref.read(calculatorProvider.notifier).appendFunctionTemplate('ln');
+                  return true;
+                },
                 uiStyle: uiStyle,
               ),
               _btn(
                 ref,
-                'log₂',
+                'logₙ',
                 ButtonType.scientific,
-                () => ref.read(calculatorProvider.notifier).append('log2('),
+                () {
+                  ref.read(calculatorProvider.notifier).appendLogTemplate();
+                  return true;
+                },
                 uiStyle: uiStyle,
               ),
               _btn(
