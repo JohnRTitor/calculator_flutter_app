@@ -25,6 +25,22 @@ class ConverterResultCard extends StatelessWidget {
     final valueColor = colorScheme.onSurface;
     final secondaryTextColor = colorScheme.onSurfaceVariant;
 
+    Widget slideFadeTransition(Widget child, Animation<double> animation) {
+      return FadeTransition(
+        opacity: animation,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0.0, 0.4),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutCubic,
+          )),
+          child: child,
+        ),
+      );
+    }
+
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeOutCubic,
@@ -74,6 +90,7 @@ class ConverterResultCard extends StatelessWidget {
                 duration: const Duration(milliseconds: 300),
                 switchInCurve: Curves.easeOut,
                 switchOutCurve: Curves.easeIn,
+                transitionBuilder: slideFadeTransition,
                 child: Container(
                   key: ValueKey<String>('${data.primaryValue}_$isActive'),
                   alignment: Alignment.centerLeft,
@@ -96,6 +113,7 @@ class ConverterResultCard extends StatelessWidget {
                 const SizedBox(height: 16),
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
+                  transitionBuilder: slideFadeTransition,
                   child: Container(
                     key: ValueKey<String>(data.secondaryText),
                     alignment: Alignment.centerLeft,

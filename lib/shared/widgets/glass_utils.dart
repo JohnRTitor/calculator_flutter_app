@@ -265,7 +265,9 @@ class SharedSurface extends StatelessWidget {
 
       final baseColor = glassColor ?? style.fillColor;
 
-      Widget glassLayer = Container(
+      Widget glassLayer = AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
         decoration: BoxDecoration(
           borderRadius: borderRadius,
           border: Border.all(

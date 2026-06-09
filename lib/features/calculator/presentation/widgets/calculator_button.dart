@@ -108,8 +108,8 @@ class _CalculatorButtonState extends State<CalculatorButton>
           padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 6.0),
           child: AnimatedScale(
             scale: _scale,
-            duration: const Duration(milliseconds: 150),
-            curve: Curves.easeOut,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutBack,
             child: SizedBox.expand(
               child: GestureDetector(
                 onTapDown: (_) => _handlePressDown(),

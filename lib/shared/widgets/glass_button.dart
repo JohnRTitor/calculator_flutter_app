@@ -3,6 +3,7 @@ import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/widgets/calculator_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 /// A lightweight Liquid Glass variant of the calculator button.
 ///
@@ -28,8 +29,25 @@ class LiquidGlassCalcButton extends StatefulWidget {
   State<LiquidGlassCalcButton> createState() => _LiquidGlassCalcButtonState();
 }
 
-class _LiquidGlassCalcButtonState extends State<LiquidGlassCalcButton> {
+class _LiquidGlassCalcButtonState extends State<LiquidGlassCalcButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _shakeController;
   double _scale = 1.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _shakeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+  }
+
+  @override
+  void dispose() {
+    _shakeController.dispose();
+    super.dispose();
+  }
 
   void _handlePressDown() {
     setState(() => _scale = 0.97);
@@ -41,9 +59,12 @@ class _LiquidGlassCalcButtonState extends State<LiquidGlassCalcButton> {
 
   void _handlePress() {
     if (widget.onPressed == null) return;
+    if (_shakeController.isAnimating) return;
+
     final success = widget.onPressed!();
     if (!success && mounted) {
       HapticFeedback.vibrate();
+      _shakeController.forward(from: 0.0);
     }
   }
 
@@ -71,8 +92,8 @@ class _LiquidGlassCalcButtonState extends State<LiquidGlassCalcButton> {
       padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 6.0),
       child: AnimatedScale(
         scale: _scale,
-        duration: const Duration(milliseconds: 130),
-        curve: Curves.easeOutCubic,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutBack,
         child: SizedBox.expand(
           child: GestureDetector(
             onTapDown: (_) => _handlePressDown(),
@@ -93,7 +114,9 @@ class _LiquidGlassCalcButtonState extends State<LiquidGlassCalcButton> {
             ),
           ),
         ),
-      ),
+      )
+      .animate(controller: _shakeController, autoPlay: false)
+      .shakeX(hz: 4, amount: 4),
     );
   }
 

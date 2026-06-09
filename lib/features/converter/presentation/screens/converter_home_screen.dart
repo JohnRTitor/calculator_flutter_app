@@ -8,6 +8,7 @@ import 'package:calculator_flutter_app/features/settings/presentation/providers/
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/app/navigation/route_transitions.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 /// The entry point screen for the Unit Converter feature.
 ///
@@ -164,7 +165,10 @@ class _ConverterHomeScreenState extends ConsumerState<ConverterHomeScreen> {
                 ),
               ],
             ),
-          );
+          )
+          .animate()
+          .fade(duration: 400.ms, delay: (index * 50).ms)
+          .slideY(begin: 0.2, end: 0, duration: 400.ms, curve: Curves.easeOutQuart);
         },
       ),
     );

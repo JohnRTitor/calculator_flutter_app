@@ -6,6 +6,7 @@ import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/providers/calculator_provider.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/widgets/token_text_field.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 /// The main display area of the calculator.
 ///
@@ -22,19 +23,41 @@ class DisplayPanel extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
+    Widget slideFadeTransition(Widget child, Animation<double> animation) {
+      return FadeTransition(
+        opacity: animation,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0.0, 0.3),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutCubic,
+          )),
+          child: child,
+        ),
+      );
+    }
+
     final content = Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         // Expression input
-        const Align(alignment: Alignment.bottomRight, child: TokenTextField()),
+        Align(
+          alignment: Alignment.bottomRight, 
+          child: const TokenTextField()
+            .animate(key: ValueKey(state.expression))
+            .scaleXY(begin: 1.02, end: 1.0, duration: 150.ms, curve: Curves.easeOut),
+        ),
         const SizedBox(height: 8),
 
         // Error or Preview
         if (state.error != null)
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
+            transitionBuilder: slideFadeTransition,
             child: Text(
               state.error!,
               key: ValueKey('error_${state.error}'),
@@ -48,6 +71,7 @@ class DisplayPanel extends ConsumerWidget {
         else if (!state.showResult && state.preview.isNotEmpty)
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
+            transitionBuilder: slideFadeTransition,
             child: Text(
               '= ${state.preview}',
               key: ValueKey('preview_${state.preview}'),
@@ -79,6 +103,7 @@ class DisplayPanel extends ConsumerWidget {
               reverse: true,
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
+                transitionBuilder: slideFadeTransition,
                 child: Text(
                   state.displayAsFraction && state.exactResult != null
                       ? state.exactResult!

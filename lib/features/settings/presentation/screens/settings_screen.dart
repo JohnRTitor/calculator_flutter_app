@@ -4,6 +4,7 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 /// The settings screen where users can configure the application's appearance.
 ///
@@ -110,7 +111,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             _buildAboutCard(theme, colorScheme, uiStyle),
-          ],
+          ].animate(interval: 50.ms).fade(duration: 400.ms).slideY(begin: 0.1, end: 0, duration: 400.ms, curve: Curves.easeOutQuart),
         );
 
         return Scaffold(
@@ -230,12 +231,12 @@ class _ThemeCard extends StatelessWidget {
 
   Widget _buildMaterialCard() {
     return AnimatedScale(
-      scale: isSelected ? 1.0 : 0.97,
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeOut,
+      scale: isSelected ? 1.02 : 0.95,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOutCubic,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
         decoration: BoxDecoration(
           color: isSelected
               ? colorScheme.primaryContainer
@@ -269,9 +270,9 @@ class _ThemeCard extends StatelessWidget {
 
   Widget _buildGlassCard(BuildContext context) {
     return AnimatedScale(
-      scale: isSelected ? 1.0 : 0.97,
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeOut,
+      scale: isSelected ? 1.02 : 0.95,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOutCubic,
       child: SharedSurface(
         uiStyle: uiStyle,
         isInteractive: true,
@@ -543,12 +544,12 @@ class _StyleOptionCard extends StatelessWidget {
 
   Widget _buildMaterialVariant() {
     return AnimatedScale(
-      scale: isSelected ? 1.0 : 0.97,
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeOut,
+      scale: isSelected ? 1.02 : 0.95,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOutCubic,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
         decoration: BoxDecoration(
           color: isSelected
               ? colorScheme.primaryContainer
@@ -582,9 +583,9 @@ class _StyleOptionCard extends StatelessWidget {
 
   Widget _buildGlassVariant(BuildContext context) {
     return AnimatedScale(
-      scale: isSelected ? 1.0 : 0.97,
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeOut,
+      scale: isSelected ? 1.02 : 0.95,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOutCubic,
       child: SharedSurface(
         uiStyle: uiStyle,
         isInteractive: true,

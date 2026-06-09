@@ -26,9 +26,16 @@ class Keypad extends ConsumerWidget {
     return RepaintBoundary(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(6, 0, 6, 4),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final double maxHeight = constraints.maxHeight.isFinite ? constraints.maxHeight : 400.0;
+          final fixedHeight = 48.0 + (expanded != ExpandedPanel.none ? 40.0 : 0.0);
+          final availableHeight = maxHeight - fixedHeight;
+          final sciRowHeight = (availableHeight * (60.0 / 480.0)).clamp(0.0, double.infinity);
+
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
             // === Dropdown chip row: [▾] [Trig ∨] [Log ∨] [Mem ∨] ===
             _DropdownChipRow(
               isSci: isSci,
@@ -46,45 +53,54 @@ class Keypad extends ConsumerWidget {
             ),
 
             // === Scientific utility row: √ ^ ! π ===
-            if (isSci)
-              Expanded(
-                flex: 60,
-                child: Row(
-                  children: [
-                    _btn(
-                      ref,
-                      '√',
-                      ButtonType.scientific,
-                      () {
-                        ref.read(calculatorProvider.notifier).appendFunctionTemplate('sqrt');
-                        return true;
-                      },
-                      uiStyle: uiStyle,
-                    ),
-                    _btn(
-                      ref,
-                      '^',
-                      ButtonType.scientific,
-                      () => ref.read(calculatorProvider.notifier).append('^'),
-                      uiStyle: uiStyle,
-                    ),
-                    _btn(
-                      ref,
-                      '!',
-                      ButtonType.scientific,
-                      () => ref.read(calculatorProvider.notifier).append('!'),
-                      uiStyle: uiStyle,
-                    ),
-                    _btn(
-                      ref,
-                      'π',
-                      ButtonType.scientific,
-                      () => ref.read(calculatorProvider.notifier).append('π'),
-                      uiStyle: uiStyle,
-                    ),
-                  ],
+            ClipRect(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
+                height: isSci ? sciRowHeight : 0.0,
+                child: SingleChildScrollView(
+                physics: const NeverScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: sciRowHeight,
+                  child: Row(
+                    children: [
+                      _btn(
+                        ref,
+                        '√',
+                        ButtonType.scientific,
+                        () {
+                          ref.read(calculatorProvider.notifier).appendFunctionTemplate('sqrt');
+                          return true;
+                        },
+                        uiStyle: uiStyle,
+                      ),
+                      _btn(
+                        ref,
+                        '^',
+                        ButtonType.scientific,
+                        () => ref.read(calculatorProvider.notifier).append('^'),
+                        uiStyle: uiStyle,
+                      ),
+                      _btn(
+                        ref,
+                        '!',
+                        ButtonType.scientific,
+                        () => ref.read(calculatorProvider.notifier).append('!'),
+                        uiStyle: uiStyle,
+                      ),
+                      _btn(
+                        ref,
+                        'π',
+                        ButtonType.scientific,
+                        () => ref.read(calculatorProvider.notifier).append('π'),
+                        uiStyle: uiStyle,
+                      ),
+                    ],
+                  ),
                 ),
               ),
+            ),
+            ),
 
             // === ( ) % / ===
             Expanded(
@@ -299,7 +315,9 @@ class Keypad extends ConsumerWidget {
               ),
             ),
           ],
-        ),
+        );
+        },
+      ),
       ),
     );
   }
@@ -562,64 +580,71 @@ class _DropdownChipRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
       child: SizedBox(
         height: 48,
-        child: Row(
-          children: [
-            _buildChip(
-              context,
-              label: 'Sci',
-              bgColor: isSci
-                  ? colorScheme.secondaryContainer
-                  : colorScheme.surfaceContainerHigh,
-              fgColor: isSci
-                  ? colorScheme.onSecondaryContainer
-                  : colorScheme.onSurfaceVariant,
-              onTap: () =>
-                  ref.read(calculatorProvider.notifier).toggleScientificMode(),
-              isExpanded: isSci,
-            ),
-            if (isSci) ...[
-              const SizedBox(width: 6),
-              Expanded(
-                child: _buildChip(
-                  context,
-                  label: 'Trig',
-                  bgColor: colorScheme.tertiaryContainer,
-                  fgColor: colorScheme.onTertiaryContainer,
-                  onTap: () => ref
-                      .read(calculatorProvider.notifier)
-                      .togglePanel(ExpandedPanel.trig),
-                  isExpanded: expanded == ExpandedPanel.trig,
-                ),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          transitionBuilder: (child, animation) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          child: Row(
+            key: ValueKey(isSci),
+            children: [
+              _buildChip(
+                context,
+                label: 'Sci',
+                bgColor: isSci
+                    ? colorScheme.secondaryContainer
+                    : colorScheme.surfaceContainerHigh,
+                fgColor: isSci
+                    ? colorScheme.onSecondaryContainer
+                    : colorScheme.onSurfaceVariant,
+                onTap: () =>
+                    ref.read(calculatorProvider.notifier).toggleScientificMode(),
+                isExpanded: isSci,
               ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: _buildChip(
-                  context,
-                  label: 'Log',
-                  bgColor: colorScheme.secondaryContainer,
-                  fgColor: colorScheme.onSecondaryContainer,
-                  onTap: () => ref
-                      .read(calculatorProvider.notifier)
-                      .togglePanel(ExpandedPanel.log),
-                  isExpanded: expanded == ExpandedPanel.log,
+              if (isSci) ...[
+                const SizedBox(width: 6),
+                Expanded(
+                  child: _buildChip(
+                    context,
+                    label: 'Trig',
+                    bgColor: colorScheme.tertiaryContainer,
+                    fgColor: colorScheme.onTertiaryContainer,
+                    onTap: () => ref
+                        .read(calculatorProvider.notifier)
+                        .togglePanel(ExpandedPanel.trig),
+                    isExpanded: expanded == ExpandedPanel.trig,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: _buildChip(
-                  context,
-                  label: 'Mem',
-                  bgColor: colorScheme.primaryContainer,
-                  fgColor: colorScheme.onPrimaryContainer,
-                  onTap: () => ref
-                      .read(calculatorProvider.notifier)
-                      .togglePanel(ExpandedPanel.memory),
-                  isExpanded: expanded == ExpandedPanel.memory,
+                const SizedBox(width: 6),
+                Expanded(
+                  child: _buildChip(
+                    context,
+                    label: 'Log',
+                    bgColor: colorScheme.secondaryContainer,
+                    fgColor: colorScheme.onSecondaryContainer,
+                    onTap: () => ref
+                        .read(calculatorProvider.notifier)
+                        .togglePanel(ExpandedPanel.log),
+                    isExpanded: expanded == ExpandedPanel.log,
+                  ),
                 ),
-              ),
-            ] else
-              const Spacer(),
-          ],
+                const SizedBox(width: 6),
+                Expanded(
+                  child: _buildChip(
+                    context,
+                    label: 'Mem',
+                    bgColor: colorScheme.primaryContainer,
+                    fgColor: colorScheme.onPrimaryContainer,
+                    onTap: () => ref
+                        .read(calculatorProvider.notifier)
+                        .togglePanel(ExpandedPanel.memory),
+                    isExpanded: expanded == ExpandedPanel.memory,
+                  ),
+                ),
+              ] else
+                const Spacer(),
+            ],
+          ),
         ),
       ),
     );
