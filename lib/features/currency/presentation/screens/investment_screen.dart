@@ -4,6 +4,7 @@ import 'package:calculator_flutter_app/features/currency/presentation/providers/
 import 'package:calculator_flutter_app/features/currency/presentation/widgets/utilities_keypad.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/app/theme/app_theme_extension.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/shared/widgets/screenshot_share_wrapper.dart';
 import 'package:calculator_flutter_app/shared/layouts/responsive_keypad_layout.dart';
@@ -278,9 +279,12 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
   Widget _buildResultChartArea(BuildContext context, dynamic result, UiStyle uiStyle, ColorScheme colorScheme, TextTheme textTheme) {
     final bool hasData = result.totalInvestment > 0 || result.totalInterest > 0;
     
+    final themeExt = Theme.of(context).extension<AppThemeExtension>()!;
+    
     return SharedSurface(
       uiStyle: uiStyle,
-      glassRole: GlassSurfaceRole.card,
+      glassRole: GlassSurfaceRole.primary,
+      materialColor: themeExt.resultCard,
       padding: const EdgeInsets.all(24),
       borderRadius: BorderRadius.circular(24),
       child: Column(
@@ -291,11 +295,11 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Total Value', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant)),
+                    Text('Total Value', style: textTheme.bodyMedium?.copyWith(color: themeExt.resultText.withValues(alpha: 0.8))),
                     Text(
                       _currencyFormat.format(result.futureValue),
                       style: textTheme.headlineSmall?.copyWith(
-                        color: colorScheme.onSurface,
+                        color: themeExt.resultText,
                         fontWeight: FontWeight.bold,
                         fontFeatures: const [FontFeature.tabularFigures()],
                       ),
@@ -308,8 +312,8 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Est. Returns', style: textTheme.bodySmall),
-                            Text(_currencyFormat.format(result.totalInterest), style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+                            Text('Est. Returns', style: textTheme.bodySmall?.copyWith(color: themeExt.resultText.withValues(alpha: 0.8))),
+                            Text(_currencyFormat.format(result.totalInterest), style: textTheme.titleSmall?.copyWith(color: themeExt.resultText, fontWeight: FontWeight.w600)),
                           ],
                         ),
                       ],
@@ -322,8 +326,8 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Invested Amount', style: textTheme.bodySmall),
-                            Text(_currencyFormat.format(result.totalInvestment), style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+                            Text('Invested Amount', style: textTheme.bodySmall?.copyWith(color: themeExt.resultText.withValues(alpha: 0.8))),
+                            Text(_currencyFormat.format(result.totalInvestment), style: textTheme.titleSmall?.copyWith(color: themeExt.resultText, fontWeight: FontWeight.w600)),
                           ],
                         ),
                       ],
@@ -378,9 +382,11 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen> with Single
     required UiStyle uiStyle,
     required ColorScheme colorScheme,
   }) {
+    final themeExt = Theme.of(context).extension<AppThemeExtension>()!;
     return SharedSurface(
       uiStyle: uiStyle,
-      glassRole: GlassSurfaceRole.panel,
+      glassRole: GlassSurfaceRole.card,
+      materialColor: themeExt.calculatorCard,
       isInteractive: true,
       onTap: onTap,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),

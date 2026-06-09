@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/app/theme/app_theme_extension.dart';
 
 /// Defines the core theme configurations and visual properties for the application.
 class AppTheme {
@@ -157,6 +158,16 @@ class AppTheme {
           borderRadius: BorderRadius.circular(cardRadius),
         ),
       ),
+      extensions: [
+        AppThemeExtension(
+          calculatorCard: colorScheme.surfaceContainer,
+          calculatorCardBorder: colorScheme.outlineVariant,
+          resultCard: colorScheme.primaryContainer,
+          resultText: colorScheme.onPrimaryContainer,
+          chipBackground: colorScheme.secondaryContainer,
+          chipText: colorScheme.onSecondaryContainer,
+        ),
+      ],
     );
   }
 }

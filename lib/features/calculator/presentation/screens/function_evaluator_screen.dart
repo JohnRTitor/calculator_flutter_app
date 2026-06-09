@@ -5,6 +5,7 @@ import 'package:calculator_flutter_app/features/calculator/presentation/widgets/
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/app/theme/app_theme_extension.dart';
 
 class FunctionEvaluatorScreen extends ConsumerStatefulWidget {
   const FunctionEvaluatorScreen({super.key});
@@ -44,6 +45,7 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
     final uiStyle = ref.watch(uiStyleProvider);
     final theme = Theme.of(context);
     final isGlass = uiStyle == UiStyle.liquidGlass;
+    final themeExt = theme.extension<AppThemeExtension>()!;
 
     return CustomScrollView(
       slivers: [
@@ -92,11 +94,9 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
                         return ActionChip(
                           label: Text('[$variable = $displayVal]'),
                           onPressed: _showBottomSheet,
-                          backgroundColor: isGlass
-                              ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5)
-                              : theme.colorScheme.secondaryContainer,
+                          backgroundColor: themeExt.chipBackground,
                           labelStyle: theme.textTheme.titleMedium?.copyWith(
-                            color: isGlass ? theme.colorScheme.onSurface : theme.colorScheme.onSecondaryContainer,
+                            color: themeExt.chipText,
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -114,6 +114,7 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
                 SharedSurface(
                   uiStyle: uiStyle,
                   glassRole: GlassSurfaceRole.primary,
+                  materialColor: themeExt.resultCard,
                   frosted: true,
                   borderRadius: BorderRadius.circular(24),
                   padding: const EdgeInsets.all(24),
@@ -122,9 +123,7 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
                       Text(
                         'Result',
                         style: theme.textTheme.titleMedium?.copyWith(
-                          color: isGlass 
-                              ? theme.colorScheme.onPrimary.withValues(alpha: 0.8) 
-                              : theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
+                          color: themeExt.resultText.withValues(alpha: 0.8),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -134,9 +133,7 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
                             : (state.preview.isEmpty ? '0' : state.preview),
                         style: theme.textTheme.displayMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: isGlass 
-                              ? theme.colorScheme.onPrimary 
-                              : theme.colorScheme.onPrimaryContainer,
+                          color: themeExt.resultText,
                         ),
                         textAlign: TextAlign.center,
                         maxLines: 1,
@@ -158,6 +155,8 @@ class _FunctionEvaluatorScreenState extends ConsumerState<FunctionEvaluatorScree
                       FocusScope.of(context).unfocus();
                     },
                     style: FilledButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),

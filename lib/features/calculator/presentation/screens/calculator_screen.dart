@@ -8,6 +8,7 @@ import 'package:calculator_flutter_app/features/calculator/presentation/screens/
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/app/theme/app_theme_extension.dart';
 
 /// The main screen for the calculator functionality.
 ///
@@ -102,11 +103,12 @@ class CalculatorScreen extends ConsumerWidget {
     required ThemeData theme,
     required VoidCallback onTap,
   }) {
+    final themeExt = theme.extension<AppThemeExtension>()!;
     final bgColor = isSelected
-        ? (isGlass ? glassPrimary.fillColor : theme.colorScheme.primaryContainer)
+        ? themeExt.chipBackground
         : Colors.transparent;
     final fgColor = isSelected
-        ? (isGlass ? glassPrimary.foregroundColor : theme.colorScheme.onPrimaryContainer)
+        ? themeExt.chipText
         : theme.colorScheme.onSurfaceVariant;
 
     return Material(

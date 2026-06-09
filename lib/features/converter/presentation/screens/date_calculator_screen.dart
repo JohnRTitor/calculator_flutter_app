@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/features/converter/presentation/providers/date_calculator_provider.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/app/theme/app_theme_extension.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/shared/widgets/screenshot_share_wrapper.dart';
 import 'package:intl/intl.dart';
@@ -137,11 +138,9 @@ class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
     final uiStyle = ref.watch(uiStyleProvider);
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themeExt = Theme.of(context).extension<AppThemeExtension>()!;
     
-    final cardTextColor = isDark 
-        ? (uiStyle == UiStyle.liquidGlass ? colorScheme.onPrimary : colorScheme.onPrimaryContainer)
-        : Colors.black87;
+    final cardTextColor = themeExt.resultText;
 
     final diff = state.preciseDifference;
     final isNegative = state.toDate.isBefore(state.fromDate);
@@ -231,7 +230,7 @@ class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
                   SharedSurface(
                     uiStyle: uiStyle,
                     glassRole: GlassSurfaceRole.primary,
-                    materialColor: colorScheme.primaryContainer,
+                    materialColor: themeExt.resultCard,
                     padding: const EdgeInsets.all(32),
                     borderRadius: BorderRadius.circular(32),
                     child: Column(
@@ -275,7 +274,7 @@ class _DateCalculatorScreenState extends ConsumerState<DateCalculatorScreen> {
                         ),
                         
                         const SizedBox(height: 24),
-                        const Divider(color: Colors.white24, thickness: 1),
+                        Divider(color: cardTextColor.withValues(alpha: 0.2), thickness: 1),
                         const SizedBox(height: 24),
                         
                         // Precise breakdown

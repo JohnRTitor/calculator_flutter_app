@@ -4,6 +4,7 @@ import 'package:calculator_flutter_app/features/currency/presentation/providers/
 import 'package:calculator_flutter_app/features/currency/presentation/widgets/utilities_keypad.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/app/theme/app_theme_extension.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/shared/widgets/screenshot_share_wrapper.dart';
 import 'package:calculator_flutter_app/shared/layouts/responsive_keypad_layout.dart';
@@ -27,11 +28,9 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
     final uiStyle = ref.watch(uiStyleProvider);
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themeExt = Theme.of(context).extension<AppThemeExtension>()!;
     
-    final cardTextColor = isDark 
-        ? (uiStyle == UiStyle.liquidGlass ? colorScheme.onPrimary : colorScheme.onPrimaryContainer)
-        : Colors.black87;
+    final cardTextColor = themeExt.resultText;
 
     final result = state.result;
 
@@ -76,7 +75,7 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
                   SharedSurface(
                     uiStyle: uiStyle,
                     glassRole: GlassSurfaceRole.primary,
-                    materialColor: colorScheme.primaryContainer,
+                    materialColor: themeExt.resultCard,
                     padding: const EdgeInsets.all(24),
                     borderRadius: BorderRadius.circular(24),
                     child: Column(
@@ -97,28 +96,26 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        const Divider(color: Colors.white24, thickness: 1),
+                        Divider(color: cardTextColor.withValues(alpha: 0.2), thickness: 1),
                         const SizedBox(height: 16),
                         Row(
                           children: [
                             Expanded(
-                              child: _buildSummaryItem(
-                                'Total Interest',
-                                _currencyFormat.format(result.totalInterest),
-                                uiStyle,
-                                colorScheme,
-                                textTheme,
-                              ),
+                                child: _buildSummaryItem(
+                                  context: context,
+                                  label: 'Total Interest',
+                                  value: _currencyFormat.format(result.totalInterest),
+                                  textTheme: textTheme,
+                                ),
                             ),
-                            Container(width: 1, height: 40, color: Colors.white24),
+                            Container(width: 1, height: 40, color: cardTextColor.withValues(alpha: 0.2)),
                             Expanded(
-                              child: _buildSummaryItem(
-                                'Total Payment',
-                                _currencyFormat.format(result.totalPayment),
-                                uiStyle,
-                                colorScheme,
-                                textTheme,
-                              ),
+                                child: _buildSummaryItem(
+                                  context: context,
+                                  label: 'Total Payment',
+                                  value: _currencyFormat.format(result.totalPayment),
+                                  textTheme: textTheme,
+                                ),
                             ),
                           ],
                         ),
@@ -177,11 +174,9 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
     );
   }
 
-  Widget _buildSummaryItem(String label, String value, UiStyle uiStyle, ColorScheme colorScheme, TextTheme textTheme) {
-    final isDark = colorScheme.brightness == Brightness.dark;
-    final textColor = isDark 
-        ? (uiStyle == UiStyle.liquidGlass ? colorScheme.onPrimary : colorScheme.onPrimaryContainer)
-        : Colors.black87;
+  Widget _buildSummaryItem({required BuildContext context, required String label, required String value, required TextTheme textTheme}) {
+    final themeExt = Theme.of(context).extension<AppThemeExtension>()!;
+    final textColor = themeExt.resultText;
     return Column(
       children: [
         Text(
@@ -214,9 +209,11 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
     required UiStyle uiStyle,
     required ColorScheme colorScheme,
   }) {
+    final themeExt = Theme.of(context).extension<AppThemeExtension>()!;
     return SharedSurface(
       uiStyle: uiStyle,
       glassRole: GlassSurfaceRole.card,
+      materialColor: themeExt.calculatorCard,
       isInteractive: true,
       onTap: onTap,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -270,9 +267,11 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
   }) {
     final isActive = state.activeInput == 'tenure';
     
+    final themeExt = Theme.of(context).extension<AppThemeExtension>()!;
     return SharedSurface(
       uiStyle: uiStyle,
       glassRole: GlassSurfaceRole.card,
+      materialColor: themeExt.calculatorCard,
       isInteractive: true,
       onTap: () => notifier.setActiveInput('tenure'),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -336,13 +335,14 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
     required UiStyle uiStyle,
     required ColorScheme colorScheme,
   }) {
+    final themeExt = Theme.of(context).extension<AppThemeExtension>()!;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: isSelected 
-              ? (uiStyle == UiStyle.liquidGlass ? colorScheme.primary : colorScheme.primaryContainer)
+              ? themeExt.chipBackground
               : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
@@ -350,7 +350,7 @@ class _LoanCalculatorScreenState extends ConsumerState<LoanCalculatorScreen> {
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
             color: isSelected 
-                ? (uiStyle == UiStyle.liquidGlass ? colorScheme.onPrimary : colorScheme.onPrimaryContainer)
+                ? themeExt.chipText
                 : colorScheme.onSurfaceVariant,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
           ),
