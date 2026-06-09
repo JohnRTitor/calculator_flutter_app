@@ -53,73 +53,87 @@ class DisplayPanel extends ConsumerWidget {
         ),
         const SizedBox(height: 8),
 
-        // Error or Preview
-        if (state.error != null)
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
+        // Bottom Area: Error, Preview, or Main Result
+        SizedBox(
+          height: 64,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
             transitionBuilder: slideFadeTransition,
-            child: Text(
-              state.error!,
-              key: ValueKey('error_${state.error}'),
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.error,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          )
-        else if (!state.showResult && state.preview.isNotEmpty)
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            transitionBuilder: slideFadeTransition,
-            child: Text(
-              '= ${state.preview}',
-              key: ValueKey('preview_${state.preview}'),
-              style: theme.textTheme.headlineSmall?.copyWith(
-                color: colorScheme.primary.withValues(alpha: 0.7),
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-
-        // Main Result
-        if (state.showResult)
-          GestureDetector(
-            onLongPress: () {
-              Clipboard.setData(ClipboardData(text: state.result));
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text('Result copied'),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  duration: const Duration(milliseconds: 1500),
-                ),
+            layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
+              return Stack(
+                alignment: Alignment.bottomRight,
+                children: <Widget>[
+                  ...previousChildren,
+                  ?currentChild,
+                ],
               );
             },
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              reverse: true,
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: slideFadeTransition,
-                child: Text(
-                  state.displayAsFraction && state.exactResult != null
-                      ? state.exactResult!
-                      : (state.result.isEmpty ? '0' : state.result),
-                  key: ValueKey('result_${state.result}_${state.exactResult}'),
-                  style: theme.textTheme.displayLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: colorScheme.onSurface,
-                    fontSize: 48,
+            child: () {
+              if (state.error != null) {
+                return Text(
+                  state.error!,
+                  key: ValueKey('error_${state.error}'),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.error,
                   ),
-                ),
-              ),
-            ),
-          )
-        else
-          const SizedBox(height: 8),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                );
+              } else if (!state.showResult && state.preview.isNotEmpty) {
+                return Container(
+                  key: ValueKey('preview_${state.preview}'),
+                  height: 64,
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    '= ${state.preview}',
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      color: colorScheme.primary.withValues(alpha: 0.7),
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                );
+              } else if (state.showResult) {
+                return GestureDetector(
+                  key: const ValueKey('main_result_container'),
+                  onLongPress: () {
+                    Clipboard.setData(ClipboardData(text: state.result));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Result copied'),
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        duration: const Duration(milliseconds: 1500),
+                      ),
+                    );
+                  },
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    reverse: true,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      transitionBuilder: slideFadeTransition,
+                      child: Text(
+                        state.displayAsFraction && state.exactResult != null
+                            ? state.exactResult!
+                            : (state.result.isEmpty ? '0' : state.result),
+                        key: ValueKey('result_${state.result}_${state.exactResult}'),
+                        style: theme.textTheme.displayLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurface,
+                          fontSize: 48,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              } else {
+                return const SizedBox.shrink(key: ValueKey('empty_result'));
+              }
+            }(),
+          ),
+        ),
       ],
     );
 
