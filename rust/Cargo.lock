@@ -574,8 +574,11 @@ name = "rust_lib_calculator_flutter_app"
 version = "0.1.0"
 dependencies = [
  "flutter_rust_bridge",
+ "js-sys",
  "serde",
  "serde_json",
+ "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]
