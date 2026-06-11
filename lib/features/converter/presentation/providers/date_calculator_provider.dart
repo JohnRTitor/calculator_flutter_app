@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:calculator_flutter_app/generated/rust/bridge/converter.dart';
+import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 class DateCalculatorState {
   final DateTime fromDate;
@@ -26,8 +27,8 @@ class DateCalculatorState {
   /// calculated using the Rust backend.
   DateDiffResult get preciseDifference {
     return calculateDateDifference(
-      startTimestampMs: fromDate.millisecondsSinceEpoch,
-      endTimestampMs: toDate.millisecondsSinceEpoch,
+      startTimestampMs: PlatformInt64Util.from(fromDate.millisecondsSinceEpoch),
+      endTimestampMs: PlatformInt64Util.from(toDate.millisecondsSinceEpoch),
     );
   }
 }
