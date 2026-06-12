@@ -1,2 +1,2 @@
-pub mod history;
 pub mod error;
+pub mod history;

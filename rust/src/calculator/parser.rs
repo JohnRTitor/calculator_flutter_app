@@ -92,13 +92,15 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, CalcError> {
             'e' if tokens.is_empty()
                 || matches!(
                     tokens.last(),
-                    Some(Token::Plus
-                        | Token::Minus
-                        | Token::Multiply
-                        | Token::Divide
-                        | Token::Modulo
-                        | Token::Power
-                        | Token::LParen)
+                    Some(
+                        Token::Plus
+                            | Token::Minus
+                            | Token::Multiply
+                            | Token::Divide
+                            | Token::Modulo
+                            | Token::Power
+                            | Token::LParen
+                    )
                 ) =>
             {
                 // simple 'e' constant vs exponential notation (handled in number parsing)

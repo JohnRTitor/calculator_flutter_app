@@ -8,18 +8,22 @@ use std::collections::HashSet;
 
 pub use basic_evaluator::BasicEvaluator;
 pub use function_evaluator::FunctionEvaluator;
-use num_traits::{Zero, One};
+use num_traits::{One, Zero};
 
 /// Defines the capabilities of an evaluator, specifically how it resolves variables.
 pub trait Evaluator {
     /// Resolves a variable name to its value.
     fn resolve_variable(&self, name: &str) -> Result<CalcValue, CalcError>;
-    
+
     /// Whether trigonometric functions use degrees. Default: false (radians).
-    fn is_degree(&self) -> bool { false }
-    
+    fn is_degree(&self) -> bool {
+        false
+    }
+
     /// The previous answer value. Default: 0.0.
-    fn ans_value(&self) -> f64 { 0.0 }
+    fn ans_value(&self) -> f64 {
+        0.0
+    }
 }
 
 /// Evaluates an Abstract Syntax Tree (AST) expression and returns its computed value.
@@ -32,10 +36,7 @@ pub trait Evaluator {
 /// * `evaluator` - The evaluation context (Basic or Function mode).
 /// * `is_degree` - If true, trigonometric functions will interpret their inputs/outputs as degrees instead of radians.
 /// * `ans_value` - The result of the previous calculation, used when the `Ans` token is encountered.
-pub fn evaluate_expr(
-    expr: &Expr,
-    evaluator: &dyn Evaluator,
-) -> Result<CalcValue, CalcError> {
+pub fn evaluate_expr(expr: &Expr, evaluator: &dyn Evaluator) -> Result<CalcValue, CalcError> {
     let is_degree = evaluator.is_degree();
     let ans_value = evaluator.ans_value();
     match expr {
@@ -59,12 +60,9 @@ pub fn evaluate_expr(
             }
         }
         Expr::Variable(name) => evaluator.resolve_variable(name),
-        Expr::Add(l, r) => Ok(evaluate_expr(l, evaluator)?
-            .add(evaluate_expr(r, evaluator)?)),
-        Expr::Subtract(l, r) => Ok(evaluate_expr(l, evaluator)?
-            .sub(evaluate_expr(r, evaluator)?)),
-        Expr::Multiply(l, r) => Ok(evaluate_expr(l, evaluator)?
-            .mul(evaluate_expr(r, evaluator)?)),
+        Expr::Add(l, r) => Ok(evaluate_expr(l, evaluator)?.add(evaluate_expr(r, evaluator)?)),
+        Expr::Subtract(l, r) => Ok(evaluate_expr(l, evaluator)?.sub(evaluate_expr(r, evaluator)?)),
+        Expr::Multiply(l, r) => Ok(evaluate_expr(l, evaluator)?.mul(evaluate_expr(r, evaluator)?)),
         Expr::Divide(l, r) => evaluate_expr(l, evaluator)?
             .div(evaluate_expr(r, evaluator)?)
             .map_err(|_| CalcError::DivisionByZero),
@@ -75,20 +73,35 @@ pub fn evaluate_expr(
                 let exp = evaluate_expr(exp_expr, evaluator)?;
                 let modulus = evaluate_expr(r, evaluator)?;
 
-                if let (CalcValue::Rational(b), CalcValue::Rational(e), CalcValue::Rational(m)) = (&base, &exp, &modulus) {
-                    if b.is_integer() && e.is_integer() && m.is_integer() && m.numer() > &num_bigint::BigInt::zero() {
+                if let (CalcValue::Rational(b), CalcValue::Rational(e), CalcValue::Rational(m)) =
+                    (&base, &exp, &modulus)
+                {
+                    if b.is_integer()
+                        && e.is_integer()
+                        && m.is_integer()
+                        && m.numer() > &num_bigint::BigInt::zero()
+                    {
                         use num_traits::ToPrimitive;
-                        if let (Some(b_i128), Some(e_i128), Some(m_i128)) = (b.numer().to_i128(), e.numer().to_i128(), m.numer().to_i128()) {
+                        if let (Some(b_i128), Some(e_i128), Some(m_i128)) = (
+                            b.numer().to_i128(),
+                            e.numer().to_i128(),
+                            m.numer().to_i128(),
+                        ) {
                             // Use modular arithmetic engine
-                            if let Ok(res) = crate::modular_math::mod_arith::mod_pow(b_i128, e_i128, m_i128) {
+                            if let Ok(res) = crate::modular_arithmetic::mod_arith::mod_pow(
+                                b_i128, e_i128, m_i128,
+                            ) {
                                 return Ok(CalcValue::from_i128(res, 1));
                             }
                         }
                     }
                 }
-                
+
                 // Fallback to regular evaluation if not exact integers or modulus is negative/zero
-                return base.pow(exp).modulo(modulus).map_err(|_| CalcError::DivisionByZero);
+                return base
+                    .pow(exp)
+                    .modulo(modulus)
+                    .map_err(|_| CalcError::DivisionByZero);
             }
 
             evaluate_expr(l, evaluator)?
@@ -111,16 +124,20 @@ pub fn evaluate_expr(
                     // Arbitrary limit to prevent DOS from user putting 99999999999!
                     use num_traits::ToPrimitive;
                     if n.to_u32().unwrap_or(u32::MAX) > 10000 {
-                         return Err(CalcError::Overflow);
+                        return Err(CalcError::Overflow);
                     }
                     while &i <= n {
                         result *= &i;
                         i += num_bigint::BigInt::one();
                     }
-                    return Ok(CalcValue::Rational(num_rational::BigRational::from_integer(result)));
+                    return Ok(CalcValue::Rational(
+                        num_rational::BigRational::from_integer(result),
+                    ));
                 }
             }
-            return Err(CalcError::DomainError("Factorial requires positive integer".to_string()));
+            return Err(CalcError::DomainError(
+                "Factorial requires positive integer".to_string(),
+            ));
         }
         Expr::Percentage(e) => {
             let val = evaluate_expr(e, evaluator)?;
@@ -204,24 +221,16 @@ pub fn evaluate_expr(
             }))
         }
         Expr::Sinh(e) => Ok(CalcValue::from_f64(
-            evaluate_expr(e, evaluator)?
-                .to_float()
-                .sinh(),
+            evaluate_expr(e, evaluator)?.to_float().sinh(),
         )),
         Expr::Cosh(e) => Ok(CalcValue::from_f64(
-            evaluate_expr(e, evaluator)?
-                .to_float()
-                .cosh(),
+            evaluate_expr(e, evaluator)?.to_float().cosh(),
         )),
         Expr::Tanh(e) => Ok(CalcValue::from_f64(
-            evaluate_expr(e, evaluator)?
-                .to_float()
-                .tanh(),
+            evaluate_expr(e, evaluator)?.to_float().tanh(),
         )),
         Expr::Asinh(e) => Ok(CalcValue::from_f64(
-            evaluate_expr(e, evaluator)?
-                .to_float()
-                .asinh(),
+            evaluate_expr(e, evaluator)?.to_float().asinh(),
         )),
         Expr::Acosh(e) => {
             let val = evaluate_expr(e, evaluator)?.to_float();

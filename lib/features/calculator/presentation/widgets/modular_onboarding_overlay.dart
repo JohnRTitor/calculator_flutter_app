@@ -38,7 +38,8 @@ class ModularOnboardingOverlay extends StatefulWidget {
   }
 
   @override
-  State<ModularOnboardingOverlay> createState() => _ModularOnboardingOverlayState();
+  State<ModularOnboardingOverlay> createState() =>
+      _ModularOnboardingOverlayState();
 }
 
 class _ModularOnboardingOverlayState extends State<ModularOnboardingOverlay> {
@@ -47,22 +48,26 @@ class _ModularOnboardingOverlayState extends State<ModularOnboardingOverlay> {
   final List<Map<String, dynamic>> _steps = [
     {
       'title': 'Welcome to the Abstract Algebra Workstation',
-      'desc': 'A powerful tool for modular arithmetic, number theory, and finite fields.',
+      'desc':
+          'A powerful tool for modular arithmetic, number theory, and finite fields.',
       'icon': Icons.calculate_outlined,
     },
     {
       'title': 'Dual Tabs',
-      'desc': 'Use the Evaluator tab for arithmetic and equations (e.g., powmod, crt). Use the Structure Explorer tab to analyze rings and groups.',
+      'desc':
+          'Use the Evaluator tab for arithmetic and equations (e.g., powmod, crt). Use the Structure Explorer tab to analyze rings and groups.',
       'icon': Icons.tab,
     },
     {
       'title': 'Educational Mode',
-      'desc': 'Turn on Educational Mode in Settings to see step-by-step proofs for operations like Extended GCD and Discrete Logarithm.',
+      'desc':
+          'Turn on Educational Mode in Settings to see step-by-step proofs for operations like Extended GCD and Discrete Logarithm.',
       'icon': Icons.school_outlined,
     },
     {
       'title': 'Need Help?',
-      'desc': 'Tap the (?) icon in the top right at any time to see the list of supported operations and examples.',
+      'desc':
+          'Tap the (?) icon in the top right at any time to see the list of supported operations and examples.',
       'icon': Icons.help_outline,
     },
   ];
@@ -133,7 +138,9 @@ class _ModularOnboardingOverlayState extends State<ModularOnboardingOverlay> {
                 ),
                 FilledButton(
                   onPressed: _next,
-                  child: Text(_currentIndex == _steps.length - 1 ? 'Get Started' : 'Next'),
+                  child: Text(
+                    _currentIndex == _steps.length - 1 ? 'Get Started' : 'Next',
+                  ),
                 ),
               ],
             ),

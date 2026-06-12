@@ -24,7 +24,7 @@ class EducationalModeNotifier extends _$EducationalModeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('educational_mode', isEnabled);
   }
-  
+
   /// Toggles the educational mode.
   Future<void> toggle() async {
     await setEducationalMode(!state);

@@ -7,21 +7,27 @@ pub struct ParseResult {
 
 pub fn parse_structure_input(input: &str, expected_type: &str) -> Result<ParseResult, String> {
     let clean = input.replace(" ", "").to_lowercase();
-    
+
     // Check for extension field syntax like GF(2^8)
     if expected_type == "field" && clean.contains('^') {
         let parts: Vec<&str> = clean.split('^').collect();
         if parts.len() == 2 {
-            let base_str = parts[0].chars().filter(|c| c.is_ascii_digit()).collect::<String>();
-            let exp_str = parts[1].chars().filter(|c| c.is_ascii_digit()).collect::<String>();
-            
+            let base_str = parts[0]
+                .chars()
+                .filter(|c| c.is_ascii_digit())
+                .collect::<String>();
+            let exp_str = parts[1]
+                .chars()
+                .filter(|c| c.is_ascii_digit())
+                .collect::<String>();
+
             if let (Ok(b), Ok(e)) = (base_str.parse::<u32>(), exp_str.parse::<u32>()) {
                 let p = b as i128;
                 let modulus = p.pow(e);
                 let canonical = format!("GF({}^{})", b, e);
-                
-                // Even though extension fields aren't fully supported by analyze_structure, 
-                // we parse them and return the canonical name. 
+
+                // Even though extension fields aren't fully supported by analyze_structure,
+                // we parse them and return the canonical name.
                 // The math validator will handle the error later.
                 return Ok(ParseResult {
                     modulus,
@@ -39,10 +45,15 @@ pub fn parse_structure_input(input: &str, expected_type: &str) -> Result<ParseRe
         return Err("No numeric modulus found in input.".to_string());
     }
 
-    let modulus = digits.parse::<i128>().map_err(|_| "Modulus is too large.".to_string())?;
+    let modulus = digits
+        .parse::<i128>()
+        .map_err(|_| "Modulus is too large.".to_string())?;
 
     // Determine implied type based on syntax
-    let is_group_syntax = clean.contains('*') || clean.contains('u') || clean.contains("^*") || clean.contains(" units");
+    let is_group_syntax = clean.contains('*')
+        || clean.contains('u')
+        || clean.contains("^*")
+        || clean.contains(" units");
     let is_field_syntax = clean.contains('f') || clean.contains("gf");
     let is_ring_syntax = clean.contains('z') && !is_group_syntax;
     let is_raw_number = clean == digits;

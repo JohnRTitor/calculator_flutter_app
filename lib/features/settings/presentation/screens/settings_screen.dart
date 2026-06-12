@@ -145,7 +145,8 @@ class SettingsScreen extends ConsumerWidget {
                     const SizedBox(height: 8),
                     _SettingsSwitchCard(
                       label: 'Educational Mode',
-                      description: 'Show step-by-step explanations in Modular workspace',
+                      description:
+                          'Show step-by-step explanations in Modular workspace',
                       icon: Icons.school_outlined,
                       value: isEducationalMode,
                       uiStyle: uiStyle,
@@ -237,8 +238,6 @@ class _SectionHeader extends StatelessWidget {
     );
   }
 }
-
-
 
 // ── Colors Selector ──
 class _ColorsSelector extends StatelessWidget {
@@ -583,8 +582,9 @@ class _SettingsOptionCard extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 11,
-                color: (isSelected ? selectedColor : colorScheme.onSurfaceVariant)
-                    .withValues(alpha: 0.7),
+                color:
+                    (isSelected ? selectedColor : colorScheme.onSurfaceVariant)
+                        .withValues(alpha: 0.7),
               ),
             ),
           ],
@@ -654,11 +654,7 @@ class _SettingsSwitchCard extends StatelessWidget {
           color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
         ),
       ),
-      secondary: Icon(
-        icon,
-        color: colorScheme.primary,
-        size: 28,
-      ),
+      secondary: Icon(icon, color: colorScheme.primary, size: 28),
       activeThumbColor: colorScheme.onPrimary,
       activeTrackColor: colorScheme.primary,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

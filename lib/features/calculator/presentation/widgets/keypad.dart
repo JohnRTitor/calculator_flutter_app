@@ -281,7 +281,8 @@ class Keypad extends ConsumerWidget {
                         ref,
                         'MOD',
                         ButtonType.scientific,
-                        () => ref.read(calculatorProvider.notifier).append('mod'),
+                        () =>
+                            ref.read(calculatorProvider.notifier).append('mod'),
                         tooltip: 'Remainder after division',
                         uiStyle: uiStyle,
                         onLongPress: () {

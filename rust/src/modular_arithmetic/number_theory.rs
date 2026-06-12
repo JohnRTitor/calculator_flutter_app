@@ -1,4 +1,4 @@
-use crate::modular_math::error::ModError;
+use crate::modular_arithmetic::error::ModError;
 
 /// Computes the greatest common divisor of `a` and `b`.
 pub fn gcd(mut a: i128, mut b: i128) -> i128 {
@@ -60,36 +60,42 @@ pub fn crt(remainders: &[(i128, i128)]) -> Result<(i128, i128), ModError> {
 
     let mut current_remainder = remainders[0].0;
     let mut current_modulus = remainders[0].1;
-    
+
     // Normalize first equation
-    current_remainder = crate::modular_math::mod_arith::mod_reduce(current_remainder, current_modulus);
+    current_remainder =
+        crate::modular_arithmetic::mod_arith::mod_reduce(current_remainder, current_modulus);
 
     for &(mut rem, modl) in &remainders[1..] {
         if modl <= 0 {
-            return Err(ModError::InvalidModulus("Modulus must be positive".to_string()));
+            return Err(ModError::InvalidModulus(
+                "Modulus must be positive".to_string(),
+            ));
         }
-        
-        rem = crate::modular_math::mod_arith::mod_reduce(rem, modl);
-        
+
+        rem = crate::modular_arithmetic::mod_arith::mod_reduce(rem, modl);
+
         let (g, m1, _m2) = extended_gcd(current_modulus, modl);
-        
+
         if (rem - current_remainder) % g != 0 {
-            return Err(ModError::InconsistentCRT("System has no solution".to_string()));
+            return Err(ModError::InconsistentCRT(
+                "System has no solution".to_string(),
+            ));
         }
-        
+
         // current_modulus / g and modl / g are coprime
         let lcm = (current_modulus / g) * modl;
-        
+
         let diff = (rem - current_remainder) / g;
-        
+
         // Calculate diff * m1 * (current_modulus) + current_remainder
-        let step = crate::modular_math::mod_arith::mod_mul(
-            crate::modular_math::mod_arith::mod_mul(diff, m1, lcm), 
-            current_modulus, 
-            lcm
+        let step = crate::modular_arithmetic::mod_arith::mod_mul(
+            crate::modular_arithmetic::mod_arith::mod_mul(diff, m1, lcm),
+            current_modulus,
+            lcm,
         );
-        
-        current_remainder = crate::modular_math::mod_arith::mod_add(current_remainder, step, lcm);
+
+        current_remainder =
+            crate::modular_arithmetic::mod_arith::mod_add(current_remainder, step, lcm);
         current_modulus = lcm;
     }
 

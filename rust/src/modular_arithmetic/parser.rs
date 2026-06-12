@@ -1,4 +1,4 @@
-use crate::modular_math::error::ModError;
+use crate::modular_arithmetic::error::ModError;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ModToken {
@@ -88,7 +88,9 @@ pub fn tokenize(input: &str) -> Result<Vec<ModToken>, ModError> {
                 num_str.push(chars[i]);
                 i += 1;
             }
-            let num = num_str.parse::<i128>().map_err(|_| ModError::InvalidExpression(format!("Invalid number: {}", num_str)))?;
+            let num = num_str
+                .parse::<i128>()
+                .map_err(|_| ModError::InvalidExpression(format!("Invalid number: {}", num_str)))?;
             tokens.push(ModToken::Number(num));
             continue;
         }
@@ -99,7 +101,7 @@ pub fn tokenize(input: &str) -> Result<Vec<ModToken>, ModError> {
                 ident.push(chars[i].to_ascii_lowercase());
                 i += 1;
             }
-            
+
             match ident.as_str() {
                 "mod" => tokens.push(ModToken::Mod),
                 "powmod" => tokens.push(ModToken::PowMod),
@@ -124,7 +126,12 @@ pub fn tokenize(input: &str) -> Result<Vec<ModToken>, ModError> {
                 "analyze" => tokens.push(ModToken::Analyze),
                 "cayley_add" => tokens.push(ModToken::CayleyAdd),
                 "cayley_mul" => tokens.push(ModToken::CayleyMul),
-                _ => return Err(ModError::InvalidExpression(format!("Unknown function or operator: {}", ident))),
+                _ => {
+                    return Err(ModError::InvalidExpression(format!(
+                        "Unknown function or operator: {}",
+                        ident
+                    )));
+                }
             }
             continue;
         }
@@ -138,7 +145,12 @@ pub fn tokenize(input: &str) -> Result<Vec<ModToken>, ModError> {
             ',' => tokens.push(ModToken::Comma),
             '(' => tokens.push(ModToken::LParen),
             ')' => tokens.push(ModToken::RParen),
-            _ => return Err(ModError::InvalidExpression(format!("Unexpected character: {}", c))),
+            _ => {
+                return Err(ModError::InvalidExpression(format!(
+                    "Unexpected character: {}",
+                    c
+                )));
+            }
         }
         i += 1;
     }
@@ -150,7 +162,9 @@ pub fn parse(tokens: &[ModToken]) -> Result<ModExpr, ModError> {
     let mut pos = 0;
     let expr = parse_expression(tokens, &mut pos)?;
     if pos < tokens.len() {
-        return Err(ModError::InvalidExpression("Unexpected tokens at the end".to_string()));
+        return Err(ModError::InvalidExpression(
+            "Unexpected tokens at the end".to_string(),
+        ));
     }
     Ok(expr)
 }
@@ -232,7 +246,9 @@ fn parse_unary(tokens: &[ModToken], pos: &mut usize) -> Result<ModExpr, ModError
 
 fn parse_primary(tokens: &[ModToken], pos: &mut usize) -> Result<ModExpr, ModError> {
     if *pos >= tokens.len() {
-        return Err(ModError::InvalidExpression("Unexpected end of expression".to_string()));
+        return Err(ModError::InvalidExpression(
+            "Unexpected end of expression".to_string(),
+        ));
     }
 
     match &tokens[*pos] {
@@ -291,7 +307,7 @@ fn parse_primary(tokens: &[ModToken], pos: &mut usize) -> Result<ModExpr, ModErr
             *pos += 1;
             expect_token(tokens, pos, ModToken::LParen)?;
             let mut pairs = Vec::new();
-            
+
             loop {
                 let rem = parse_expression(tokens, pos)?;
                 // Allow "mod" or comma as separator between rem and mod
@@ -302,23 +318,30 @@ fn parse_primary(tokens: &[ModToken], pos: &mut usize) -> Result<ModExpr, ModErr
                     expect_token(tokens, pos, ModToken::Comma)?;
                     false
                 };
-                
+
                 let m = parse_expression(tokens, pos)?;
                 pairs.push((Box::new(rem), Box::new(m)));
-                
+
                 if *pos < tokens.len() && tokens[*pos] == ModToken::Comma {
                     *pos += 1;
                 } else {
                     break;
                 }
             }
-            
+
             expect_token(tokens, pos, ModToken::RParen)?;
             Ok(ModExpr::Crt(pairs))
         }
-        ModToken::Totient | ModToken::PrimitiveRoots | ModToken::Units | ModToken::ZeroDivisors | 
-        ModToken::Idempotents | ModToken::Nilpotents | ModToken::QuadraticResidues | ModToken::Analyze | 
-        ModToken::CayleyAdd | ModToken::CayleyMul => {
+        ModToken::Totient
+        | ModToken::PrimitiveRoots
+        | ModToken::Units
+        | ModToken::ZeroDivisors
+        | ModToken::Idempotents
+        | ModToken::Nilpotents
+        | ModToken::QuadraticResidues
+        | ModToken::Analyze
+        | ModToken::CayleyAdd
+        | ModToken::CayleyMul => {
             let token = tokens[*pos].clone();
             *pos += 1;
             expect_token(tokens, pos, ModToken::LParen)?;
@@ -338,7 +361,11 @@ fn parse_primary(tokens: &[ModToken], pos: &mut usize) -> Result<ModExpr, ModErr
                 _ => unreachable!(),
             }
         }
-        ModToken::Order | ModToken::AdditiveInverse | ModToken::Legendre | ModToken::Jacobi | ModToken::SqrtMod => {
+        ModToken::Order
+        | ModToken::AdditiveInverse
+        | ModToken::Legendre
+        | ModToken::Jacobi
+        | ModToken::SqrtMod => {
             let token = tokens[*pos].clone();
             *pos += 1;
             expect_token(tokens, pos, ModToken::LParen)?;
@@ -366,23 +393,38 @@ fn parse_primary(tokens: &[ModToken], pos: &mut usize) -> Result<ModExpr, ModErr
             let c = parse_expression(tokens, pos)?;
             expect_token(tokens, pos, ModToken::RParen)?;
             match token {
-                ModToken::SolveCongruence => Ok(ModExpr::SolveCongruence(Box::new(a), Box::new(b), Box::new(c))),
-                ModToken::DiscreteLog => Ok(ModExpr::DiscreteLog(Box::new(a), Box::new(b), Box::new(c))),
+                ModToken::SolveCongruence => Ok(ModExpr::SolveCongruence(
+                    Box::new(a),
+                    Box::new(b),
+                    Box::new(c),
+                )),
+                ModToken::DiscreteLog => {
+                    Ok(ModExpr::DiscreteLog(Box::new(a), Box::new(b), Box::new(c)))
+                }
                 _ => unreachable!(),
             }
         }
-        _ => Err(ModError::InvalidExpression(format!("Unexpected token: {:?}", tokens[*pos]))),
+        _ => Err(ModError::InvalidExpression(format!(
+            "Unexpected token: {:?}",
+            tokens[*pos]
+        ))),
     }
 }
 
 fn expect_token(tokens: &[ModToken], pos: &mut usize, expected: ModToken) -> Result<(), ModError> {
     if *pos >= tokens.len() {
-        return Err(ModError::InvalidExpression(format!("Expected {:?}, found end of expression", expected)));
+        return Err(ModError::InvalidExpression(format!(
+            "Expected {:?}, found end of expression",
+            expected
+        )));
     }
     if tokens[*pos] == expected {
         *pos += 1;
         Ok(())
     } else {
-        Err(ModError::InvalidExpression(format!("Expected {:?}, found {:?}", expected, tokens[*pos])))
+        Err(ModError::InvalidExpression(format!(
+            "Expected {:?}, found {:?}",
+            expected, tokens[*pos]
+        )))
     }
 }

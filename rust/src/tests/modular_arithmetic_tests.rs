@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use crate::bridge::modular_math::analyze_structure;
+    use crate::bridge::modular_arithmetic::analyze_structure;
 
     #[test]
     fn test_ring_classification() {
@@ -10,7 +10,13 @@ mod tests {
         assert_eq!(analysis.order, "|Z_12| = 12");
         assert_eq!(analysis.is_cyclic, true);
         assert!(analysis.units.as_ref().unwrap().contains("1, 5, 7, 11"));
-        assert!(analysis.zero_divisors.as_ref().unwrap().contains("2, 3, 4, 6, 8, 9, 10"));
+        assert!(
+            analysis
+                .zero_divisors
+                .as_ref()
+                .unwrap()
+                .contains("2, 3, 4, 6, 8, 9, 10")
+        );
         assert!(analysis.idempotents.as_ref().unwrap().contains("4, 9"));
         assert!(analysis.nilpotents.as_ref().unwrap().contains("6"));
     }
@@ -19,8 +25,8 @@ mod tests {
     fn test_group_classification() {
         let res = analyze_structure("group".to_string(), "10".to_string()).unwrap();
         let analysis = res.analysis.unwrap();
-        assert_eq!(analysis.label, "Z_10*");
-        assert_eq!(analysis.order, "|Z_10*| = φ(10) = 4");
+        assert_eq!(analysis.label, "U(10)");
+        assert_eq!(analysis.order, "|U(10)| = φ(10) = 4");
         assert_eq!(analysis.is_cyclic, true);
         assert!(analysis.generators.as_ref().unwrap().contains("3, 7"));
     }

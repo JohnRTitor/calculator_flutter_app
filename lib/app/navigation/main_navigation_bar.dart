@@ -86,7 +86,6 @@ class _MainScreenState extends ConsumerState<MainScreen>
     TextTheme textTheme,
     UiStyle uiStyle,
   ) {
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: SizedBox(
@@ -143,7 +142,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
   void _showAboutDialog(BuildContext context, UiStyle uiStyle) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+
     showAppDialog(
       context: context,
       title: 'About',
@@ -171,7 +170,9 @@ class _MainScreenState extends ConsumerState<MainScreen>
       ),
       primaryButtonText: 'View Source Code',
       onPrimaryButtonPressed: () async {
-        final url = Uri.parse('https://github.com/JohnRTitor/calculator_flutter_app');
+        final url = Uri.parse(
+          'https://github.com/JohnRTitor/calculator_flutter_app',
+        );
         if (await canLaunchUrl(url)) {
           await launchUrl(url);
         }

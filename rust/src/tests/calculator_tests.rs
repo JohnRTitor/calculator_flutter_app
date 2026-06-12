@@ -65,10 +65,13 @@ fn test_large_integers() {
     } else {
         panic!("Expected Rational");
     }
-    
+
     let result2 = evaluate_core("50!", false, 0.0).unwrap();
     if let crate::calculator::rational::CalcValue::Rational(r) = result2 {
-        assert_eq!(r.numer().to_string(), "30414093201713378043612608166064768844377641568960512000000000000");
+        assert_eq!(
+            r.numer().to_string(),
+            "30414093201713378043612608166064768844377641568960512000000000000"
+        );
     } else {
         panic!("Expected Rational for Factorial");
     }

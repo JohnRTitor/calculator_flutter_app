@@ -1,11 +1,11 @@
+pub mod cayley;
 pub mod error;
+pub mod evaluator;
+pub mod galois;
 pub mod mod_arith;
 pub mod number_theory;
 pub mod number_theory_ext;
-pub mod ring_analysis;
-pub mod quadratic;
-pub mod cayley;
-pub mod galois;
 pub mod parser;
-pub mod evaluator;
+pub mod quadratic;
+pub mod ring_analysis;
 pub mod structure_parser;

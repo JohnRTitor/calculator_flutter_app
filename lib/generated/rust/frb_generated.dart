@@ -6,7 +6,7 @@
 import 'bridge/calculator.dart';
 import 'bridge/converter.dart';
 import 'bridge/currency.dart';
-import 'bridge/modular_math.dart';
+import 'bridge/modular_arithmetic.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.dart';
@@ -68,7 +68,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => -672477624;
+  int get rustContentHash => -267255599;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -80,7 +80,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
-  StructureAnalysisResponse crateBridgeModularMathAnalyzeStructure({
+  StructureAnalysisResponse crateBridgeModularArithmeticAnalyzeStructure({
     required String structureType,
     required String n,
   });
@@ -201,27 +201,33 @@ abstract class RustLibApi extends BaseApi {
 
   void crateBridgeCalculatorMemorySubtract({required double value});
 
-  ModularResult crateBridgeModularMathModularEvaluate({
+  ModularResult crateBridgeModularArithmeticModularEvaluate({
     required String expression,
     String? contextModulus,
     required String mode,
     required bool showSteps,
   });
 
-  void crateBridgeModularMathModularHistoryAdd({
+  void crateBridgeModularArithmeticModularHistoryAdd({
     required String expression,
     required String result,
   });
 
-  void crateBridgeModularMathModularHistoryClear();
+  void crateBridgeModularArithmeticModularHistoryClear();
 
-  void crateBridgeModularMathModularHistoryDelete({required BigInt index});
+  void crateBridgeModularArithmeticModularHistoryDelete({
+    required BigInt index,
+  });
 
-  List<HistoryEntry> crateBridgeModularMathModularHistoryGetAll();
+  List<HistoryEntry> crateBridgeModularArithmeticModularHistoryGetAll();
 
-  Future<void> crateBridgeModularMathModularHistoryLoad({required String path});
+  Future<void> crateBridgeModularArithmeticModularHistoryLoad({
+    required String path,
+  });
 
-  Future<void> crateBridgeModularMathModularHistorySave({required String path});
+  Future<void> crateBridgeModularArithmeticModularHistorySave({
+    required String path,
+  });
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -233,7 +239,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
-  StructureAnalysisResponse crateBridgeModularMathAnalyzeStructure({
+  StructureAnalysisResponse crateBridgeModularArithmeticAnalyzeStructure({
     required String structureType,
     required String n,
   }) {
@@ -249,14 +255,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_structure_analysis_response,
           decodeErrorData: sse_decode_String,
         ),
-        constMeta: kCrateBridgeModularMathAnalyzeStructureConstMeta,
+        constMeta: kCrateBridgeModularArithmeticAnalyzeStructureConstMeta,
         argValues: [structureType, n],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateBridgeModularMathAnalyzeStructureConstMeta =>
+  TaskConstMeta get kCrateBridgeModularArithmeticAnalyzeStructureConstMeta =>
       const TaskConstMeta(
         debugName: "analyze_structure",
         argNames: ["structureType", "n"],
@@ -1120,7 +1126,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "memory_subtract", argNames: ["value"]);
 
   @override
-  ModularResult crateBridgeModularMathModularEvaluate({
+  ModularResult crateBridgeModularArithmeticModularEvaluate({
     required String expression,
     String? contextModulus,
     required String mode,
@@ -1140,21 +1146,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_modular_result,
           decodeErrorData: sse_decode_String,
         ),
-        constMeta: kCrateBridgeModularMathModularEvaluateConstMeta,
+        constMeta: kCrateBridgeModularArithmeticModularEvaluateConstMeta,
         argValues: [expression, contextModulus, mode, showSteps],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateBridgeModularMathModularEvaluateConstMeta =>
+  TaskConstMeta get kCrateBridgeModularArithmeticModularEvaluateConstMeta =>
       const TaskConstMeta(
         debugName: "modular_evaluate",
         argNames: ["expression", "contextModulus", "mode", "showSteps"],
       );
 
   @override
-  void crateBridgeModularMathModularHistoryAdd({
+  void crateBridgeModularArithmeticModularHistoryAdd({
     required String expression,
     required String result,
   }) {
@@ -1170,21 +1176,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_unit,
           decodeErrorData: null,
         ),
-        constMeta: kCrateBridgeModularMathModularHistoryAddConstMeta,
+        constMeta: kCrateBridgeModularArithmeticModularHistoryAddConstMeta,
         argValues: [expression, result],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateBridgeModularMathModularHistoryAddConstMeta =>
+  TaskConstMeta get kCrateBridgeModularArithmeticModularHistoryAddConstMeta =>
       const TaskConstMeta(
         debugName: "modular_history_add",
         argNames: ["expression", "result"],
       );
 
   @override
-  void crateBridgeModularMathModularHistoryClear() {
+  void crateBridgeModularArithmeticModularHistoryClear() {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
@@ -1195,18 +1201,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_unit,
           decodeErrorData: null,
         ),
-        constMeta: kCrateBridgeModularMathModularHistoryClearConstMeta,
+        constMeta: kCrateBridgeModularArithmeticModularHistoryClearConstMeta,
         argValues: [],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateBridgeModularMathModularHistoryClearConstMeta =>
+  TaskConstMeta get kCrateBridgeModularArithmeticModularHistoryClearConstMeta =>
       const TaskConstMeta(debugName: "modular_history_clear", argNames: []);
 
   @override
-  void crateBridgeModularMathModularHistoryDelete({required BigInt index}) {
+  void crateBridgeModularArithmeticModularHistoryDelete({
+    required BigInt index,
+  }) {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
@@ -1218,21 +1226,22 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_unit,
           decodeErrorData: null,
         ),
-        constMeta: kCrateBridgeModularMathModularHistoryDeleteConstMeta,
+        constMeta: kCrateBridgeModularArithmeticModularHistoryDeleteConstMeta,
         argValues: [index],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateBridgeModularMathModularHistoryDeleteConstMeta =>
+  TaskConstMeta
+  get kCrateBridgeModularArithmeticModularHistoryDeleteConstMeta =>
       const TaskConstMeta(
         debugName: "modular_history_delete",
         argNames: ["index"],
       );
 
   @override
-  List<HistoryEntry> crateBridgeModularMathModularHistoryGetAll() {
+  List<HistoryEntry> crateBridgeModularArithmeticModularHistoryGetAll() {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
@@ -1243,18 +1252,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_list_history_entry,
           decodeErrorData: null,
         ),
-        constMeta: kCrateBridgeModularMathModularHistoryGetAllConstMeta,
+        constMeta: kCrateBridgeModularArithmeticModularHistoryGetAllConstMeta,
         argValues: [],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateBridgeModularMathModularHistoryGetAllConstMeta =>
+  TaskConstMeta
+  get kCrateBridgeModularArithmeticModularHistoryGetAllConstMeta =>
       const TaskConstMeta(debugName: "modular_history_get_all", argNames: []);
 
   @override
-  Future<void> crateBridgeModularMathModularHistoryLoad({
+  Future<void> crateBridgeModularArithmeticModularHistoryLoad({
     required String path,
   }) {
     return handler.executeNormal(
@@ -1273,21 +1283,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_unit,
           decodeErrorData: sse_decode_String,
         ),
-        constMeta: kCrateBridgeModularMathModularHistoryLoadConstMeta,
+        constMeta: kCrateBridgeModularArithmeticModularHistoryLoadConstMeta,
         argValues: [path],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateBridgeModularMathModularHistoryLoadConstMeta =>
+  TaskConstMeta get kCrateBridgeModularArithmeticModularHistoryLoadConstMeta =>
       const TaskConstMeta(
         debugName: "modular_history_load",
         argNames: ["path"],
       );
 
   @override
-  Future<void> crateBridgeModularMathModularHistorySave({
+  Future<void> crateBridgeModularArithmeticModularHistorySave({
     required String path,
   }) {
     return handler.executeNormal(
@@ -1306,14 +1316,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_unit,
           decodeErrorData: sse_decode_String,
         ),
-        constMeta: kCrateBridgeModularMathModularHistorySaveConstMeta,
+        constMeta: kCrateBridgeModularArithmeticModularHistorySaveConstMeta,
         argValues: [path],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateBridgeModularMathModularHistorySaveConstMeta =>
+  TaskConstMeta get kCrateBridgeModularArithmeticModularHistorySaveConstMeta =>
       const TaskConstMeta(
         debugName: "modular_history_save",
         argNames: ["path"],

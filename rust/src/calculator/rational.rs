@@ -1,7 +1,7 @@
 use bigdecimal::{BigDecimal, ToPrimitive};
 use num_bigint::BigInt;
 use num_rational::BigRational;
-use num_traits::{Zero, One};
+use num_traits::{One, Zero};
 
 /// Represents the evaluated value of an expression.
 /// Can be a precise Rational, a multiple of Pi, or a fallback decimal value.
@@ -21,7 +21,7 @@ impl CalcValue {
             CalcValue::Float(f) => f.to_f64().unwrap_or(f64::NAN),
         }
     }
-    
+
     pub fn from_f64(f: f64) -> Self {
         CalcValue::Float(BigDecimal::try_from(f).unwrap_or_default())
     }
@@ -44,7 +44,7 @@ impl CalcValue {
                 let f = self.to_float();
                 BigDecimal::try_from(f).unwrap_or_default()
             }
-            CalcValue::Float(f) => f.clone()
+            CalcValue::Float(f) => f.clone(),
         }
     }
 
@@ -83,9 +83,7 @@ impl CalcValue {
     /// Adds two `CalcValue`s, preserving rationality if possible.
     pub fn add(self, other: CalcValue) -> CalcValue {
         match (self, other) {
-            (CalcValue::Rational(r1), CalcValue::Rational(r2)) => {
-                CalcValue::Rational(r1 + r2)
-            }
+            (CalcValue::Rational(r1), CalcValue::Rational(r2)) => CalcValue::Rational(r1 + r2),
             (CalcValue::PiRational(r1), CalcValue::PiRational(r2)) => {
                 CalcValue::PiRational(r1 + r2)
             }
@@ -96,9 +94,7 @@ impl CalcValue {
     /// Subtracts `other` from `self`, preserving rationality if possible.
     pub fn sub(self, other: CalcValue) -> CalcValue {
         match (self, other) {
-            (CalcValue::Rational(r1), CalcValue::Rational(r2)) => {
-                CalcValue::Rational(r1 - r2)
-            }
+            (CalcValue::Rational(r1), CalcValue::Rational(r2)) => CalcValue::Rational(r1 - r2),
             (CalcValue::PiRational(r1), CalcValue::PiRational(r2)) => {
                 CalcValue::PiRational(r1 - r2)
             }
@@ -109,9 +105,7 @@ impl CalcValue {
     /// Multiplies two `CalcValue`s, preserving rationality if possible.
     pub fn mul(self, other: CalcValue) -> CalcValue {
         match (self, other) {
-            (CalcValue::Rational(r1), CalcValue::Rational(r2)) => {
-                CalcValue::Rational(r1 * r2)
-            }
+            (CalcValue::Rational(r1), CalcValue::Rational(r2)) => CalcValue::Rational(r1 * r2),
             (CalcValue::Rational(r1), CalcValue::PiRational(r2))
             | (CalcValue::PiRational(r2), CalcValue::Rational(r1)) => {
                 CalcValue::PiRational(r1 * r2)
@@ -128,15 +122,9 @@ impl CalcValue {
             return Err(());
         }
         Ok(match (self, other) {
-            (CalcValue::Rational(r1), CalcValue::Rational(r2)) => {
-                CalcValue::Rational(r1 / r2)
-            }
-            (CalcValue::PiRational(r1), CalcValue::Rational(r2)) => {
-                CalcValue::PiRational(r1 / r2)
-            }
-            (CalcValue::PiRational(r1), CalcValue::PiRational(r2)) => {
-                CalcValue::Rational(r1 / r2)
-            }
+            (CalcValue::Rational(r1), CalcValue::Rational(r2)) => CalcValue::Rational(r1 / r2),
+            (CalcValue::PiRational(r1), CalcValue::Rational(r2)) => CalcValue::PiRational(r1 / r2),
+            (CalcValue::PiRational(r1), CalcValue::PiRational(r2)) => CalcValue::Rational(r1 / r2),
             (a, b) => {
                 let res = a.to_float() / b.to_float();
                 CalcValue::Float(BigDecimal::try_from(res).unwrap_or_default())
@@ -149,9 +137,11 @@ impl CalcValue {
         if other.to_float() == 0.0 {
             return Err(());
         }
-        
+
         match (self, other) {
-            (CalcValue::Rational(r1), CalcValue::Rational(r2)) if r1.is_integer() && r2.is_integer() => {
+            (CalcValue::Rational(r1), CalcValue::Rational(r2))
+                if r1.is_integer() && r2.is_integer() =>
+            {
                 let mut res = r1.numer() % r2.numer();
                 if res < BigInt::zero() {
                     if r2.numer() > &BigInt::zero() {
@@ -164,7 +154,9 @@ impl CalcValue {
             }
             (a, b) => {
                 let res = a.to_float() % b.to_float();
-                Ok(CalcValue::Float(BigDecimal::try_from(res).unwrap_or_default()))
+                Ok(CalcValue::Float(
+                    BigDecimal::try_from(res).unwrap_or_default(),
+                ))
             }
         }
     }
@@ -180,7 +172,7 @@ impl CalcValue {
                     } else {
                         CalcValue::Rational(BigRational::new(
                             r1.denom().pow(exp.abs() as u32),
-                            r1.numer().pow(exp.abs() as u32)
+                            r1.numer().pow(exp.abs() as u32),
                         ))
                     }
                 } else {

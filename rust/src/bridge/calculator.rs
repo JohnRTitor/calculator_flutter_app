@@ -27,8 +27,7 @@ fn perform_evaluation<E: evaluator::Evaluator>(
     let mut p = parser::Parser::new(&tokens);
     let ast = p.parse().map_err(|e| e.to_string())?;
 
-    let calc_val =
-        evaluator::evaluate_expr(&ast, eval).map_err(|e| e.to_string())?;
+    let calc_val = evaluator::evaluate_expr(&ast, eval).map_err(|e| e.to_string())?;
 
     let val = calc_val.to_float();
     // Check for NaN or Inf
@@ -37,7 +36,9 @@ fn perform_evaluation<E: evaluator::Evaluator>(
     }
 
     let formatted = match &calc_val {
-        crate::calculator::rational::CalcValue::Rational(r) if r.is_integer() => r.numer().to_string(),
+        crate::calculator::rational::CalcValue::Rational(r) if r.is_integer() => {
+            r.numer().to_string()
+        }
         _ => format_result(val, 10),
     };
 
@@ -171,4 +172,3 @@ fn is_variable(ident: &str) -> bool {
         _ => true,
     }
 }
-

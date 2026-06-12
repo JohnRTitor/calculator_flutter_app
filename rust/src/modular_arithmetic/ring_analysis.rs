@@ -1,6 +1,6 @@
-use crate::modular_math::mod_arith::{mod_pow, is_prime};
-use crate::modular_math::number_theory::gcd;
-use crate::modular_math::number_theory_ext::unit_group;
+use crate::modular_arithmetic::mod_arith::{is_prime, mod_pow};
+use crate::modular_arithmetic::number_theory::gcd;
+use crate::modular_arithmetic::number_theory_ext::unit_group;
 
 #[derive(Debug, Clone)]
 pub struct RingInfo {
@@ -30,7 +30,7 @@ pub fn zero_divisors(n: i128) -> Vec<i128> {
     zd
 }
 
-/// Returns pairs of zero divisors (a,b) where a*b = 0 mod n. 
+/// Returns pairs of zero divisors (a,b) where a*b = 0 mod n.
 /// It returns one pair for each zero divisor a.
 pub fn zero_divisor_pairs(n: i128) -> Vec<(i128, i128)> {
     let mut pairs = Vec::new();
@@ -70,14 +70,14 @@ pub fn nilpotents(n: i128) -> Vec<i128> {
     if n <= 1 {
         return nilp;
     }
-    
+
     // An element a is nilpotent mod n iff every prime factor of n divides a.
-    let factors = crate::modular_math::number_theory_ext::prime_factorization(n);
+    let factors = crate::modular_arithmetic::number_theory_ext::prime_factorization(n);
     let mut product_of_primes = 1;
     for (p, _) in factors {
         product_of_primes *= p;
     }
-    
+
     for i in 0..n {
         if i % product_of_primes == 0 {
             nilp.push(i);

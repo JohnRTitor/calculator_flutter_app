@@ -12,7 +12,7 @@ ModularResult modularEvaluate({
   String? contextModulus,
   required String mode,
   required bool showSteps,
-}) => RustLib.instance.api.crateBridgeModularMathModularEvaluate(
+}) => RustLib.instance.api.crateBridgeModularArithmeticModularEvaluate(
   expression: expression,
   contextModulus: contextModulus,
   mode: mode,
@@ -22,31 +22,31 @@ ModularResult modularEvaluate({
 StructureAnalysisResponse analyzeStructure({
   required String structureType,
   required String n,
-}) => RustLib.instance.api.crateBridgeModularMathAnalyzeStructure(
+}) => RustLib.instance.api.crateBridgeModularArithmeticAnalyzeStructure(
   structureType: structureType,
   n: n,
 );
 
 void modularHistoryAdd({required String expression, required String result}) =>
-    RustLib.instance.api.crateBridgeModularMathModularHistoryAdd(
+    RustLib.instance.api.crateBridgeModularArithmeticModularHistoryAdd(
       expression: expression,
       result: result,
     );
 
 List<HistoryEntry> modularHistoryGetAll() =>
-    RustLib.instance.api.crateBridgeModularMathModularHistoryGetAll();
+    RustLib.instance.api.crateBridgeModularArithmeticModularHistoryGetAll();
 
 void modularHistoryClear() =>
-    RustLib.instance.api.crateBridgeModularMathModularHistoryClear();
+    RustLib.instance.api.crateBridgeModularArithmeticModularHistoryClear();
 
 void modularHistoryDelete({required BigInt index}) => RustLib.instance.api
-    .crateBridgeModularMathModularHistoryDelete(index: index);
+    .crateBridgeModularArithmeticModularHistoryDelete(index: index);
 
-Future<void> modularHistorySave({required String path}) =>
-    RustLib.instance.api.crateBridgeModularMathModularHistorySave(path: path);
+Future<void> modularHistorySave({required String path}) => RustLib.instance.api
+    .crateBridgeModularArithmeticModularHistorySave(path: path);
 
-Future<void> modularHistoryLoad({required String path}) =>
-    RustLib.instance.api.crateBridgeModularMathModularHistoryLoad(path: path);
+Future<void> modularHistoryLoad({required String path}) => RustLib.instance.api
+    .crateBridgeModularArithmeticModularHistoryLoad(path: path);
 
 /// Represents the result of a modular calculation
 class ModularResult {

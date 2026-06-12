@@ -253,7 +253,8 @@ class _FunctionEvaluatorScreenState
                       style: SegmentedButton.styleFrom(
                         backgroundColor: themeExt.chipBackground,
                         selectedForegroundColor: themeExt.chipText,
-                        selectedBackgroundColor: theme.colorScheme.primaryContainer,
+                        selectedBackgroundColor:
+                            theme.colorScheme.primaryContainer,
                       ),
                     ),
                   ],

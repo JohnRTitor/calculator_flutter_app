@@ -60,14 +60,18 @@ Future<T?> showAppDialog<T>({
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: isDestructive 
+                        color: isDestructive
                             ? colorScheme.errorContainer.withValues(alpha: 0.5)
-                            : colorScheme.primaryContainer.withValues(alpha: 0.5),
+                            : colorScheme.primaryContainer.withValues(
+                                alpha: 0.5,
+                              ),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        icon, 
-                        color: isDestructive ? colorScheme.error : colorScheme.primary, 
+                        icon,
+                        color: isDestructive
+                            ? colorScheme.error
+                            : colorScheme.primary,
                         size: 28,
                       ),
                     ),
@@ -137,8 +141,8 @@ Widget _buildButton({
   final handlePress = onPressed ?? () => Navigator.of(context).pop();
 
   if (uiStyle == UiStyle.liquidGlass) {
-    final role = isDestructive 
-        ? GlassSurfaceRole.destructive 
+    final role = isDestructive
+        ? GlassSurfaceRole.destructive
         : (isPrimary ? GlassSurfaceRole.primary : GlassSurfaceRole.accent);
 
     final style = resolveGlassStyle(

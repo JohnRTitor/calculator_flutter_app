@@ -1,31 +1,26 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:calculator_flutter_app/features/calculator/presentation/providers/modular_workspace_state.dart';
-import 'package:calculator_flutter_app/generated/rust/bridge/modular_math.dart' as rust;
+import 'package:calculator_flutter_app/features/calculator/presentation/providers/modular_arithmetic_workspace_state.dart';
+import 'package:calculator_flutter_app/generated/rust/bridge/modular_arithmetic.dart'
+    as rust;
 import 'package:calculator_flutter_app/features/history/presentation/providers/history_provider.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/settings_provider.dart';
 
-part 'modular_workspace_provider.g.dart';
+part 'modular_arithmetic_workspace_provider.g.dart';
 
 @riverpod
-class ModularWorkspace extends _$ModularWorkspace {
+class ModularArithmeticWorkspace extends _$ModularArithmeticWorkspace {
   @override
-  ModularWorkspaceState build() {
-    return const ModularWorkspaceState();
+  ModularArithmeticWorkspaceState build() {
+    return const ModularArithmeticWorkspaceState();
   }
 
   void updateExpression(String expr) {
-    state = state.copyWith(
-      expression: expr,
-      clearError: true,
-    );
+    state = state.copyWith(expression: expr, clearError: true);
     _updatePreview();
   }
 
   void updateModulus(String modulus) {
-    state = state.copyWith(
-      modulus: modulus,
-      clearError: true,
-    );
+    state = state.copyWith(modulus: modulus, clearError: true);
     _updatePreview();
   }
 
@@ -68,7 +63,7 @@ class ModularWorkspace extends _$ModularWorkspace {
   }
 
   void clear() {
-    state = const ModularWorkspaceState();
+    state = const ModularArithmeticWorkspaceState();
   }
 
   void _updatePreview() {
@@ -95,21 +90,18 @@ class ModularWorkspace extends _$ModularWorkspace {
 
     try {
       final showSteps = ref.read(educationalModeProvider);
-      
+
       final res = rust.modularEvaluate(
         expression: state.expression,
         contextModulus: state.modulus.isEmpty ? null : state.modulus,
         mode: state.mode.name,
         showSteps: showSteps,
       );
-      
+
       final historyExpr = _formatHistoryExpression();
-      
-      rust.modularHistoryAdd(
-        expression: historyExpr,
-        result: res.value,
-      );
-      
+
+      rust.modularHistoryAdd(expression: historyExpr, result: res.value);
+
       ref.invalidate(historyProvider);
 
       state = state.copyWith(
@@ -122,7 +114,10 @@ class ModularWorkspace extends _$ModularWorkspace {
       );
     } catch (e) {
       state = state.copyWith(
-        error: e.toString().replaceAll('AnyhowException(', '').replaceAll(')', ''),
+        error: e
+            .toString()
+            .replaceAll('AnyhowException(', '')
+            .replaceAll(')', ''),
       );
     }
   }
@@ -154,13 +149,13 @@ class ModularWorkspace extends _$ModularWorkspace {
 
   void analyzeStructure() {
     if (state.explorerN.trim().isEmpty) return;
-    
+
     try {
       final res = rust.analyzeStructure(
         structureType: state.explorerType,
         n: state.explorerN,
       );
-      
+
       if (res.success && res.analysis != null) {
         // Also add to rich history
         rust.modularHistoryAdd(
@@ -168,7 +163,7 @@ class ModularWorkspace extends _$ModularWorkspace {
           result: res.analysis!.classification,
         );
         ref.invalidate(historyProvider);
-        
+
         state = state.copyWith(
           explorerResult: res.analysis,
           explorerInterpretedAs: res.interpretedAs,
@@ -188,7 +183,10 @@ class ModularWorkspace extends _$ModularWorkspace {
       }
     } catch (e) {
       state = state.copyWith(
-        explorerError: e.toString().replaceAll('AnyhowException(', '').replaceAll(')', ''),
+        explorerError: e
+            .toString()
+            .replaceAll('AnyhowException(', '')
+            .replaceAll(')', ''),
         clearExplorerSuggestion: true,
         clearExplorerInterpretedAs: true,
       );

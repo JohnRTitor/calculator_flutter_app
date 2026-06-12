@@ -1,4 +1,4 @@
-use crate::modular_math::error::ModError;
+use crate::modular_arithmetic::error::ModError;
 
 /// Reduces `a` modulo `n`, ensuring the result is in the range `[0, n)`.
 pub fn mod_reduce(a: i128, n: i128) -> i128 {
@@ -7,11 +7,7 @@ pub fn mod_reduce(a: i128, n: i128) -> i128 {
     }
     let r = a % n;
     if r < 0 {
-        if n > 0 {
-            r + n
-        } else {
-            r - n
-        }
+        if n > 0 { r + n } else { r - n }
     } else {
         r
     }
@@ -40,7 +36,9 @@ pub fn mod_neg(a: i128, n: i128) -> i128 {
 /// Computes `base` raised to the power `exp` modulo `modulus`.
 pub fn mod_pow(mut base: i128, mut exp: i128, modulus: i128) -> Result<i128, ModError> {
     if modulus <= 0 {
-        return Err(ModError::InvalidModulus("Modulus must be positive".to_string()));
+        return Err(ModError::InvalidModulus(
+            "Modulus must be positive".to_string(),
+        ));
     }
     if modulus == 1 {
         return Ok(0);
@@ -67,9 +65,12 @@ pub fn mod_pow(mut base: i128, mut exp: i128, modulus: i128) -> Result<i128, Mod
 
 /// Computes the modular inverse of `a` modulo `n`.
 pub fn mod_inv(a: i128, n: i128) -> Result<i128, ModError> {
-    let (g, x, _) = crate::modular_math::number_theory::extended_gcd(a, n);
+    let (g, x, _) = crate::modular_arithmetic::number_theory::extended_gcd(a, n);
     if g != 1 && g != -1 {
-        return Err(ModError::InverseDoesNotExist(format!("{} and {} are not coprime", a, n)));
+        return Err(ModError::InverseDoesNotExist(format!(
+            "{} and {} are not coprime",
+            a, n
+        )));
     }
     Ok(mod_reduce(x, n))
 }

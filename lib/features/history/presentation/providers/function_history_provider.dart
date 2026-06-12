@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:calculator_flutter_app/generated/rust/bridge/calculator.dart' as bridge;
+import 'package:calculator_flutter_app/generated/rust/bridge/calculator.dart'
+    as bridge;
 import 'package:calculator_flutter_app/generated/rust/shared/history.dart';
 
 part 'function_history_provider.g.dart';

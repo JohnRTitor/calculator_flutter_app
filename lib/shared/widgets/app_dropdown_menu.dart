@@ -32,7 +32,10 @@ class AppDropdownMenu extends StatelessWidget {
     this.tooltip,
     this.showArrow = true,
     this.isExpanded = false,
-  }) : assert(icon != null || label != null, 'Must provide either an icon or a label');
+  }) : assert(
+         icon != null || label != null,
+         'Must provide either an icon or a label',
+       );
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +53,9 @@ class AppDropdownMenu extends StatelessWidget {
       return entries.map((entry) {
         return MenuItemButton(
           style: const ButtonStyle(
-            padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 24, vertical: 16)),
+            padding: WidgetStatePropertyAll(
+              EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            ),
             minimumSize: WidgetStatePropertyAll(Size(180, 48)),
           ),
           onPressed: entry.onPressed,
@@ -75,7 +80,10 @@ class AppDropdownMenu extends StatelessWidget {
             }
           },
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 12.0,
+            ),
             child: Row(
               mainAxisSize: isExpanded ? MainAxisSize.max : MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -96,7 +104,7 @@ class AppDropdownMenu extends StatelessWidget {
                     Icons.arrow_drop_down,
                     color: fgColor ?? colorScheme.onSurfaceVariant,
                   ),
-                ]
+                ],
               ],
             ),
           ),
@@ -123,7 +131,9 @@ class AppDropdownMenu extends StatelessWidget {
     if (isGlass) {
       return SharedSurface(
         uiStyle: uiStyle,
-        glassRole: label != null ? GlassSurfaceRole.card : GlassSurfaceRole.button,
+        glassRole: label != null
+            ? GlassSurfaceRole.card
+            : GlassSurfaceRole.button,
         frosted: true,
         borderRadius: BorderRadius.circular(label != null ? 16 : 24),
         child: MenuAnchor(
@@ -157,21 +167,25 @@ class AppDropdownMenu extends StatelessWidget {
 
     return MenuAnchor(
       style: MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(colorScheme.surfaceContainerHigh),
+        backgroundColor: WidgetStatePropertyAll(
+          colorScheme.surfaceContainerHigh,
+        ),
         elevation: const WidgetStatePropertyAll(3),
         shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         ),
-        padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 8)),
+        padding: const WidgetStatePropertyAll(
+          EdgeInsets.symmetric(vertical: 8),
+        ),
       ),
       builder: (context, controller, child) {
         return Container(
-          decoration: label != null ? BoxDecoration(
-            color: colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(16),
-          ) : null,
+          decoration: label != null
+              ? BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(16),
+                )
+              : null,
           child: buildTrigger(controller, null),
         );
       },

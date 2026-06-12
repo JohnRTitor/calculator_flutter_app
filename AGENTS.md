@@ -239,7 +239,7 @@ A task is not complete until:
 
 ```
 ├── rust/src/                    # Rust computation engine
-│   ├── bridge/                  # FRB API surface (calculator.rs, modular_math.rs, converter.rs)
+│   ├── bridge/                  # FRB API surface (calculator.rs, modular_arithmetic.rs, converter.rs)
 │   ├── calculator/              # Standard calculator engine
 │   │   ├── evaluator/           # Evaluator trait + implementations
 │   │   │   ├── mod.rs           # Evaluator trait, evaluate_expr()
@@ -249,7 +249,7 @@ A task is not complete until:
 │   │   ├── rational.rs          # CalcValue enum (Rational, PiRational, Float)
 │   │   ├── error.rs             # CalcError enum
 │   │   └── memory.rs            # Calculator memory (M+, M-, MR, MC)
-│   ├── modular_math/            # Modular arithmetic + number theory
+│   ├── modular_arithmetic/            # Modular arithmetic + number theory
 │   │   ├── evaluator.rs         # Modular expression evaluator
 │   │   ├── parser.rs            # Modular expression parser
 │   │   ├── structure_parser.rs  # Structure notation parser (Z_n, Z_n*, GF(p))
@@ -385,7 +385,7 @@ The project has three error enums with `From` conversions:
 
 - `CommonError` → base errors (`shared/error.rs`)
 - `CalcError` → calculator errors, `From<CommonError>` (`calculator/error.rs`)
-- `ModError` → modular math errors, `From<CommonError>` (`modular_math/error.rs`)
+- `ModError` → modular math errors, `From<CommonError>` (`modular_arithmetic/error.rs`)
 
 When adding new error variants, add them to the most specific enum. If shared, add to `CommonError` and update the `From` impls.
 
@@ -395,7 +395,7 @@ When adding new error variants, add them to the most specific enum. If shared, a
 - **No god objects.** If a file exceeds ~300 lines, consider splitting.
 - **Use traits for polymorphism.** See `Evaluator` trait pattern.
 - **Use composition over inheritance-like patterns.**
-- **Shared logic goes in `shared/`.** Don't duplicate between `calculator/` and `modular_math/`.
+- **Shared logic goes in `shared/`.** Don't duplicate between `calculator/` and `modular_arithmetic/`.
 
 ### Adding New Mathematical Systems
 

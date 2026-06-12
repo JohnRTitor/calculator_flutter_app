@@ -1,8 +1,8 @@
-import 'package:calculator_flutter_app/generated/rust/bridge/modular_math.dart';
+import 'package:calculator_flutter_app/generated/rust/bridge/modular_arithmetic.dart';
 
 enum ModularMode { ring, field, crt }
 
-class ModularWorkspaceState {
+class ModularArithmeticWorkspaceState {
   final String expression;
   final String modulus;
   final ModularMode mode;
@@ -22,7 +22,7 @@ class ModularWorkspaceState {
   final String? explorerSuggestion;
   final String? explorerInterpretedAs;
 
-  const ModularWorkspaceState({
+  const ModularArithmeticWorkspaceState({
     this.expression = '',
     this.modulus = '',
     this.mode = ModularMode.ring,
@@ -41,7 +41,7 @@ class ModularWorkspaceState {
     this.explorerInterpretedAs,
   });
 
-  ModularWorkspaceState copyWith({
+  ModularArithmeticWorkspaceState copyWith({
     String? expression,
     String? modulus,
     ModularMode? mode,
@@ -67,7 +67,7 @@ class ModularWorkspaceState {
     String? explorerInterpretedAs,
     bool clearExplorerInterpretedAs = false,
   }) {
-    return ModularWorkspaceState(
+    return ModularArithmeticWorkspaceState(
       expression: expression ?? this.expression,
       modulus: modulus ?? this.modulus,
       mode: mode ?? this.mode,
@@ -80,10 +80,18 @@ class ModularWorkspaceState {
       error: clearError ? null : (error ?? this.error),
       explorerN: explorerN ?? this.explorerN,
       explorerType: explorerType ?? this.explorerType,
-      explorerResult: clearExplorerResult ? null : (explorerResult ?? this.explorerResult),
-      explorerError: clearExplorerError ? null : (explorerError ?? this.explorerError),
-      explorerSuggestion: clearExplorerSuggestion ? null : (explorerSuggestion ?? this.explorerSuggestion),
-      explorerInterpretedAs: clearExplorerInterpretedAs ? null : (explorerInterpretedAs ?? this.explorerInterpretedAs),
+      explorerResult: clearExplorerResult
+          ? null
+          : (explorerResult ?? this.explorerResult),
+      explorerError: clearExplorerError
+          ? null
+          : (explorerError ?? this.explorerError),
+      explorerSuggestion: clearExplorerSuggestion
+          ? null
+          : (explorerSuggestion ?? this.explorerSuggestion),
+      explorerInterpretedAs: clearExplorerInterpretedAs
+          ? null
+          : (explorerInterpretedAs ?? this.explorerInterpretedAs),
     );
   }
 }

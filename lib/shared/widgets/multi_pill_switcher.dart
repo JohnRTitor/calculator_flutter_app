@@ -52,7 +52,9 @@ class MultiPillSwitcher extends StatelessWidget {
             final isSelected = entry.key == selectedIndex;
             return Expanded(
               child: Padding(
-                padding: EdgeInsets.only(right: entry.key < labels.length - 1 ? 4.0 : 0.0),
+                padding: EdgeInsets.only(
+                  right: entry.key < labels.length - 1 ? 4.0 : 0.0,
+                ),
                 child: _buildToggleChip(
                   context: context,
                   label: entry.value,

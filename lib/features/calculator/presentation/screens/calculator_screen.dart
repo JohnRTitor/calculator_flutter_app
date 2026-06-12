@@ -10,7 +10,7 @@ import 'package:calculator_flutter_app/app/navigation/route_transitions.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
-import 'package:calculator_flutter_app/features/calculator/presentation/screens/modular_workspace_screen.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/screens/modular_arithmetic_workspace_screen.dart';
 import 'package:calculator_flutter_app/shared/widgets/multi_pill_switcher.dart';
 
 /// The main screen for the calculator functionality.
@@ -32,7 +32,9 @@ class SelectedTabNotifier extends Notifier<int> {
   }
 }
 
-final selectedTabProvider = NotifierProvider<SelectedTabNotifier, int>(SelectedTabNotifier.new);
+final selectedTabProvider = NotifierProvider<SelectedTabNotifier, int>(
+  SelectedTabNotifier.new,
+);
 
 class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
   @override
@@ -63,8 +65,8 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
             child: selectedTabIndex == 0
                 ? const _ScientificLayout()
                 : selectedTabIndex == 1
-                    ? const FunctionEvaluatorScreen()
-                    : const ModularWorkspaceScreen(),
+                ? const FunctionEvaluatorScreen()
+                : const ModularArithmeticWorkspaceScreen(),
           ),
         ),
       ],

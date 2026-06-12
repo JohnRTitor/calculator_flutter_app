@@ -6,7 +6,7 @@
 import 'bridge/calculator.dart';
 import 'bridge/converter.dart';
 import 'bridge/currency.dart';
-import 'bridge/modular_math.dart';
+import 'bridge/modular_arithmetic.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi' as ffi;

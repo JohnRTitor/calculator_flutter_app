@@ -27,7 +27,7 @@
 // Section: imports
 
 use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
-use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
+use flutter_rust_bridge::for_generated::{Lifetimeable, Lockable, transform_result_dco};
 use flutter_rust_bridge::{Handler, IntoIntoDart};
 
 // Section: boilerplate
@@ -38,7 +38,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.12.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -672477624;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -267255599;
 
 // Section: executor
 
@@ -46,7 +46,7 @@ flutter_rust_bridge::frb_generated_default_handler!();
 
 // Section: wire_funcs
 
-fn wire__crate__bridge__modular_math__analyze_structure_impl(
+fn wire__crate__bridge__modular_arithmetic__analyze_structure_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -71,8 +71,10 @@ fn wire__crate__bridge__modular_math__analyze_structure_impl(
             let api_n = <String>::sse_decode(&mut deserializer);
             deserializer.end();
             transform_result_sse::<_, String>((move || {
-                let output_ok =
-                    crate::bridge::modular_math::analyze_structure(api_structure_type, api_n)?;
+                let output_ok = crate::bridge::modular_arithmetic::analyze_structure(
+                    api_structure_type,
+                    api_n,
+                )?;
                 Ok(output_ok)
             })())
         },
@@ -1108,7 +1110,7 @@ fn wire__crate__bridge__calculator__memory_subtract_impl(
         },
     )
 }
-fn wire__crate__bridge__modular_math__modular_evaluate_impl(
+fn wire__crate__bridge__modular_arithmetic__modular_evaluate_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -1135,7 +1137,7 @@ fn wire__crate__bridge__modular_math__modular_evaluate_impl(
             let api_show_steps = <bool>::sse_decode(&mut deserializer);
             deserializer.end();
             transform_result_sse::<_, String>((move || {
-                let output_ok = crate::bridge::modular_math::modular_evaluate(
+                let output_ok = crate::bridge::modular_arithmetic::modular_evaluate(
                     api_expression,
                     api_context_modulus,
                     api_mode,
@@ -1146,7 +1148,7 @@ fn wire__crate__bridge__modular_math__modular_evaluate_impl(
         },
     )
 }
-fn wire__crate__bridge__modular_math__modular_history_add_impl(
+fn wire__crate__bridge__modular_arithmetic__modular_history_add_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -1172,14 +1174,17 @@ fn wire__crate__bridge__modular_math__modular_history_add_impl(
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
                 let output_ok = Result::<_, ()>::Ok({
-                    crate::bridge::modular_math::modular_history_add(api_expression, api_result);
+                    crate::bridge::modular_arithmetic::modular_history_add(
+                        api_expression,
+                        api_result,
+                    );
                 })?;
                 Ok(output_ok)
             })())
         },
     )
 }
-fn wire__crate__bridge__modular_math__modular_history_clear_impl(
+fn wire__crate__bridge__modular_arithmetic__modular_history_clear_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -1203,14 +1208,14 @@ fn wire__crate__bridge__modular_math__modular_history_clear_impl(
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
                 let output_ok = Result::<_, ()>::Ok({
-                    crate::bridge::modular_math::modular_history_clear();
+                    crate::bridge::modular_arithmetic::modular_history_clear();
                 })?;
                 Ok(output_ok)
             })())
         },
     )
 }
-fn wire__crate__bridge__modular_math__modular_history_delete_impl(
+fn wire__crate__bridge__modular_arithmetic__modular_history_delete_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -1235,14 +1240,14 @@ fn wire__crate__bridge__modular_math__modular_history_delete_impl(
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
                 let output_ok = Result::<_, ()>::Ok({
-                    crate::bridge::modular_math::modular_history_delete(api_index);
+                    crate::bridge::modular_arithmetic::modular_history_delete(api_index);
                 })?;
                 Ok(output_ok)
             })())
         },
     )
 }
-fn wire__crate__bridge__modular_math__modular_history_get_all_impl(
+fn wire__crate__bridge__modular_arithmetic__modular_history_get_all_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
@@ -1265,14 +1270,15 @@ fn wire__crate__bridge__modular_math__modular_history_get_all_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             transform_result_sse::<_, ()>((move || {
-                let output_ok =
-                    Result::<_, ()>::Ok(crate::bridge::modular_math::modular_history_get_all())?;
+                let output_ok = Result::<_, ()>::Ok(
+                    crate::bridge::modular_arithmetic::modular_history_get_all(),
+                )?;
                 Ok(output_ok)
             })())
         },
     )
 }
-fn wire__crate__bridge__modular_math__modular_history_load_impl(
+fn wire__crate__bridge__modular_arithmetic__modular_history_load_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -1298,14 +1304,15 @@ fn wire__crate__bridge__modular_math__modular_history_load_impl(
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, String>((move || {
-                    let output_ok = crate::bridge::modular_math::modular_history_load(api_path)?;
+                    let output_ok =
+                        crate::bridge::modular_arithmetic::modular_history_load(api_path)?;
                     Ok(output_ok)
                 })())
             }
         },
     )
 }
-fn wire__crate__bridge__modular_math__modular_history_save_impl(
+fn wire__crate__bridge__modular_arithmetic__modular_history_save_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -1331,7 +1338,8 @@ fn wire__crate__bridge__modular_math__modular_history_save_impl(
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, String>((move || {
-                    let output_ok = crate::bridge::modular_math::modular_history_save(api_path)?;
+                    let output_ok =
+                        crate::bridge::modular_arithmetic::modular_history_save(api_path)?;
                     Ok(output_ok)
                 })())
             }
@@ -1607,14 +1615,14 @@ impl SseDecode for crate::bridge::currency::LoanResult {
     }
 }
 
-impl SseDecode for crate::bridge::modular_math::ModularResult {
+impl SseDecode for crate::bridge::modular_arithmetic::ModularResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_value = <String>::sse_decode(deserializer);
         let mut var_details = <Option<String>>::sse_decode(deserializer);
         let mut var_modulusUsed = <Option<String>>::sse_decode(deserializer);
         let mut var_steps = <Option<String>>::sse_decode(deserializer);
-        return crate::bridge::modular_math::ModularResult {
+        return crate::bridge::modular_arithmetic::ModularResult {
             value: var_value,
             details: var_details,
             modulus_used: var_modulusUsed,
@@ -1645,12 +1653,12 @@ impl SseDecode for Option<f64> {
     }
 }
 
-impl SseDecode for Option<crate::bridge::modular_math::StructureAnalysis> {
+impl SseDecode for Option<crate::bridge::modular_arithmetic::StructureAnalysis> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         if (<bool>::sse_decode(deserializer)) {
             return Some(
-                <crate::bridge::modular_math::StructureAnalysis>::sse_decode(deserializer),
+                <crate::bridge::modular_arithmetic::StructureAnalysis>::sse_decode(deserializer),
             );
         } else {
             return None;
@@ -1667,7 +1675,7 @@ impl SseDecode for (String, f64) {
     }
 }
 
-impl SseDecode for crate::bridge::modular_math::StructureAnalysis {
+impl SseDecode for crate::bridge::modular_arithmetic::StructureAnalysis {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_label = <String>::sse_decode(deserializer);
@@ -1684,7 +1692,7 @@ impl SseDecode for crate::bridge::modular_math::StructureAnalysis {
         let mut var_elementOrders = <Option<String>>::sse_decode(deserializer);
         let mut var_cayleyTable = <Option<String>>::sse_decode(deserializer);
         let mut var_classification = <String>::sse_decode(deserializer);
-        return crate::bridge::modular_math::StructureAnalysis {
+        return crate::bridge::modular_arithmetic::StructureAnalysis {
             label: var_label,
             order: var_order,
             is_cyclic: var_isCyclic,
@@ -1703,16 +1711,18 @@ impl SseDecode for crate::bridge::modular_math::StructureAnalysis {
     }
 }
 
-impl SseDecode for crate::bridge::modular_math::StructureAnalysisResponse {
+impl SseDecode for crate::bridge::modular_arithmetic::StructureAnalysisResponse {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_success = <bool>::sse_decode(deserializer);
         let mut var_analysis =
-            <Option<crate::bridge::modular_math::StructureAnalysis>>::sse_decode(deserializer);
+            <Option<crate::bridge::modular_arithmetic::StructureAnalysis>>::sse_decode(
+                deserializer,
+            );
         let mut var_errorMessage = <Option<String>>::sse_decode(deserializer);
         let mut var_suggestion = <Option<String>>::sse_decode(deserializer);
         let mut var_interpretedAs = <Option<String>>::sse_decode(deserializer);
-        return crate::bridge::modular_math::StructureAnalysisResponse {
+        return crate::bridge::modular_arithmetic::StructureAnalysisResponse {
             success: var_success,
             analysis: var_analysis,
             error_message: var_errorMessage,
@@ -1771,13 +1781,13 @@ fn pde_ffi_dispatcher_primary_impl(
         ),
         26 => wire__crate__bridge__calculator__history_load_impl(port, ptr, rust_vec_len, data_len),
         27 => wire__crate__bridge__calculator__history_save_impl(port, ptr, rust_vec_len, data_len),
-        38 => wire__crate__bridge__modular_math__modular_history_load_impl(
+        38 => wire__crate__bridge__modular_arithmetic__modular_history_load_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        39 => wire__crate__bridge__modular_math__modular_history_save_impl(
+        39 => wire__crate__bridge__modular_arithmetic__modular_history_save_impl(
             port,
             ptr,
             rust_vec_len,
@@ -1795,7 +1805,11 @@ fn pde_ffi_dispatcher_sync_impl(
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        1 => wire__crate__bridge__modular_math__analyze_structure_impl(ptr, rust_vec_len, data_len),
+        1 => wire__crate__bridge__modular_arithmetic__analyze_structure_impl(
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
         2 => wire__crate__bridge__converter__calculate_bmi_impl(ptr, rust_vec_len, data_len),
         3 => wire__crate__bridge__converter__calculate_date_difference_impl(
             ptr,
@@ -1843,21 +1857,27 @@ fn pde_ffi_dispatcher_sync_impl(
         30 => wire__crate__bridge__calculator__memory_recall_impl(ptr, rust_vec_len, data_len),
         31 => wire__crate__bridge__calculator__memory_store_impl(ptr, rust_vec_len, data_len),
         32 => wire__crate__bridge__calculator__memory_subtract_impl(ptr, rust_vec_len, data_len),
-        33 => wire__crate__bridge__modular_math__modular_evaluate_impl(ptr, rust_vec_len, data_len),
-        34 => {
-            wire__crate__bridge__modular_math__modular_history_add_impl(ptr, rust_vec_len, data_len)
-        }
-        35 => wire__crate__bridge__modular_math__modular_history_clear_impl(
+        33 => wire__crate__bridge__modular_arithmetic__modular_evaluate_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        36 => wire__crate__bridge__modular_math__modular_history_delete_impl(
+        34 => wire__crate__bridge__modular_arithmetic__modular_history_add_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        37 => wire__crate__bridge__modular_math__modular_history_get_all_impl(
+        35 => wire__crate__bridge__modular_arithmetic__modular_history_clear_impl(
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        36 => wire__crate__bridge__modular_arithmetic__modular_history_delete_impl(
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        37 => wire__crate__bridge__modular_arithmetic__modular_history_get_all_impl(
             ptr,
             rust_vec_len,
             data_len,
@@ -2092,7 +2112,7 @@ impl flutter_rust_bridge::IntoIntoDart<crate::bridge::currency::LoanResult>
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::bridge::modular_math::ModularResult {
+impl flutter_rust_bridge::IntoDart for crate::bridge::modular_arithmetic::ModularResult {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.value.into_into_dart().into_dart(),
@@ -2104,18 +2124,18 @@ impl flutter_rust_bridge::IntoDart for crate::bridge::modular_math::ModularResul
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::bridge::modular_math::ModularResult
+    for crate::bridge::modular_arithmetic::ModularResult
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::bridge::modular_math::ModularResult>
-    for crate::bridge::modular_math::ModularResult
+impl flutter_rust_bridge::IntoIntoDart<crate::bridge::modular_arithmetic::ModularResult>
+    for crate::bridge::modular_arithmetic::ModularResult
 {
-    fn into_into_dart(self) -> crate::bridge::modular_math::ModularResult {
+    fn into_into_dart(self) -> crate::bridge::modular_arithmetic::ModularResult {
         self
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::bridge::modular_math::StructureAnalysis {
+impl flutter_rust_bridge::IntoDart for crate::bridge::modular_arithmetic::StructureAnalysis {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.label.into_into_dart().into_dart(),
@@ -2137,18 +2157,20 @@ impl flutter_rust_bridge::IntoDart for crate::bridge::modular_math::StructureAna
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::bridge::modular_math::StructureAnalysis
+    for crate::bridge::modular_arithmetic::StructureAnalysis
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::bridge::modular_math::StructureAnalysis>
-    for crate::bridge::modular_math::StructureAnalysis
+impl flutter_rust_bridge::IntoIntoDart<crate::bridge::modular_arithmetic::StructureAnalysis>
+    for crate::bridge::modular_arithmetic::StructureAnalysis
 {
-    fn into_into_dart(self) -> crate::bridge::modular_math::StructureAnalysis {
+    fn into_into_dart(self) -> crate::bridge::modular_arithmetic::StructureAnalysis {
         self
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::bridge::modular_math::StructureAnalysisResponse {
+impl flutter_rust_bridge::IntoDart
+    for crate::bridge::modular_arithmetic::StructureAnalysisResponse
+{
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.success.into_into_dart().into_dart(),
@@ -2161,13 +2183,13 @@ impl flutter_rust_bridge::IntoDart for crate::bridge::modular_math::StructureAna
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::bridge::modular_math::StructureAnalysisResponse
+    for crate::bridge::modular_arithmetic::StructureAnalysisResponse
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::bridge::modular_math::StructureAnalysisResponse>
-    for crate::bridge::modular_math::StructureAnalysisResponse
+impl flutter_rust_bridge::IntoIntoDart<crate::bridge::modular_arithmetic::StructureAnalysisResponse>
+    for crate::bridge::modular_arithmetic::StructureAnalysisResponse
 {
-    fn into_into_dart(self) -> crate::bridge::modular_math::StructureAnalysisResponse {
+    fn into_into_dart(self) -> crate::bridge::modular_arithmetic::StructureAnalysisResponse {
         self
     }
 }
@@ -2367,7 +2389,7 @@ impl SseEncode for crate::bridge::currency::LoanResult {
     }
 }
 
-impl SseEncode for crate::bridge::modular_math::ModularResult {
+impl SseEncode for crate::bridge::modular_arithmetic::ModularResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.value, serializer);
@@ -2397,12 +2419,12 @@ impl SseEncode for Option<f64> {
     }
 }
 
-impl SseEncode for Option<crate::bridge::modular_math::StructureAnalysis> {
+impl SseEncode for Option<crate::bridge::modular_arithmetic::StructureAnalysis> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <bool>::sse_encode(self.is_some(), serializer);
         if let Some(value) = self {
-            <crate::bridge::modular_math::StructureAnalysis>::sse_encode(value, serializer);
+            <crate::bridge::modular_arithmetic::StructureAnalysis>::sse_encode(value, serializer);
         }
     }
 }
@@ -2415,7 +2437,7 @@ impl SseEncode for (String, f64) {
     }
 }
 
-impl SseEncode for crate::bridge::modular_math::StructureAnalysis {
+impl SseEncode for crate::bridge::modular_arithmetic::StructureAnalysis {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.label, serializer);
@@ -2435,11 +2457,11 @@ impl SseEncode for crate::bridge::modular_math::StructureAnalysis {
     }
 }
 
-impl SseEncode for crate::bridge::modular_math::StructureAnalysisResponse {
+impl SseEncode for crate::bridge::modular_arithmetic::StructureAnalysisResponse {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <bool>::sse_encode(self.success, serializer);
-        <Option<crate::bridge::modular_math::StructureAnalysis>>::sse_encode(
+        <Option<crate::bridge::modular_arithmetic::StructureAnalysis>>::sse_encode(
             self.analysis,
             serializer,
         );
@@ -2489,7 +2511,7 @@ mod io {
     use flutter_rust_bridge::for_generated::byteorder::{
         NativeEndian, ReadBytesExt, WriteBytesExt,
     };
-    use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
+    use flutter_rust_bridge::for_generated::{Lifetimeable, Lockable, transform_result_dco};
     use flutter_rust_bridge::{Handler, IntoIntoDart};
 
     // Section: boilerplate
@@ -2513,7 +2535,7 @@ mod web {
     };
     use flutter_rust_bridge::for_generated::wasm_bindgen;
     use flutter_rust_bridge::for_generated::wasm_bindgen::prelude::*;
-    use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
+    use flutter_rust_bridge::for_generated::{Lifetimeable, Lockable, transform_result_dco};
     use flutter_rust_bridge::{Handler, IntoIntoDart};
 
     // Section: boilerplate

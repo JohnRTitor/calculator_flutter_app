@@ -1,7 +1,7 @@
+use crate::modular_arithmetic::error::ModError;
+use crate::modular_arithmetic::mod_arith::{mod_pow, mod_reduce};
+use crate::modular_arithmetic::number_theory::{extended_gcd, gcd};
 use std::collections::HashMap;
-use crate::modular_math::error::ModError;
-use crate::modular_math::mod_arith::{mod_reduce, mod_pow};
-use crate::modular_math::number_theory::{gcd, extended_gcd};
 
 /// Returns the prime factorization of n as a list of (prime, exponent).
 pub fn prime_factorization(mut n: i128) -> Vec<(i128, u32)> {
@@ -10,7 +10,7 @@ pub fn prime_factorization(mut n: i128) -> Vec<(i128, u32)> {
     if n <= 1 {
         return factors;
     }
-    
+
     let mut count = 0;
     while n % 2 == 0 {
         count += 1;
@@ -19,7 +19,7 @@ pub fn prime_factorization(mut n: i128) -> Vec<(i128, u32)> {
     if count > 0 {
         factors.push((2, count));
     }
-    
+
     let mut i = 3;
     while i * i <= n {
         let mut count = 0;
@@ -35,7 +35,7 @@ pub fn prime_factorization(mut n: i128) -> Vec<(i128, u32)> {
     if n > 1 {
         factors.push((n, 1));
     }
-    
+
     factors
 }
 
@@ -60,13 +60,16 @@ pub fn element_order(a: i128, n: i128) -> Result<i128, ModError> {
     }
     let a_reduced = mod_reduce(a, n);
     if gcd(a_reduced, n) != 1 {
-        return Err(ModError::InvalidExpression(format!("Order undefined: gcd({}, {}) != 1", a_reduced, n)));
+        return Err(ModError::InvalidExpression(format!(
+            "Order undefined: gcd({}, {}) != 1",
+            a_reduced, n
+        )));
     }
-    
+
     let phi = euler_totient(n);
     let mut order = phi;
     let factors = prime_factorization(phi);
-    
+
     // For each prime factor p of phi, if a^(phi/p) == 1, then the order divides phi/p.
     for (p, _) in factors {
         let mut temp = order;
@@ -75,7 +78,7 @@ pub fn element_order(a: i128, n: i128) -> Result<i128, ModError> {
         }
         order = temp;
     }
-    
+
     Ok(order)
 }
 
@@ -113,13 +116,15 @@ pub fn primitive_roots(n: i128) -> Result<Vec<i128>, ModError> {
         return Err(ModError::InvalidModulus("Modulus must be > 1".to_string()));
     }
     if !has_primitive_roots(n) {
-        return Err(ModError::NoPrimitiveRoot(format!("Z_{}* is not cyclic (no primitive roots exist)", n)));
+        return Err(ModError::NoPrimitiveRoot(format!(
+            "Z_{}* is not cyclic (no primitive roots exist)",
+            n
+        )));
     }
-    
+
     let mut roots = Vec::new();
     let phi = euler_totient(n);
-    
-    
+
     // Find the first primitive root
     let mut g = -1;
     for i in 2..n {
@@ -130,18 +135,21 @@ pub fn primitive_roots(n: i128) -> Result<Vec<i128>, ModError> {
             }
         }
     }
-    
+
     if g == -1 {
-        return Err(ModError::NoPrimitiveRoot(format!("Could not find primitive root for {}", n)));
+        return Err(ModError::NoPrimitiveRoot(format!(
+            "Could not find primitive root for {}",
+            n
+        )));
     }
-    
+
     // The other primitive roots are g^k mod n where gcd(k, phi) == 1
     for k in 1..phi {
         if gcd(k, phi) == 1 {
             roots.push(mod_pow(g, k, n)?);
         }
     }
-    
+
     roots.sort_unstable();
     Ok(roots)
 }
@@ -154,10 +162,10 @@ pub fn cyclic_subgroup(a: i128, n: i128) -> Result<Vec<i128>, ModError> {
     let a_red = mod_reduce(a, n);
     let mut subgroup = Vec::new();
     let mut current = 1;
-    
+
     // Keep multiplying by a until we hit a cycle or 0
     let mut seen = std::collections::HashSet::new();
-    
+
     loop {
         if seen.contains(&current) {
             break;
@@ -166,7 +174,7 @@ pub fn cyclic_subgroup(a: i128, n: i128) -> Result<Vec<i128>, ModError> {
         subgroup.push(current);
         current = mod_reduce(current * a_red, n);
     }
-    
+
     subgroup.sort_unstable();
     Ok(subgroup)
 }
@@ -189,34 +197,35 @@ pub fn unit_group(n: i128) -> Vec<i128> {
 /// Returns the additive inverse of a modulo n.
 pub fn additive_inverse(a: i128, n: i128) -> i128 {
     let a_red = mod_reduce(a, n);
-    if a_red == 0 {
-        0
-    } else {
-        n - a_red
-    }
+    if a_red == 0 { 0 } else { n - a_red }
 }
 
 /// Solves ax ≡ b (mod n). Returns all distinct solutions mod n.
 pub fn solve_linear_congruence(a: i128, b: i128, n: i128) -> Result<Vec<i128>, ModError> {
     if n <= 0 {
-        return Err(ModError::InvalidModulus("Modulus must be positive".to_string()));
+        return Err(ModError::InvalidModulus(
+            "Modulus must be positive".to_string(),
+        ));
     }
     let a_red = mod_reduce(a, n);
     let b_red = mod_reduce(b, n);
-    
+
     let (g, x, _) = extended_gcd(a_red, n);
     if b_red % g != 0 {
-        return Err(ModError::NoSolution(format!("No solution: {} does not divide {}", g, b_red)));
+        return Err(ModError::NoSolution(format!(
+            "No solution: {} does not divide {}",
+            g, b_red
+        )));
     }
-    
+
     let mut solutions = Vec::new();
     let x0 = mod_reduce(x * (b_red / g), n);
-    
+
     let step = n / g;
     for i in 0..g {
         solutions.push(mod_reduce(x0 + i * step, n));
     }
-    
+
     solutions.sort_unstable();
     Ok(solutions)
 }
@@ -229,20 +238,32 @@ pub fn discrete_log(base: i128, target: i128, p: i128) -> Result<i128, ModError>
         return Err(ModError::InvalidModulus("Modulus must be > 1".to_string()));
     }
     if p > 1_000_000_000 {
-        return Err(ModError::TooLarge(format!("Modulus {} is too large for discrete log. Limit is 10^9.", p)));
+        return Err(ModError::TooLarge(format!(
+            "Modulus {} is too large for discrete log. Limit is 10^9.",
+            p
+        )));
     }
     let a = mod_reduce(base, p);
     let b = mod_reduce(target, p);
-    
+
     // Special cases
-    if b == 1 { return Ok(0); }
-    if a == 0 {
-        return if b == 0 { Ok(1) } else { Err(ModError::NoSolution(format!("No solution for 0^x = {} mod {}", b, p))) };
+    if b == 1 {
+        return Ok(0);
     }
-    
+    if a == 0 {
+        return if b == 0 {
+            Ok(1)
+        } else {
+            Err(ModError::NoSolution(format!(
+                "No solution for 0^x = {} mod {}",
+                b, p
+            )))
+        };
+    }
+
     // Baby-step Giant-step
     let m = (p as f64).sqrt().ceil() as i128;
-    
+
     let mut table = HashMap::new();
     let mut current = 1;
     for j in 0..m {
@@ -250,9 +271,9 @@ pub fn discrete_log(base: i128, target: i128, p: i128) -> Result<i128, ModError>
         table.entry(current).or_insert(j);
         current = mod_reduce(current * a, p);
     }
-    
-    let factor = mod_pow(crate::modular_math::mod_arith::mod_inv(a, p)?, m, p)?;
-    
+
+    let factor = mod_pow(crate::modular_arithmetic::mod_arith::mod_inv(a, p)?, m, p)?;
+
     current = b;
     for i in 0..m {
         if let Some(&j) = table.get(&current) {
@@ -260,6 +281,9 @@ pub fn discrete_log(base: i128, target: i128, p: i128) -> Result<i128, ModError>
         }
         current = mod_reduce(current * factor, p);
     }
-    
-    Err(ModError::NoSolution(format!("No discrete log found for {}^x = {} mod {}", a, b, p)))
+
+    Err(ModError::NoSolution(format!(
+        "No discrete log found for {}^x = {} mod {}",
+        a, b, p
+    )))
 }
