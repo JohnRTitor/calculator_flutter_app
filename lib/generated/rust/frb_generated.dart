@@ -6,13 +6,14 @@
 import 'bridge/calculator.dart';
 import 'bridge/converter.dart';
 import 'bridge/currency.dart';
-import 'calculator/history.dart';
+import 'bridge/modular_math.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.dart';
 import 'frb_generated.io.dart'
     if (dart.library.js_interop) 'frb_generated.web.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
+import 'shared/history.dart';
 
 /// Main entrypoint of the Rust API
 class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
@@ -67,7 +68,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => -639902854;
+  int get rustContentHash => 2013335168;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -194,6 +195,27 @@ abstract class RustLibApi extends BaseApi {
   void crateBridgeCalculatorMemoryStore({required double value});
 
   void crateBridgeCalculatorMemorySubtract({required double value});
+
+  ModularResult crateBridgeModularMathModularEvaluate({
+    required String expression,
+    String? contextModulus,
+    required String mode,
+  });
+
+  void crateBridgeModularMathModularHistoryAdd({
+    required String expression,
+    required String result,
+  });
+
+  void crateBridgeModularMathModularHistoryClear();
+
+  void crateBridgeModularMathModularHistoryDelete({required BigInt index});
+
+  List<HistoryEntry> crateBridgeModularMathModularHistoryGetAll();
+
+  Future<void> crateBridgeModularMathModularHistoryLoad({required String path});
+
+  Future<void> crateBridgeModularMathModularHistorySave({required String path});
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -1061,6 +1083,204 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateBridgeCalculatorMemorySubtractConstMeta =>
       const TaskConstMeta(debugName: "memory_subtract", argNames: ["value"]);
 
+  @override
+  ModularResult crateBridgeModularMathModularEvaluate({
+    required String expression,
+    String? contextModulus,
+    required String mode,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(expression, serializer);
+          sse_encode_opt_String(contextModulus, serializer);
+          sse_encode_String(mode, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 32)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_modular_result,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateBridgeModularMathModularEvaluateConstMeta,
+        argValues: [expression, contextModulus, mode],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateBridgeModularMathModularEvaluateConstMeta =>
+      const TaskConstMeta(
+        debugName: "modular_evaluate",
+        argNames: ["expression", "contextModulus", "mode"],
+      );
+
+  @override
+  void crateBridgeModularMathModularHistoryAdd({
+    required String expression,
+    required String result,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(expression, serializer);
+          sse_encode_String(result, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 33)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateBridgeModularMathModularHistoryAddConstMeta,
+        argValues: [expression, result],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateBridgeModularMathModularHistoryAddConstMeta =>
+      const TaskConstMeta(
+        debugName: "modular_history_add",
+        argNames: ["expression", "result"],
+      );
+
+  @override
+  void crateBridgeModularMathModularHistoryClear() {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 34)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateBridgeModularMathModularHistoryClearConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateBridgeModularMathModularHistoryClearConstMeta =>
+      const TaskConstMeta(debugName: "modular_history_clear", argNames: []);
+
+  @override
+  void crateBridgeModularMathModularHistoryDelete({required BigInt index}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_usize(index, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 35)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateBridgeModularMathModularHistoryDeleteConstMeta,
+        argValues: [index],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateBridgeModularMathModularHistoryDeleteConstMeta =>
+      const TaskConstMeta(
+        debugName: "modular_history_delete",
+        argNames: ["index"],
+      );
+
+  @override
+  List<HistoryEntry> crateBridgeModularMathModularHistoryGetAll() {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 36)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_history_entry,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateBridgeModularMathModularHistoryGetAllConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateBridgeModularMathModularHistoryGetAllConstMeta =>
+      const TaskConstMeta(debugName: "modular_history_get_all", argNames: []);
+
+  @override
+  Future<void> crateBridgeModularMathModularHistoryLoad({
+    required String path,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 37,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateBridgeModularMathModularHistoryLoadConstMeta,
+        argValues: [path],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateBridgeModularMathModularHistoryLoadConstMeta =>
+      const TaskConstMeta(
+        debugName: "modular_history_load",
+        argNames: ["path"],
+      );
+
+  @override
+  Future<void> crateBridgeModularMathModularHistorySave({
+    required String path,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 38,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateBridgeModularMathModularHistorySaveConstMeta,
+        argValues: [path],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateBridgeModularMathModularHistorySaveConstMeta =>
+      const TaskConstMeta(
+        debugName: "modular_history_save",
+        argNames: ["path"],
+      );
+
   @protected
   Map<String, double> dco_decode_Map_String_f_64_None(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
@@ -1281,6 +1501,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       monthlyEmi: dco_decode_f_64(arr[0]),
       totalInterest: dco_decode_f_64(arr[1]),
       totalPayment: dco_decode_f_64(arr[2]),
+    );
+  }
+
+  @protected
+  ModularResult dco_decode_modular_result(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    return ModularResult(
+      value: dco_decode_String(arr[0]),
+      details: dco_decode_opt_String(arr[1]),
+      modulusUsed: dco_decode_opt_String(arr[2]),
     );
   }
 
@@ -1588,6 +1821,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ModularResult sse_decode_modular_result(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_value = sse_decode_String(deserializer);
+    var var_details = sse_decode_opt_String(deserializer);
+    var var_modulusUsed = sse_decode_opt_String(deserializer);
+    return ModularResult(
+      value: var_value,
+      details: var_details,
+      modulusUsed: var_modulusUsed,
+    );
+  }
+
+  @protected
   String? sse_decode_opt_String(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
@@ -1851,6 +2097,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_f_64(self.monthlyEmi, serializer);
     sse_encode_f_64(self.totalInterest, serializer);
     sse_encode_f_64(self.totalPayment, serializer);
+  }
+
+  @protected
+  void sse_encode_modular_result(ModularResult self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.value, serializer);
+    sse_encode_opt_String(self.details, serializer);
+    sse_encode_opt_String(self.modulusUsed, serializer);
   }
 
   @protected

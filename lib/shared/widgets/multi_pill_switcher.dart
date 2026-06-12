@@ -1,0 +1,105 @@
+import 'package:flutter/material.dart';
+import 'package:calculator_flutter_app/app/theme/ui_style.dart';
+import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
+import 'package:calculator_flutter_app/app/theme/app_theme_extension.dart';
+
+class MultiPillSwitcher extends StatelessWidget {
+  final UiStyle uiStyle;
+  final List<String> labels;
+  final int selectedIndex;
+  final ValueChanged<int> onChanged;
+
+  const MultiPillSwitcher({
+    super.key,
+    required this.uiStyle,
+    required this.labels,
+    required this.selectedIndex,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (uiStyle != UiStyle.liquidGlass) {
+      return SegmentedButton<int>(
+        segments: labels.asMap().entries.map((entry) {
+          return ButtonSegment<int>(
+            value: entry.key,
+            label: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: Text(entry.value),
+            ),
+          );
+        }).toList(),
+        selected: {selectedIndex},
+        onSelectionChanged: (Set<int> newSelection) {
+          onChanged(newSelection.first);
+        },
+      );
+    }
+
+    // Liquid Glass Mode
+    return SharedSurface(
+      uiStyle: uiStyle,
+      borderRadius: BorderRadius.circular(24),
+      glassRole: GlassSurfaceRole.card,
+      frosted: true,
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+      child: SizedBox(
+        width: 100.0 * labels.length,
+        height: 40,
+        child: Row(
+          children: labels.asMap().entries.map((entry) {
+            final isSelected = entry.key == selectedIndex;
+            return Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(right: entry.key < labels.length - 1 ? 4.0 : 0.0),
+                child: _buildToggleChip(
+                  context: context,
+                  label: entry.value,
+                  isSelected: isSelected,
+                  onTap: () {
+                    if (!isSelected) {
+                      onChanged(entry.key);
+                    }
+                  },
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildToggleChip({
+    required BuildContext context,
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    final themeExt = theme.extension<AppThemeExtension>()!;
+    final bgColor = isSelected ? themeExt.chipBackground : Colors.transparent;
+    final fgColor = isSelected
+        ? themeExt.chipText
+        : theme.colorScheme.onSurfaceVariant;
+
+    return Material(
+      color: bgColor,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Center(
+          child: Text(
+            label,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: fgColor,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

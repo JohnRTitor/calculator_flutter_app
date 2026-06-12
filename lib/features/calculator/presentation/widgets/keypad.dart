@@ -7,6 +7,7 @@ import 'package:calculator_flutter_app/features/calculator/presentation/provider
 import 'package:calculator_flutter_app/shared/widgets/app_button.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/widgets/animated_equals_button.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/screens/calculator_screen.dart';
 
 /// The interactive keypad for the calculator.
 ///
@@ -280,10 +281,12 @@ class Keypad extends ConsumerWidget {
                         ref,
                         'MOD',
                         ButtonType.scientific,
-                        () =>
-                            ref.read(calculatorProvider.notifier).append('mod'),
+                        () => ref.read(calculatorProvider.notifier).append('mod'),
                         tooltip: 'Remainder after division',
                         uiStyle: uiStyle,
+                        onLongPress: () {
+                          ref.read(selectedTabProvider.notifier).update(2);
+                        },
                       ),
                       _btn(
                         ref,
@@ -518,11 +521,13 @@ class Keypad extends ConsumerWidget {
     bool isActive = false,
     String? tooltip,
     required UiStyle uiStyle,
+    VoidCallback? onLongPress,
   }) {
     Widget btn = AppCalcButton(
       text: text,
       type: type,
       onPressed: onPressed,
+      onLongPress: onLongPress,
       isActive: isActive,
       uiStyle: uiStyle,
     );

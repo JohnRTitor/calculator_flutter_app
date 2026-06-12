@@ -6,12 +6,13 @@
 import 'bridge/calculator.dart';
 import 'bridge/converter.dart';
 import 'bridge/currency.dart';
-import 'calculator/history.dart';
+import 'bridge/modular_math.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi' as ffi;
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_io.dart';
+import 'shared/history.dart';
 
 abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   RustLibApiImplPlatform({
@@ -94,6 +95,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   LoanResult dco_decode_loan_result(dynamic raw);
+
+  @protected
+  ModularResult dco_decode_modular_result(dynamic raw);
 
   @protected
   String? dco_decode_opt_String(dynamic raw);
@@ -197,6 +201,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   LoanResult sse_decode_loan_result(SseDeserializer deserializer);
+
+  @protected
+  ModularResult sse_decode_modular_result(SseDeserializer deserializer);
 
   @protected
   String? sse_decode_opt_String(SseDeserializer deserializer);
@@ -317,6 +324,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_loan_result(LoanResult self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_modular_result(ModularResult self, SseSerializer serializer);
 
   @protected
   void sse_encode_opt_String(String? self, SseSerializer serializer);

@@ -1,4 +1,6 @@
-use crate::calculator::{evaluator, history, memory, parser};
+use crate::calculator::{evaluator, memory, parser};
+use crate::shared::history;
+pub use crate::shared::history::HistoryEntry;
 use flutter_rust_bridge::frb;
 
 /// Represents the result of a calculation to be returned to Flutter.
@@ -109,69 +111,69 @@ pub fn memory_clear() {
 /// Adds a history entry from Flutter.
 #[frb(sync)]
 pub fn history_add(expression: String, result: String) {
-    history::add(expression, result);
+    history::BASIC_HISTORY.add(expression, result);
 }
 
 /// Retrieves all history entries to display in Flutter.
 #[frb(sync)]
-pub fn history_get_all() -> Vec<history::HistoryEntry> {
-    history::get_all()
+pub fn history_get_all() -> Vec<HistoryEntry> {
+    history::BASIC_HISTORY.get_all()
 }
 
 /// Clears all history entries.
 #[frb(sync)]
 pub fn history_clear() {
-    history::clear();
+    history::BASIC_HISTORY.clear();
 }
 
 /// Deletes a specific history entry.
 #[frb(sync)]
 pub fn history_delete(index: usize) {
-    history::delete(index);
+    history::BASIC_HISTORY.delete(index);
 }
 
 /// Saves the calculation history to a file path provided by Flutter.
 pub fn history_save(path: String) -> Result<(), String> {
-    history::save(&path).map_err(|e| e.to_string())
+    history::BASIC_HISTORY.save(&path).map_err(|e| e.to_string())
 }
 
 /// Loads the calculation history from a file path provided by Flutter.
 pub fn history_load(path: String) -> Result<(), String> {
-    history::load(&path).map_err(|e| e.to_string())
+    history::BASIC_HISTORY.load(&path).map_err(|e| e.to_string())
 }
 
 /// Adds a func history entry from Flutter.
 #[frb(sync)]
 pub fn func_history_add(expression: String, result: String) {
-    history::func_history_add(expression, result);
+    history::FUNC_HISTORY.add(expression, result);
 }
 
 /// Retrieves all func history entries to display in Flutter.
 #[frb(sync)]
-pub fn func_history_get_all() -> Vec<history::HistoryEntry> {
-    history::func_history_get_all()
+pub fn func_history_get_all() -> Vec<HistoryEntry> {
+    history::FUNC_HISTORY.get_all()
 }
 
 /// Clears all func history entries.
 #[frb(sync)]
 pub fn func_history_clear() {
-    history::func_history_clear();
+    history::FUNC_HISTORY.clear();
 }
 
 /// Deletes a specific func history entry.
 #[frb(sync)]
 pub fn func_history_delete(index: usize) {
-    history::func_history_delete(index);
+    history::FUNC_HISTORY.delete(index);
 }
 
 /// Saves the func history to a file path provided by Flutter.
 pub fn func_history_save(path: String) -> Result<(), String> {
-    history::func_history_save(&path).map_err(|e| e.to_string())
+    history::FUNC_HISTORY.save(&path).map_err(|e| e.to_string())
 }
 
 /// Loads the func history from a file path provided by Flutter.
 pub fn func_history_load(path: String) -> Result<(), String> {
-    history::func_history_load(&path).map_err(|e| e.to_string())
+    history::FUNC_HISTORY.load(&path).map_err(|e| e.to_string())
 }
 
 /// Extracts variables from an expression string.

@@ -10,7 +10,8 @@ import 'package:calculator_flutter_app/app/navigation/route_transitions.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
-import 'package:calculator_flutter_app/shared/widgets/pill_switcher.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/screens/modular_workspace_screen.dart';
+import 'package:calculator_flutter_app/shared/widgets/multi_pill_switcher.dart';
 
 /// The main screen for the calculator functionality.
 ///
@@ -22,13 +23,23 @@ class CalculatorScreen extends ConsumerStatefulWidget {
   ConsumerState<CalculatorScreen> createState() => _CalculatorScreenState();
 }
 
-class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
-  bool isFuncMode = false;
+class SelectedTabNotifier extends Notifier<int> {
+  @override
+  int build() => 0;
 
+  void update(int index) {
+    state = index;
+  }
+}
+
+final selectedTabProvider = NotifierProvider<SelectedTabNotifier, int>(SelectedTabNotifier.new);
+
+class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
   @override
   Widget build(BuildContext context) {
     final uiStyle = ref.watch(uiStyleProvider);
     final isGlass = uiStyle == UiStyle.liquidGlass;
+    final selectedTabIndex = ref.watch(selectedTabProvider);
 
     return Column(
       children: [
@@ -40,34 +51,33 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildHistoryButton(context, isGlass, uiStyle),
+              _buildHistoryButton(context, isGlass, uiStyle, selectedTabIndex),
               const SizedBox(width: 8),
-              _buildSegmentedToggle(uiStyle),
+              _buildSegmentedToggle(uiStyle, selectedTabIndex),
             ],
           ),
         ),
         Expanded(
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
-            child: isFuncMode
-                ? const FunctionEvaluatorScreen()
-                : const _ScientificLayout(),
+            child: selectedTabIndex == 0
+                ? const _ScientificLayout()
+                : selectedTabIndex == 1
+                    ? const FunctionEvaluatorScreen()
+                    : const ModularWorkspaceScreen(),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildSegmentedToggle(UiStyle uiStyle) {
-    return PillSwitcher(
+  Widget _buildSegmentedToggle(UiStyle uiStyle, int selectedTabIndex) {
+    return MultiPillSwitcher(
       uiStyle: uiStyle,
-      label1: 'Calculator',
-      label2: 'Fn Evaluator',
-      isFirstSelected: !isFuncMode,
-      onChanged: (isFirst) {
-        setState(() {
-          isFuncMode = !isFirst;
-        });
+      labels: const ['Calculator', 'Fn Evaluator', 'Mod'],
+      selectedIndex: selectedTabIndex,
+      onChanged: (index) {
+        ref.read(selectedTabProvider.notifier).update(index);
       },
     );
   }
@@ -76,6 +86,7 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
     BuildContext context,
     bool isGlass,
     UiStyle uiStyle,
+    int selectedTabIndex,
   ) {
     final theme = Theme.of(context);
     final glassCard = resolveGlassStyle(
@@ -83,6 +94,18 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
       brightness: theme.brightness,
       role: GlassSurfaceRole.card,
     );
+
+    void onPressed() async {
+      final result = await Navigator.push<bool>(
+        context,
+        FadePageRoute(
+          page: HistoryScreen(initialIsFuncMode: selectedTabIndex == 1),
+        ),
+      );
+      if (result != null && result != (selectedTabIndex == 1)) {
+        ref.read(selectedTabProvider.notifier).update(result ? 1 : 0);
+      }
+    }
 
     return isGlass
         ? SharedSurface(
@@ -96,19 +119,7 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
               child: IconButton(
                 padding: EdgeInsets.zero,
                 icon: const Icon(Icons.history, size: 20),
-                onPressed: () async {
-                  final result = await Navigator.push<bool>(
-                    context,
-                    FadePageRoute(
-                      page: HistoryScreen(initialIsFuncMode: isFuncMode),
-                    ),
-                  );
-                  if (result != null && result != isFuncMode) {
-                    setState(() {
-                      isFuncMode = result;
-                    });
-                  }
-                },
+                onPressed: onPressed,
                 tooltip: 'History',
                 color: glassCard.foregroundColor,
               ),
@@ -120,19 +131,7 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
             child: IconButton(
               padding: EdgeInsets.zero,
               icon: const Icon(Icons.history, size: 20),
-              onPressed: () async {
-                final result = await Navigator.push<bool>(
-                  context,
-                  FadePageRoute(
-                    page: HistoryScreen(initialIsFuncMode: isFuncMode),
-                  ),
-                );
-                if (result != null && result != isFuncMode) {
-                  setState(() {
-                    isFuncMode = result;
-                  });
-                }
-              },
+              onPressed: onPressed,
               tooltip: 'History',
               color: theme.colorScheme.onSurfaceVariant,
             ),

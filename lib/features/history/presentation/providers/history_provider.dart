@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:calculator_flutter_app/generated/rust/bridge/calculator.dart';
-import 'package:calculator_flutter_app/generated/rust/calculator/history.dart';
+import 'package:calculator_flutter_app/generated/rust/shared/history.dart';
+import 'package:calculator_flutter_app/generated/rust/bridge/calculator.dart' as bridge;
 
 part 'history_provider.g.dart';
 
@@ -15,9 +15,9 @@ class History extends _$History {
   Future<List<HistoryEntry>> build() async {
     try {
       final file = await _getHistoryFile();
-      await historyLoad(path: file.path);
+      await bridge.historyLoad(path: file.path);
     } catch (_) {}
-    return historyGetAll();
+    return bridge.historyGetAll();
   }
 
   Future<File> _getHistoryFile() async {
@@ -28,22 +28,22 @@ class History extends _$History {
   Future<void> saveHistoryToFile() async {
     try {
       final file = await _getHistoryFile();
-      await historySave(path: file.path);
+      await bridge.historySave(path: file.path);
     } catch (_) {}
   }
 
   Future<void> refresh() async {
-    state = AsyncData(historyGetAll());
+    state = AsyncData(bridge.historyGetAll());
   }
 
   Future<void> delete(int index) async {
-    historyDelete(index: BigInt.from(index));
+    bridge.historyDelete(index: BigInt.from(index));
     await saveHistoryToFile();
     await refresh();
   }
 
   Future<void> clear() async {
-    historyClear();
+    bridge.historyClear();
     await saveHistoryToFile();
     await refresh();
   }

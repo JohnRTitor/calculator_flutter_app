@@ -23,6 +23,7 @@ enum ButtonType {
 class AppCalcButton extends StatefulWidget {
   final String text;
   final bool Function()? onPressed;
+  final VoidCallback? onLongPress;
   final ButtonType type;
   final Widget? icon;
   final bool isActive;
@@ -32,6 +33,7 @@ class AppCalcButton extends StatefulWidget {
     super.key,
     required this.text,
     this.onPressed,
+    this.onLongPress,
     this.type = ButtonType.number,
     this.icon,
     this.isActive = false,
@@ -111,6 +113,7 @@ class _AppCalcButtonState extends State<AppCalcButton>
         onTapDown: (_) => _handlePressDown(),
         onTapUp: (_) => _handlePressUp(),
         onTapCancel: _handlePressUp,
+        onLongPress: widget.onLongPress,
         child: SharedSurface(
           uiStyle: widget.uiStyle,
           onTap: widget.onPressed == null ? null : _handlePress,
@@ -138,6 +141,7 @@ class _AppCalcButtonState extends State<AppCalcButton>
         onTapDown: (_) => _handlePressDown(),
         onTapUp: (_) => _handlePressUp(),
         onTapCancel: _handlePressUp,
+        onLongPress: widget.onLongPress,
         child: FilledButton(
           onPressed: widget.onPressed == null ? null : _handlePress,
           style: FilledButton.styleFrom(
