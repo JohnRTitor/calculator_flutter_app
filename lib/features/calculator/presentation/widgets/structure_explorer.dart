@@ -98,7 +98,7 @@ class _StructureExplorerState extends ConsumerState<StructureExplorer> {
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           sliver: SliverFillRemaining(
-            hasScrollBody: false,
+            hasScrollBody: true,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

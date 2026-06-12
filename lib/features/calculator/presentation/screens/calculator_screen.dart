@@ -55,7 +55,7 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
             children: [
               _buildHistoryButton(context, isGlass, uiStyle, selectedTabIndex),
               const SizedBox(width: 8),
-              _buildSegmentedToggle(uiStyle, selectedTabIndex),
+              Flexible(child: _buildSegmentedToggle(uiStyle, selectedTabIndex)),
             ],
           ),
         ),
