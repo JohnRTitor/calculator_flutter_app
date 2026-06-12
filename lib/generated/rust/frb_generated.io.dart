@@ -41,6 +41,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   FfiUnit dco_decode_box_autoadd_ffi_unit(dynamic raw);
 
   @protected
+  StructureAnalysis dco_decode_box_autoadd_structure_analysis(dynamic raw);
+
+  @protected
   CalcResult dco_decode_calc_result(dynamic raw);
 
   @protected
@@ -106,10 +109,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   double? dco_decode_opt_box_autoadd_f_64(dynamic raw);
 
   @protected
+  StructureAnalysis? dco_decode_opt_box_autoadd_structure_analysis(dynamic raw);
+
+  @protected
   (String, double) dco_decode_record_string_f_64(dynamic raw);
 
   @protected
   StructureAnalysis dco_decode_structure_analysis(dynamic raw);
+
+  @protected
+  StructureAnalysisResponse dco_decode_structure_analysis_response(dynamic raw);
 
   @protected
   int dco_decode_u_32(dynamic raw);
@@ -142,6 +151,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   FfiUnit sse_decode_box_autoadd_ffi_unit(SseDeserializer deserializer);
+
+  @protected
+  StructureAnalysis sse_decode_box_autoadd_structure_analysis(
+    SseDeserializer deserializer,
+  );
 
   @protected
   CalcResult sse_decode_calc_result(SseDeserializer deserializer);
@@ -215,10 +229,20 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   double? sse_decode_opt_box_autoadd_f_64(SseDeserializer deserializer);
 
   @protected
+  StructureAnalysis? sse_decode_opt_box_autoadd_structure_analysis(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   (String, double) sse_decode_record_string_f_64(SseDeserializer deserializer);
 
   @protected
   StructureAnalysis sse_decode_structure_analysis(SseDeserializer deserializer);
+
+  @protected
+  StructureAnalysisResponse sse_decode_structure_analysis_response(
+    SseDeserializer deserializer,
+  );
 
   @protected
   int sse_decode_u_32(SseDeserializer deserializer);
@@ -252,6 +276,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_box_autoadd_ffi_unit(FfiUnit self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_structure_analysis(
+    StructureAnalysis self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_calc_result(CalcResult self, SseSerializer serializer);
@@ -341,6 +371,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_opt_box_autoadd_f_64(double? self, SseSerializer serializer);
 
   @protected
+  void sse_encode_opt_box_autoadd_structure_analysis(
+    StructureAnalysis? self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_record_string_f_64(
     (String, double) self,
     SseSerializer serializer,
@@ -349,6 +385,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_structure_analysis(
     StructureAnalysis self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_structure_analysis_response(
+    StructureAnalysisResponse self,
     SseSerializer serializer,
   );
 

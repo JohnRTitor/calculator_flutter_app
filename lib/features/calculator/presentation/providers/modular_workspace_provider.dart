@@ -135,11 +135,21 @@ class ModularWorkspace extends _$ModularWorkspace {
   }
 
   void setExplorerN(String n) {
-    state = state.copyWith(explorerN: n, clearExplorerError: true);
+    state = state.copyWith(
+      explorerN: n,
+      clearExplorerError: true,
+      clearExplorerSuggestion: true,
+      clearExplorerInterpretedAs: true,
+    );
   }
 
   void setExplorerType(String type) {
-    state = state.copyWith(explorerType: type, clearExplorerError: true);
+    state = state.copyWith(
+      explorerType: type,
+      clearExplorerError: true,
+      clearExplorerSuggestion: true,
+      clearExplorerInterpretedAs: true,
+    );
   }
 
   void analyzeStructure() {
@@ -151,20 +161,36 @@ class ModularWorkspace extends _$ModularWorkspace {
         n: state.explorerN,
       );
       
-      // Also add to rich history
-      rust.modularHistoryAdd(
-        expression: 'analyze(Z_${state.explorerN}${state.explorerType == "group" ? "*" : ""})',
-        result: res.classification,
-      );
-      ref.invalidate(historyProvider);
-      
-      state = state.copyWith(
-        explorerResult: res,
-        clearExplorerError: true,
-      );
+      if (res.success && res.analysis != null) {
+        // Also add to rich history
+        rust.modularHistoryAdd(
+          expression: 'analyze(${res.analysis!.label})',
+          result: res.analysis!.classification,
+        );
+        ref.invalidate(historyProvider);
+        
+        state = state.copyWith(
+          explorerResult: res.analysis,
+          explorerInterpretedAs: res.interpretedAs,
+          clearExplorerError: true,
+          clearExplorerSuggestion: true,
+        );
+      } else {
+        // Handle parser suggestions or mathematical errors
+        state = state.copyWith(
+          explorerError: res.errorMessage,
+          clearExplorerError: res.errorMessage == null,
+          explorerSuggestion: res.suggestion,
+          clearExplorerSuggestion: res.suggestion == null,
+          clearExplorerResult: true,
+          clearExplorerInterpretedAs: true,
+        );
+      }
     } catch (e) {
       state = state.copyWith(
         explorerError: e.toString().replaceAll('AnyhowException(', '').replaceAll(')', ''),
+        clearExplorerSuggestion: true,
+        clearExplorerInterpretedAs: true,
       );
     }
   }

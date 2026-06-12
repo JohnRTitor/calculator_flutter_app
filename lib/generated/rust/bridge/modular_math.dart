@@ -19,7 +19,7 @@ ModularResult modularEvaluate({
   showSteps: showSteps,
 );
 
-StructureAnalysis analyzeStructure({
+StructureAnalysisResponse analyzeStructure({
   required String structureType,
   required String n,
 }) => RustLib.instance.api.crateBridgeModularMathAnalyzeStructure(
@@ -146,4 +146,39 @@ class StructureAnalysis {
           elementOrders == other.elementOrders &&
           cayleyTable == other.cayleyTable &&
           classification == other.classification;
+}
+
+class StructureAnalysisResponse {
+  final bool success;
+  final StructureAnalysis? analysis;
+  final String? errorMessage;
+  final String? suggestion;
+  final String? interpretedAs;
+
+  const StructureAnalysisResponse({
+    required this.success,
+    this.analysis,
+    this.errorMessage,
+    this.suggestion,
+    this.interpretedAs,
+  });
+
+  @override
+  int get hashCode =>
+      success.hashCode ^
+      analysis.hashCode ^
+      errorMessage.hashCode ^
+      suggestion.hashCode ^
+      interpretedAs.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is StructureAnalysisResponse &&
+          runtimeType == other.runtimeType &&
+          success == other.success &&
+          analysis == other.analysis &&
+          errorMessage == other.errorMessage &&
+          suggestion == other.suggestion &&
+          interpretedAs == other.interpretedAs;
 }

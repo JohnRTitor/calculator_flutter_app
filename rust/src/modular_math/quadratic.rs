@@ -1,6 +1,5 @@
 use crate::modular_math::error::ModError;
 use crate::modular_math::mod_arith::{mod_reduce, mod_pow, is_prime};
-use crate::modular_math::number_theory::gcd;
 
 /// Returns the quadratic residues modulo n.
 pub fn quadratic_residues(n: i128) -> Vec<i128> {

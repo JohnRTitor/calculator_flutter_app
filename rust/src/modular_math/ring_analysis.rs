@@ -1,4 +1,4 @@
-use crate::modular_math::mod_arith::{mod_reduce, mod_pow, is_prime};
+use crate::modular_math::mod_arith::{mod_pow, is_prime};
 use crate::modular_math::number_theory::gcd;
 use crate::modular_math::number_theory_ext::unit_group;
 

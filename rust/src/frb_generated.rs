@@ -1645,6 +1645,19 @@ impl SseDecode for Option<f64> {
     }
 }
 
+impl SseDecode for Option<crate::bridge::modular_math::StructureAnalysis> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(
+                <crate::bridge::modular_math::StructureAnalysis>::sse_decode(deserializer),
+            );
+        } else {
+            return None;
+        }
+    }
+}
+
 impl SseDecode for (String, f64) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1686,6 +1699,25 @@ impl SseDecode for crate::bridge::modular_math::StructureAnalysis {
             element_orders: var_elementOrders,
             cayley_table: var_cayleyTable,
             classification: var_classification,
+        };
+    }
+}
+
+impl SseDecode for crate::bridge::modular_math::StructureAnalysisResponse {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_success = <bool>::sse_decode(deserializer);
+        let mut var_analysis =
+            <Option<crate::bridge::modular_math::StructureAnalysis>>::sse_decode(deserializer);
+        let mut var_errorMessage = <Option<String>>::sse_decode(deserializer);
+        let mut var_suggestion = <Option<String>>::sse_decode(deserializer);
+        let mut var_interpretedAs = <Option<String>>::sse_decode(deserializer);
+        return crate::bridge::modular_math::StructureAnalysisResponse {
+            success: var_success,
+            analysis: var_analysis,
+            error_message: var_errorMessage,
+            suggestion: var_suggestion,
+            interpreted_as: var_interpretedAs,
         };
     }
 }
@@ -2115,6 +2147,30 @@ impl flutter_rust_bridge::IntoIntoDart<crate::bridge::modular_math::StructureAna
         self
     }
 }
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::bridge::modular_math::StructureAnalysisResponse {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.success.into_into_dart().into_dart(),
+            self.analysis.into_into_dart().into_dart(),
+            self.error_message.into_into_dart().into_dart(),
+            self.suggestion.into_into_dart().into_dart(),
+            self.interpreted_as.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::bridge::modular_math::StructureAnalysisResponse
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::bridge::modular_math::StructureAnalysisResponse>
+    for crate::bridge::modular_math::StructureAnalysisResponse
+{
+    fn into_into_dart(self) -> crate::bridge::modular_math::StructureAnalysisResponse {
+        self
+    }
+}
 
 impl SseEncode for std::collections::HashMap<String, f64> {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -2341,6 +2397,16 @@ impl SseEncode for Option<f64> {
     }
 }
 
+impl SseEncode for Option<crate::bridge::modular_math::StructureAnalysis> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <crate::bridge::modular_math::StructureAnalysis>::sse_encode(value, serializer);
+        }
+    }
+}
+
 impl SseEncode for (String, f64) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -2366,6 +2432,20 @@ impl SseEncode for crate::bridge::modular_math::StructureAnalysis {
         <Option<String>>::sse_encode(self.element_orders, serializer);
         <Option<String>>::sse_encode(self.cayley_table, serializer);
         <String>::sse_encode(self.classification, serializer);
+    }
+}
+
+impl SseEncode for crate::bridge::modular_math::StructureAnalysisResponse {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.success, serializer);
+        <Option<crate::bridge::modular_math::StructureAnalysis>>::sse_encode(
+            self.analysis,
+            serializer,
+        );
+        <Option<String>>::sse_encode(self.error_message, serializer);
+        <Option<String>>::sse_encode(self.suggestion, serializer);
+        <Option<String>>::sse_encode(self.interpreted_as, serializer);
     }
 }
 

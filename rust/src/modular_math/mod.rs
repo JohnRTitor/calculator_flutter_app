@@ -8,3 +8,4 @@ pub mod cayley;
 pub mod galois;
 pub mod parser;
 pub mod evaluator;
+pub mod structure_parser;

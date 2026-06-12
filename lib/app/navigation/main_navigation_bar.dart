@@ -7,7 +7,6 @@ import 'package:calculator_flutter_app/features/currency/presentation/screens/cu
 
 import 'package:calculator_flutter_app/features/settings/presentation/screens/settings_screen.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
-import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/shared/widgets/app_tab_bar.dart';
 import 'package:calculator_flutter_app/app/navigation/route_transitions.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -87,12 +86,6 @@ class _MainScreenState extends ConsumerState<MainScreen>
     TextTheme textTheme,
     UiStyle uiStyle,
   ) {
-    final isGlass = uiStyle == UiStyle.liquidGlass;
-    final glassCard = resolveGlassStyle(
-      colorScheme,
-      brightness: Theme.of(context).brightness,
-      role: GlassSurfaceRole.card,
-    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),

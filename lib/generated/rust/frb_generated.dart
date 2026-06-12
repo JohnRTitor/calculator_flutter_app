@@ -80,7 +80,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
-  StructureAnalysis crateBridgeModularMathAnalyzeStructure({
+  StructureAnalysisResponse crateBridgeModularMathAnalyzeStructure({
     required String structureType,
     required String n,
   });
@@ -233,7 +233,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
-  StructureAnalysis crateBridgeModularMathAnalyzeStructure({
+  StructureAnalysisResponse crateBridgeModularMathAnalyzeStructure({
     required String structureType,
     required String n,
   }) {
@@ -246,7 +246,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 1)!;
         },
         codec: SseCodec(
-          decodeSuccessData: sse_decode_structure_analysis,
+          decodeSuccessData: sse_decode_structure_analysis_response,
           decodeErrorData: sse_decode_String,
         ),
         constMeta: kCrateBridgeModularMathAnalyzeStructureConstMeta,
@@ -1364,6 +1364,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  StructureAnalysis dco_decode_box_autoadd_structure_analysis(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_structure_analysis(raw);
+  }
+
+  @protected
   CalcResult dco_decode_calc_result(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -1569,6 +1575,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  StructureAnalysis? dco_decode_opt_box_autoadd_structure_analysis(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_structure_analysis(raw);
+  }
+
+  @protected
   (String, double) dco_decode_record_string_f_64(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -1599,6 +1613,23 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       elementOrders: dco_decode_opt_String(arr[11]),
       cayleyTable: dco_decode_opt_String(arr[12]),
       classification: dco_decode_String(arr[13]),
+    );
+  }
+
+  @protected
+  StructureAnalysisResponse dco_decode_structure_analysis_response(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return StructureAnalysisResponse(
+      success: dco_decode_bool(arr[0]),
+      analysis: dco_decode_opt_box_autoadd_structure_analysis(arr[1]),
+      errorMessage: dco_decode_opt_String(arr[2]),
+      suggestion: dco_decode_opt_String(arr[3]),
+      interpretedAs: dco_decode_opt_String(arr[4]),
     );
   }
 
@@ -1666,6 +1697,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   FfiUnit sse_decode_box_autoadd_ffi_unit(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_ffi_unit(deserializer));
+  }
+
+  @protected
+  StructureAnalysis sse_decode_box_autoadd_structure_analysis(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_structure_analysis(deserializer));
   }
 
   @protected
@@ -1921,6 +1960,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  StructureAnalysis? sse_decode_opt_box_autoadd_structure_analysis(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_structure_analysis(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
   (String, double) sse_decode_record_string_f_64(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_field0 = sse_decode_String(deserializer);
@@ -1962,6 +2014,27 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       elementOrders: var_elementOrders,
       cayleyTable: var_cayleyTable,
       classification: var_classification,
+    );
+  }
+
+  @protected
+  StructureAnalysisResponse sse_decode_structure_analysis_response(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_success = sse_decode_bool(deserializer);
+    var var_analysis = sse_decode_opt_box_autoadd_structure_analysis(
+      deserializer,
+    );
+    var var_errorMessage = sse_decode_opt_String(deserializer);
+    var var_suggestion = sse_decode_opt_String(deserializer);
+    var var_interpretedAs = sse_decode_opt_String(deserializer);
+    return StructureAnalysisResponse(
+      success: var_success,
+      analysis: var_analysis,
+      errorMessage: var_errorMessage,
+      suggestion: var_suggestion,
+      interpretedAs: var_interpretedAs,
     );
   }
 
@@ -2029,6 +2102,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_box_autoadd_ffi_unit(FfiUnit self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_ffi_unit(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_structure_analysis(
+    StructureAnalysis self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_structure_analysis(self, serializer);
   }
 
   @protected
@@ -2231,6 +2313,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_opt_box_autoadd_structure_analysis(
+    StructureAnalysis? self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_structure_analysis(self, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_record_string_f_64(
     (String, double) self,
     SseSerializer serializer,
@@ -2260,6 +2355,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_String(self.elementOrders, serializer);
     sse_encode_opt_String(self.cayleyTable, serializer);
     sse_encode_String(self.classification, serializer);
+  }
+
+  @protected
+  void sse_encode_structure_analysis_response(
+    StructureAnalysisResponse self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_bool(self.success, serializer);
+    sse_encode_opt_box_autoadd_structure_analysis(self.analysis, serializer);
+    sse_encode_opt_String(self.errorMessage, serializer);
+    sse_encode_opt_String(self.suggestion, serializer);
+    sse_encode_opt_String(self.interpretedAs, serializer);
   }
 
   @protected

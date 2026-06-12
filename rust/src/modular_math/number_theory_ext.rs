@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use crate::modular_math::error::ModError;
-use crate::modular_math::mod_arith::{mod_reduce, mod_pow, is_prime};
+use crate::modular_math::mod_arith::{mod_reduce, mod_pow};
 use crate::modular_math::number_theory::{gcd, extended_gcd};
 
 /// Returns the prime factorization of n as a list of (prime, exponent).
@@ -118,7 +118,7 @@ pub fn primitive_roots(n: i128) -> Result<Vec<i128>, ModError> {
     
     let mut roots = Vec::new();
     let phi = euler_totient(n);
-    let phi_phi = euler_totient(phi);
+    
     
     // Find the first primitive root
     let mut g = -1;

@@ -37,13 +37,15 @@ class ScreenshotShareWrapperState extends State<ScreenshotShareWrapper> {
         _isCapturing = true;
       });
 
+      final pixelRatio = MediaQuery.of(context).devicePixelRatio;
+
       // Allow the UI to render the opaque background
       await Future.delayed(const Duration(milliseconds: 50));
 
       // 2. Capture the image
       final Uint8List? imageBytes = await _screenshotController.capture(
         delay: const Duration(milliseconds: 50),
-        pixelRatio: MediaQuery.of(context).devicePixelRatio,
+        pixelRatio: pixelRatio,
       );
 
       // 3. Revert to transparent background immediately

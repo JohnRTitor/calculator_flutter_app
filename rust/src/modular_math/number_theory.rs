@@ -64,7 +64,7 @@ pub fn crt(remainders: &[(i128, i128)]) -> Result<(i128, i128), ModError> {
     // Normalize first equation
     current_remainder = crate::modular_math::mod_arith::mod_reduce(current_remainder, current_modulus);
 
-    for &(mut rem, mut modl) in &remainders[1..] {
+    for &(mut rem, modl) in &remainders[1..] {
         if modl <= 0 {
             return Err(ModError::InvalidModulus("Modulus must be positive".to_string()));
         }

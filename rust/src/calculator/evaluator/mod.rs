@@ -77,7 +77,7 @@ pub fn evaluate_expr(
 
                 if let (CalcValue::Rational(b), CalcValue::Rational(e), CalcValue::Rational(m)) = (&base, &exp, &modulus) {
                     if b.is_integer() && e.is_integer() && m.is_integer() && m.numer() > &num_bigint::BigInt::zero() {
-                        use num_traits::{ToPrimitive, Zero};
+                        use num_traits::ToPrimitive;
                         if let (Some(b_i128), Some(e_i128), Some(m_i128)) = (b.numer().to_i128(), e.numer().to_i128(), m.numer().to_i128()) {
                             // Use modular arithmetic engine
                             if let Ok(res) = crate::modular_math::mod_arith::mod_pow(b_i128, e_i128, m_i128) {

@@ -69,17 +69,61 @@ pub struct StructureAnalysis {
     pub classification: String,
 }
 
+#[frb]
+pub struct StructureAnalysisResponse {
+    pub success: bool,
+    pub analysis: Option<StructureAnalysis>,
+    pub error_message: Option<String>,
+    pub suggestion: Option<String>,
+    pub interpreted_as: Option<String>,
+}
+
 #[frb(sync)]
 pub fn analyze_structure(
     structure_type: String,
     n: String,
-) -> Result<StructureAnalysis, String> {
-    let modulus = n.parse::<i128>().map_err(|_| "Invalid modulus".to_string())?;
-    if modulus <= 1 {
-        return Err("Modulus must be > 1".to_string());
+) -> Result<StructureAnalysisResponse, String> {
+    // 1. Parse Notation
+    let parsed = match crate::modular_math::structure_parser::parse_structure_input(&n, &structure_type) {
+        Ok(p) => p,
+        Err(e) => {
+            return Ok(StructureAnalysisResponse {
+                success: false,
+                analysis: None,
+                error_message: Some(e),
+                suggestion: None,
+                interpreted_as: None,
+            });
+        }
+    };
+
+    // If there is a suggestion, we return it without running the analysis 
+    // (the user must accept the suggestion or fix the input)
+    if let Some(suggestion) = parsed.suggestion {
+        return Ok(StructureAnalysisResponse {
+            success: false,
+            analysis: None,
+            error_message: None,
+            suggestion: Some(suggestion),
+            interpreted_as: None,
+        });
     }
 
-    match structure_type.to_lowercase().as_str() {
+    let modulus = parsed.modulus;
+    
+    // 2. Math Validation
+    if modulus <= 1 {
+        return Ok(StructureAnalysisResponse {
+            success: false,
+            analysis: None,
+            error_message: Some("Modulus must be > 1".to_string()),
+            suggestion: None,
+            interpreted_as: None,
+        });
+    }
+
+    // 3. Analyze
+    let analysis = match structure_type.to_lowercase().as_str() {
         "ring" => {
             let info = crate::modular_math::ring_analysis::ring_classify(modulus);
             let mut inverses_str = String::new();
@@ -96,16 +140,16 @@ pub fn analyze_structure(
                 if let Ok(table) = crate::modular_math::cayley::addition_table(modulus) {
                     let mut s = String::new();
                     for row in table {
-                        s.push_str(&row.iter().map(|n| format!("{:3}", n)).collect::<Vec<_>>().join(" "));
+                        s.push_str(&row.iter().map(|num| format!("{:3}", num)).collect::<Vec<_>>().join(" "));
                         s.push('\n');
                     }
                     Some(s)
                 } else { None }
             } else { None };
 
-            Ok(StructureAnalysis {
-                label: format!("Z_{}", modulus),
-                order: format!("|Z_{}| = {}", modulus, modulus),
+            StructureAnalysis {
+                label: parsed.canonical_notation.clone(),
+                order: format!("|{}| = {}", parsed.canonical_notation, modulus),
                 is_cyclic: true, // Z_n is always cyclic under addition
                 identity: "0".to_string(),
                 elements: format!("{{0, 1, ..., {}}}", modulus - 1),
@@ -118,7 +162,7 @@ pub fn analyze_structure(
                 element_orders: None, // Too verbose for additive group
                 cayley_table: cayley,
                 classification: info.classification,
-            })
+            }
         }
         "group" => {
             let units = crate::modular_math::number_theory_ext::unit_group(modulus);
@@ -152,16 +196,16 @@ pub fn analyze_structure(
                 if let Ok((_, table)) = crate::modular_math::cayley::unit_group_table(modulus) {
                     let mut s = String::new();
                     for row in table {
-                        s.push_str(&row.iter().map(|n| format!("{:3}", n)).collect::<Vec<_>>().join(" "));
+                        s.push_str(&row.iter().map(|num| format!("{:3}", num)).collect::<Vec<_>>().join(" "));
                         s.push('\n');
                     }
                     Some(s)
                 } else { None }
             } else { None };
 
-            Ok(StructureAnalysis {
-                label: format!("Z_{}*", modulus),
-                order: format!("|Z_{}*| = φ({}) = {}", modulus, modulus, units.len()),
+            StructureAnalysis {
+                label: parsed.canonical_notation.clone(),
+                order: format!("|{}| = φ({}) = {}", parsed.canonical_notation, modulus, units.len()),
                 is_cyclic: generators.is_some(),
                 identity: "1".to_string(),
                 elements: format!("{{{}}}", units.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(", ")),
@@ -174,18 +218,34 @@ pub fn analyze_structure(
                 element_orders: Some(orders_str),
                 cayley_table: cayley,
                 classification: if generators.is_some() { "Cyclic Group".to_string() } else { "Abelian Group".to_string() },
-            })
+            }
         }
         "field" => {
+            // Check for math errors
             if !crate::modular_math::mod_arith::is_prime(modulus) {
-                return Err(format!("GF(p) requires p to be prime. {} is not prime.", modulus));
+                // Determine if it was parsed as an extension field originally
+                let is_extension = parsed.canonical_notation.contains('^');
+                let error_msg = if is_extension {
+                    format!("{} requires a prime modulus in this version (extension fields not yet supported).", parsed.canonical_notation)
+                } else {
+                    format!("{} is not a field because {} is not prime.", parsed.canonical_notation, modulus)
+                };
+                
+                return Ok(StructureAnalysisResponse {
+                    success: false,
+                    analysis: None,
+                    error_message: Some(error_msg),
+                    suggestion: None,
+                    interpreted_as: None,
+                });
             }
+            
             let elements = format!("{{0, 1, ..., {}}}", modulus - 1);
             let generators = crate::modular_math::number_theory_ext::primitive_roots(modulus).ok();
 
-            Ok(StructureAnalysis {
-                label: format!("GF({})", modulus),
-                order: format!("|GF({})| = {}", modulus, modulus),
+            StructureAnalysis {
+                label: parsed.canonical_notation.clone(),
+                order: format!("|{}| = {}", parsed.canonical_notation, modulus),
                 is_cyclic: true, // Multiplicative group is cyclic
                 identity: "0 (Add), 1 (Mul)".to_string(),
                 elements,
@@ -198,10 +258,26 @@ pub fn analyze_structure(
                 element_orders: None,
                 cayley_table: None, // Fields get too large fast, skip for field summary
                 classification: "Finite Field (Galois Field)".to_string(),
-            })
+            }
         }
-        _ => Err("Invalid structure type. Use 'ring', 'group', or 'field'.".to_string()),
-    }
+        _ => {
+            return Ok(StructureAnalysisResponse {
+                success: false,
+                analysis: None,
+                error_message: Some("Invalid structure type. Use 'ring', 'group', or 'field'.".to_string()),
+                suggestion: None,
+                interpreted_as: None,
+            });
+        }
+    };
+
+    Ok(StructureAnalysisResponse {
+        success: true,
+        analysis: Some(analysis),
+        error_message: None,
+        suggestion: None,
+        interpreted_as: parsed.interpreted_as,
+    })
 }
 
 crate::history_bridge!(

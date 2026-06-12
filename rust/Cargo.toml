@@ -3,6 +3,9 @@ name = "rust_lib_calculator_flutter_app"
 version = "0.1.0"
 edition = "2024"
 
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false
+
 [lib]
 crate-type = ["cdylib", "staticlib"]
 
@@ -29,6 +32,3 @@ panic = "abort"
 wasm-bindgen = "0.2"
 js-sys = "0.3"
 web-sys = { version = "0.3", features = ["console", "Window"] }
-
-[package.metadata.wasm-pack.profile.release]
-wasm-opt = false

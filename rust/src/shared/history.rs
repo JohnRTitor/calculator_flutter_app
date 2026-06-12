@@ -14,19 +14,19 @@ pub struct HistoryEntry {
 #[macro_export]
 macro_rules! history_bridge {
     ($add:ident, $get_all:ident, $clear:ident, $delete:ident, $save:ident, $load:ident, $history:expr) => {
-        #[flutter_rust_bridge::frb(sync)]
+        #[frb(sync)]
         pub fn $add(expression: String, result: String) {
             $history.add(expression, result);
         }
-        #[flutter_rust_bridge::frb(sync)]
+        #[frb(sync)]
         pub fn $get_all() -> Vec<crate::shared::history::HistoryEntry> {
             $history.get_all()
         }
-        #[flutter_rust_bridge::frb(sync)]
+        #[frb(sync)]
         pub fn $clear() {
             $history.clear();
         }
-        #[flutter_rust_bridge::frb(sync)]
+        #[frb(sync)]
         pub fn $delete(index: usize) {
             $history.delete(index);
         }

@@ -58,6 +58,11 @@ class _StructureExplorerState extends ConsumerState<StructureExplorer> {
                 icon: const Icon(Icons.analytics),
                 label: const Text('Analyze'),
               ),
+              IconButton(
+                icon: const Icon(Icons.info_outline),
+                onPressed: () => _showInfoDialog(context),
+                tooltip: 'Supported Notation',
+              )
             ],
           ),
           const SizedBox(height: 16),
@@ -66,6 +71,60 @@ class _StructureExplorerState extends ConsumerState<StructureExplorer> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showInfoDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Supported Notation'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('You can enter simple numbers, and the system will automatically convert them based on your selected type. Or, use any of the standard math notations:'),
+                const SizedBox(height: 16),
+                DataTable(
+                  headingRowHeight: 40,
+                  dataRowMinHeight: 40,
+                  dataRowMaxHeight: 60,
+                  columns: const [
+                    DataColumn(label: Text('Type', style: TextStyle(fontWeight: FontWeight.bold))),
+                    DataColumn(label: Text('Accepted Forms', style: TextStyle(fontWeight: FontWeight.bold))),
+                  ],
+                  rows: const [
+                    DataRow(cells: [
+                      DataCell(Text('Z₁₂')),
+                      DataCell(Text('Z_12, Z12, Z(12), Z/12Z')),
+                    ]),
+                    DataRow(cells: [
+                      DataCell(Text('U(85)')),
+                      DataCell(Text('U(85), Units(85), Z_85*')),
+                    ]),
+                    DataRow(cells: [
+                      DataCell(Text('GF(7)')),
+                      DataCell(Text('GF(7), GF7, F7')),
+                    ]),
+                    DataRow(cells: [
+                      DataCell(Text('GF(2⁸)')),
+                      DataCell(Text('GF(2^8), F(2^8)')),
+                    ]),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -106,12 +165,10 @@ class _StructureExplorerState extends ConsumerState<StructureExplorer> {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: TextField(
         controller: _nController,
-        keyboardType: TextInputType.number,
+        keyboardType: TextInputType.text,
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: state.explorerType == 'field' ? 'Prime p' : 'n',
-          prefixText: state.explorerType == 'field' ? 'GF(' : (state.explorerType == 'group' ? 'U(' : 'Z_'),
-          suffixText: ')',
         ),
         onChanged: (val) {
           ref.read(modularWorkspaceProvider.notifier).setExplorerN(val);
@@ -121,12 +178,35 @@ class _StructureExplorerState extends ConsumerState<StructureExplorer> {
   }
 
   Widget _buildResultArea(BuildContext context, ModularWorkspaceState state, UiStyle uiStyle, ThemeData theme) {
+    if (state.explorerSuggestion != null) {
+      return Center(
+        child: ActionChip(
+          avatar: const Icon(Icons.lightbulb_outline),
+          label: Text(state.explorerSuggestion!),
+          onPressed: () {
+            // Extract what's between "mean " and "?"
+            final sug = state.explorerSuggestion!;
+            final match = RegExp(r'Did you mean (.*?)\?').firstMatch(sug);
+            if (match != null) {
+              final corrected = match.group(1)!;
+              _nController.text = corrected;
+              ref.read(modularWorkspaceProvider.notifier).setExplorerN(corrected);
+              ref.read(modularWorkspaceProvider.notifier).analyzeStructure();
+            }
+          },
+        ),
+      );
+    }
+
     if (state.explorerError != null) {
       return Center(
-        child: Text(
-          state.explorerError!,
-          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.error),
-          textAlign: TextAlign.center,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            state.explorerError!,
+            style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.error),
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     }
@@ -154,6 +234,18 @@ class _StructureExplorerState extends ConsumerState<StructureExplorer> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            if (state.explorerInterpretedAs != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text(
+                  state.explorerInterpretedAs!,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontStyle: FontStyle.italic,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             Text(
               res.label,
               style: theme.textTheme.headlineMedium?.copyWith(

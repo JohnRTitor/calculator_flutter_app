@@ -659,7 +659,7 @@ class _SettingsSwitchCard extends StatelessWidget {
         color: colorScheme.primary,
         size: 28,
       ),
-      activeColor: colorScheme.onPrimary,
+      activeThumbColor: colorScheme.onPrimary,
       activeTrackColor: colorScheme.primary,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

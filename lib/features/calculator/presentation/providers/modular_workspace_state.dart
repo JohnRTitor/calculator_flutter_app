@@ -19,6 +19,8 @@ class ModularWorkspaceState {
   final String explorerType; // 'ring', 'group', 'field'
   final StructureAnalysis? explorerResult;
   final String? explorerError;
+  final String? explorerSuggestion;
+  final String? explorerInterpretedAs;
 
   const ModularWorkspaceState({
     this.expression = '',
@@ -35,6 +37,8 @@ class ModularWorkspaceState {
     this.explorerType = 'ring',
     this.explorerResult,
     this.explorerError,
+    this.explorerSuggestion,
+    this.explorerInterpretedAs,
   });
 
   ModularWorkspaceState copyWith({
@@ -58,6 +62,10 @@ class ModularWorkspaceState {
     bool clearExplorerResult = false,
     String? explorerError,
     bool clearExplorerError = false,
+    String? explorerSuggestion,
+    bool clearExplorerSuggestion = false,
+    String? explorerInterpretedAs,
+    bool clearExplorerInterpretedAs = false,
   }) {
     return ModularWorkspaceState(
       expression: expression ?? this.expression,
@@ -74,6 +82,8 @@ class ModularWorkspaceState {
       explorerType: explorerType ?? this.explorerType,
       explorerResult: clearExplorerResult ? null : (explorerResult ?? this.explorerResult),
       explorerError: clearExplorerError ? null : (explorerError ?? this.explorerError),
+      explorerSuggestion: clearExplorerSuggestion ? null : (explorerSuggestion ?? this.explorerSuggestion),
+      explorerInterpretedAs: clearExplorerInterpretedAs ? null : (explorerInterpretedAs ?? this.explorerInterpretedAs),
     );
   }
 }

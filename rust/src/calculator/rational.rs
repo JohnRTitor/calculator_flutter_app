@@ -1,7 +1,7 @@
 use bigdecimal::{BigDecimal, ToPrimitive};
 use num_bigint::BigInt;
 use num_rational::BigRational;
-use num_traits::{Signed, ToPrimitive as _, Zero, One};
+use num_traits::{Zero, One};
 
 /// Represents the evaluated value of an expression.
 /// Can be a precise Rational, a multiple of Pi, or a fallback decimal value.
@@ -36,7 +36,7 @@ impl CalcValue {
 
     pub fn to_big_decimal(&self) -> BigDecimal {
         match self {
-            CalcValue::Rational(r) => {
+            CalcValue::Rational(_) => {
                 let f = self.to_float();
                 BigDecimal::try_from(f).unwrap_or_default()
             }
