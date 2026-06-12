@@ -35,3 +35,15 @@ impl fmt::Display for ModError {
 }
 
 impl std::error::Error for ModError {}
+
+impl From<crate::shared::error::CommonError> for ModError {
+    fn from(err: crate::shared::error::CommonError) -> Self {
+        match err {
+            crate::shared::error::CommonError::InvalidExpression(msg) => ModError::InvalidExpression(msg),
+            crate::shared::error::CommonError::DivisionByZero => ModError::DivisionByZero,
+            crate::shared::error::CommonError::Overflow => ModError::Overflow,
+            crate::shared::error::CommonError::DomainError(msg) => ModError::InvalidExpression(format!("Domain Error: {}", msg)),
+            crate::shared::error::CommonError::IoError(msg) => ModError::InvalidExpression(format!("IO Error: {}", msg)),
+        }
+    }
+}

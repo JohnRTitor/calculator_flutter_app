@@ -12,8 +12,8 @@ fn evaluate_core(
     let tokens = parser::tokenize(expr).unwrap();
     let mut p = parser::Parser::new(&tokens);
     let ast = p.parse().unwrap();
-    let evaluator = evaluator::BasicEvaluator;
-    evaluator::evaluate_expr(&ast, &evaluator, is_degree, ans_value)
+    let evaluator = evaluator::BasicEvaluator::new(is_degree, ans_value);
+    evaluator::evaluate_expr(&ast, &evaluator)
 }
 
 // Convenience: evaluates to f64 with default state (radians, ans = 0)
@@ -179,13 +179,13 @@ fn test_variables() {
     vars.insert("y".to_string(), 3.0);
     vars.insert("radius".to_string(), 10.0);
 
-    let func_eval = evaluator::FunctionEvaluator { vars };
+    let func_eval = evaluator::FunctionEvaluator::new(vars, false, 0.0);
 
     let expr = parser::Parser::new(&parser::tokenize("x^2 + y^2").unwrap())
         .parse()
         .unwrap();
     assert_eq!(
-        evaluator::evaluate_expr(&expr, &func_eval, false, 0.0)
+        evaluator::evaluate_expr(&expr, &func_eval)
             .unwrap()
             .to_float(),
         34.0
@@ -195,7 +195,7 @@ fn test_variables() {
         .parse()
         .unwrap();
     assert!(
-        (evaluator::evaluate_expr(&expr2, &func_eval, false, 0.0)
+        (evaluator::evaluate_expr(&expr2, &func_eval)
             .unwrap()
             .to_float()
             - 314.159265)
@@ -207,7 +207,7 @@ fn test_variables() {
         .parse()
         .unwrap();
     assert!(matches!(
-        evaluator::evaluate_expr(&expr_err, &func_eval, false, 0.0),
+        evaluator::evaluate_expr(&expr_err, &func_eval),
         Err(crate::calculator::error::CalcError::InvalidExpression(_))
     ));
 }

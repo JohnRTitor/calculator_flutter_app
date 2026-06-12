@@ -24,3 +24,15 @@ impl fmt::Display for CalcError {
 
 // Needed for flutter_rust_bridge Result returns
 impl std::error::Error for CalcError {}
+
+impl From<crate::shared::error::CommonError> for CalcError {
+    fn from(err: crate::shared::error::CommonError) -> Self {
+        match err {
+            crate::shared::error::CommonError::InvalidExpression(msg) => CalcError::InvalidExpression(msg),
+            crate::shared::error::CommonError::DivisionByZero => CalcError::DivisionByZero,
+            crate::shared::error::CommonError::Overflow => CalcError::Overflow,
+            crate::shared::error::CommonError::DomainError(msg) => CalcError::DomainError(msg),
+            crate::shared::error::CommonError::IoError(msg) => CalcError::IoError(msg),
+        }
+    }
+}

@@ -60,55 +60,43 @@ void memorySubtract({required double value}) =>
 /// Clears the global calculator memory.
 void memoryClear() => RustLib.instance.api.crateBridgeCalculatorMemoryClear();
 
-/// Adds a history entry from Flutter.
 void historyAdd({required String expression, required String result}) => RustLib
     .instance
     .api
     .crateBridgeCalculatorHistoryAdd(expression: expression, result: result);
 
-/// Retrieves all history entries to display in Flutter.
 List<HistoryEntry> historyGetAll() =>
     RustLib.instance.api.crateBridgeCalculatorHistoryGetAll();
 
-/// Clears all history entries.
 void historyClear() => RustLib.instance.api.crateBridgeCalculatorHistoryClear();
 
-/// Deletes a specific history entry.
 void historyDelete({required BigInt index}) =>
     RustLib.instance.api.crateBridgeCalculatorHistoryDelete(index: index);
 
-/// Saves the calculation history to a file path provided by Flutter.
 Future<void> historySave({required String path}) =>
     RustLib.instance.api.crateBridgeCalculatorHistorySave(path: path);
 
-/// Loads the calculation history from a file path provided by Flutter.
 Future<void> historyLoad({required String path}) =>
     RustLib.instance.api.crateBridgeCalculatorHistoryLoad(path: path);
 
-/// Adds a func history entry from Flutter.
 void funcHistoryAdd({required String expression, required String result}) =>
     RustLib.instance.api.crateBridgeCalculatorFuncHistoryAdd(
       expression: expression,
       result: result,
     );
 
-/// Retrieves all func history entries to display in Flutter.
 List<HistoryEntry> funcHistoryGetAll() =>
     RustLib.instance.api.crateBridgeCalculatorFuncHistoryGetAll();
 
-/// Clears all func history entries.
 void funcHistoryClear() =>
     RustLib.instance.api.crateBridgeCalculatorFuncHistoryClear();
 
-/// Deletes a specific func history entry.
 void funcHistoryDelete({required BigInt index}) =>
     RustLib.instance.api.crateBridgeCalculatorFuncHistoryDelete(index: index);
 
-/// Saves the func history to a file path provided by Flutter.
 Future<void> funcHistorySave({required String path}) =>
     RustLib.instance.api.crateBridgeCalculatorFuncHistorySave(path: path);
 
-/// Loads the func history from a file path provided by Flutter.
 Future<void> funcHistoryLoad({required String path}) =>
     RustLib.instance.api.crateBridgeCalculatorFuncHistoryLoad(path: path);
 

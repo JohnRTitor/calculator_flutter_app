@@ -14,8 +14,6 @@ pub struct CalcResult {
 fn perform_evaluation<E: evaluator::Evaluator>(
     expression: String,
     eval: &E,
-    is_degree: bool,
-    ans_value: f64,
 ) -> Result<CalcResult, String> {
     if expression.trim().is_empty() {
         return Ok(CalcResult {
@@ -30,7 +28,7 @@ fn perform_evaluation<E: evaluator::Evaluator>(
     let ast = p.parse().map_err(|e| e.to_string())?;
 
     let calc_val =
-        evaluator::evaluate_expr(&ast, eval, is_degree, ans_value).map_err(|e| e.to_string())?;
+        evaluator::evaluate_expr(&ast, eval).map_err(|e| e.to_string())?;
 
     let val = calc_val.to_float();
     // Check for NaN or Inf
@@ -54,7 +52,8 @@ fn perform_evaluation<E: evaluator::Evaluator>(
 /// This is a synchronous Flutter Rust Bridge function.
 #[frb(sync)]
 pub fn evaluate(expression: String, is_degree: bool, ans_value: f64) -> Result<CalcResult, String> {
-    perform_evaluation(expression, &evaluator::BasicEvaluator, is_degree, ans_value)
+    let eval = evaluator::BasicEvaluator::new(is_degree, ans_value);
+    perform_evaluation(expression, &eval)
 }
 
 /// Evaluates a mathematical expression string with variables from Flutter and returns the result.
@@ -65,8 +64,8 @@ pub fn evaluate_with_vars(
     is_degree: bool,
     ans_value: f64,
 ) -> Result<CalcResult, String> {
-    let func_eval = evaluator::FunctionEvaluator::new(vars);
-    perform_evaluation(expression, &func_eval, is_degree, ans_value)
+    let func_eval = evaluator::FunctionEvaluator::new(vars, is_degree, ans_value);
+    perform_evaluation(expression, &func_eval)
 }
 
 /// Formats a floating-point result into a string, trimming trailing zeros and decimals.
@@ -113,73 +112,24 @@ pub fn memory_clear() {
     memory::clear();
 }
 
-/// Adds a history entry from Flutter.
-#[frb(sync)]
-pub fn history_add(expression: String, result: String) {
-    history::BASIC_HISTORY.add(expression, result);
-}
-
-/// Retrieves all history entries to display in Flutter.
-#[frb(sync)]
-pub fn history_get_all() -> Vec<HistoryEntry> {
-    history::BASIC_HISTORY.get_all()
-}
-
-/// Clears all history entries.
-#[frb(sync)]
-pub fn history_clear() {
-    history::BASIC_HISTORY.clear();
-}
-
-/// Deletes a specific history entry.
-#[frb(sync)]
-pub fn history_delete(index: usize) {
-    history::BASIC_HISTORY.delete(index);
-}
-
-/// Saves the calculation history to a file path provided by Flutter.
-pub fn history_save(path: String) -> Result<(), String> {
-    history::BASIC_HISTORY.save(&path).map_err(|e| e.to_string())
-}
-
-/// Loads the calculation history from a file path provided by Flutter.
-pub fn history_load(path: String) -> Result<(), String> {
-    history::BASIC_HISTORY.load(&path).map_err(|e| e.to_string())
-}
-
-/// Adds a func history entry from Flutter.
-#[frb(sync)]
-pub fn func_history_add(expression: String, result: String) {
-    history::FUNC_HISTORY.add(expression, result);
-}
-
-/// Retrieves all func history entries to display in Flutter.
-#[frb(sync)]
-pub fn func_history_get_all() -> Vec<HistoryEntry> {
-    history::FUNC_HISTORY.get_all()
-}
-
-/// Clears all func history entries.
-#[frb(sync)]
-pub fn func_history_clear() {
-    history::FUNC_HISTORY.clear();
-}
-
-/// Deletes a specific func history entry.
-#[frb(sync)]
-pub fn func_history_delete(index: usize) {
-    history::FUNC_HISTORY.delete(index);
-}
-
-/// Saves the func history to a file path provided by Flutter.
-pub fn func_history_save(path: String) -> Result<(), String> {
-    history::FUNC_HISTORY.save(&path).map_err(|e| e.to_string())
-}
-
-/// Loads the func history from a file path provided by Flutter.
-pub fn func_history_load(path: String) -> Result<(), String> {
-    history::FUNC_HISTORY.load(&path).map_err(|e| e.to_string())
-}
+crate::history_bridge!(
+    history_add,
+    history_get_all,
+    history_clear,
+    history_delete,
+    history_save,
+    history_load,
+    history::BASIC_HISTORY
+);
+crate::history_bridge!(
+    func_history_add,
+    func_history_get_all,
+    func_history_clear,
+    func_history_delete,
+    func_history_save,
+    func_history_load,
+    history::FUNC_HISTORY
+);
 
 /// Extracts variables from an expression string.
 #[frb(sync)]
@@ -221,3 +171,4 @@ fn is_variable(ident: &str) -> bool {
         _ => true,
     }
 }
+

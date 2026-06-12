@@ -204,36 +204,12 @@ pub fn analyze_structure(
     }
 }
 
-/// Adds a history entry from Flutter for modular arithmetic.
-#[frb(sync)]
-pub fn modular_history_add(expression: String, result: String) {
-    history::MOD_HISTORY.add(expression, result);
-}
-
-/// Retrieves all modular history entries to display in Flutter.
-#[frb(sync)]
-pub fn modular_history_get_all() -> Vec<history::HistoryEntry> {
-    history::MOD_HISTORY.get_all()
-}
-
-/// Clears all modular history entries.
-#[frb(sync)]
-pub fn modular_history_clear() {
-    history::MOD_HISTORY.clear();
-}
-
-/// Deletes a specific modular history entry.
-#[frb(sync)]
-pub fn modular_history_delete(index: usize) {
-    history::MOD_HISTORY.delete(index);
-}
-
-/// Saves the modular history to a file path provided by Flutter.
-pub fn modular_history_save(path: String) -> Result<(), String> {
-    history::MOD_HISTORY.save(&path).map_err(|e| e.to_string())
-}
-
-/// Loads the modular history from a file path provided by Flutter.
-pub fn modular_history_load(path: String) -> Result<(), String> {
-    history::MOD_HISTORY.load(&path).map_err(|e| e.to_string())
-}
+crate::history_bridge!(
+    modular_history_add,
+    modular_history_get_all,
+    modular_history_clear,
+    modular_history_delete,
+    modular_history_save,
+    modular_history_load,
+    history::MOD_HISTORY
+);

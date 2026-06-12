@@ -1,4 +1,5 @@
 use crate::calculator::error::CalcError;
+use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::sync::Mutex;
@@ -8,6 +9,34 @@ use std::sync::Mutex;
 pub struct HistoryEntry {
     pub expression: String,
     pub result: String,
+}
+
+#[macro_export]
+macro_rules! history_bridge {
+    ($add:ident, $get_all:ident, $clear:ident, $delete:ident, $save:ident, $load:ident, $history:expr) => {
+        #[flutter_rust_bridge::frb(sync)]
+        pub fn $add(expression: String, result: String) {
+            $history.add(expression, result);
+        }
+        #[flutter_rust_bridge::frb(sync)]
+        pub fn $get_all() -> Vec<crate::shared::history::HistoryEntry> {
+            $history.get_all()
+        }
+        #[flutter_rust_bridge::frb(sync)]
+        pub fn $clear() {
+            $history.clear();
+        }
+        #[flutter_rust_bridge::frb(sync)]
+        pub fn $delete(index: usize) {
+            $history.delete(index);
+        }
+        pub fn $save(path: String) -> Result<(), String> {
+            $history.save(&path).map_err(|e| e.to_string())
+        }
+        pub fn $load(path: String) -> Result<(), String> {
+            $history.load(&path).map_err(|e| e.to_string())
+        }
+    };
 }
 
 pub struct HistoryManager {
@@ -53,7 +82,8 @@ impl HistoryManager {
         let history = self.get_all();
         let json = serde_json::to_string(&history)
             .map_err(|e| CalcError::IoError(format!("Serialization error: {}", e)))?;
-        fs::write(path, json).map_err(|e| CalcError::IoError(format!("File write error: {}", e)))?;
+        fs::write(path, json)
+            .map_err(|e| CalcError::IoError(format!("File write error: {}", e)))?;
         Ok(())
     }
 

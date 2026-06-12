@@ -27,30 +27,24 @@ StructureAnalysis analyzeStructure({
   n: n,
 );
 
-/// Adds a history entry from Flutter for modular arithmetic.
 void modularHistoryAdd({required String expression, required String result}) =>
     RustLib.instance.api.crateBridgeModularMathModularHistoryAdd(
       expression: expression,
       result: result,
     );
 
-/// Retrieves all modular history entries to display in Flutter.
 List<HistoryEntry> modularHistoryGetAll() =>
     RustLib.instance.api.crateBridgeModularMathModularHistoryGetAll();
 
-/// Clears all modular history entries.
 void modularHistoryClear() =>
     RustLib.instance.api.crateBridgeModularMathModularHistoryClear();
 
-/// Deletes a specific modular history entry.
 void modularHistoryDelete({required BigInt index}) => RustLib.instance.api
     .crateBridgeModularMathModularHistoryDelete(index: index);
 
-/// Saves the modular history to a file path provided by Flutter.
 Future<void> modularHistorySave({required String path}) =>
     RustLib.instance.api.crateBridgeModularMathModularHistorySave(path: path);
 
-/// Loads the modular history from a file path provided by Flutter.
 Future<void> modularHistoryLoad({required String path}) =>
     RustLib.instance.api.crateBridgeModularMathModularHistoryLoad(path: path);
 

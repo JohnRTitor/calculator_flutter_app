@@ -10,11 +10,13 @@ use flutter_rust_bridge::frb;
 #[frb(ignore)]
 pub struct FunctionEvaluator {
     pub vars: HashMap<String, f64>,
+    pub is_degree: bool,
+    pub ans_value: f64,
 }
 
 impl FunctionEvaluator {
-    pub fn new(vars: HashMap<String, f64>) -> Self {
-        Self { vars }
+    pub fn new(vars: HashMap<String, f64>, is_degree: bool, ans_value: f64) -> Self {
+        Self { vars, is_degree, ans_value }
     }
 }
 
@@ -34,4 +36,7 @@ impl Evaluator for FunctionEvaluator {
             )))
         }
     }
+    
+    fn is_degree(&self) -> bool { self.is_degree }
+    fn ans_value(&self) -> f64 { self.ans_value }
 }
