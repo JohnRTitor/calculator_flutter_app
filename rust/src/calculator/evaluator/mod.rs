@@ -75,8 +75,7 @@ pub fn evaluate_expr(expr: &Expr, evaluator: &dyn Evaluator) -> Result<CalcValue
 
                 if let (CalcValue::Rational(b), CalcValue::Rational(e), CalcValue::Rational(m)) =
                     (&base, &exp, &modulus)
-                {
-                    if b.is_integer()
+                    && b.is_integer()
                         && e.is_integer()
                         && m.is_integer()
                         && m.numer() > &num_bigint::BigInt::zero()
@@ -95,7 +94,6 @@ pub fn evaluate_expr(expr: &Expr, evaluator: &dyn Evaluator) -> Result<CalcValue
                             }
                         }
                     }
-                }
 
                 // Fallback to regular evaluation if not exact integers or modulus is negative/zero
                 return base
@@ -116,8 +114,8 @@ pub fn evaluate_expr(expr: &Expr, evaluator: &dyn Evaluator) -> Result<CalcValue
         Expr::Negate(e) => Ok(evaluate_expr(e, evaluator)?.negate()),
         Expr::Factorial(e) => {
             let val = evaluate_expr(e, evaluator)?;
-            if let CalcValue::Rational(r) = val {
-                if r.is_integer() && r.numer() >= &num_bigint::BigInt::zero() {
+            if let CalcValue::Rational(r) = val
+                && r.is_integer() && r.numer() >= &num_bigint::BigInt::zero() {
                     let mut result = num_bigint::BigInt::one();
                     let mut i = num_bigint::BigInt::one();
                     let n = r.numer();
@@ -134,10 +132,9 @@ pub fn evaluate_expr(expr: &Expr, evaluator: &dyn Evaluator) -> Result<CalcValue
                         num_rational::BigRational::from_integer(result),
                     ));
                 }
-            }
-            return Err(CalcError::DomainError(
+            Err(CalcError::DomainError(
                 "Factorial requires positive integer".to_string(),
-            ));
+            ))
         }
         Expr::Percentage(e) => {
             let val = evaluate_expr(e, evaluator)?;

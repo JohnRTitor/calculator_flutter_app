@@ -63,9 +63,7 @@ pub fn jacobi_symbol(mut a: i128, mut n: i128) -> Result<i8, ModError> {
             }
         }
 
-        let temp = a;
-        a = n;
-        n = temp;
+        std::mem::swap(&mut a, &mut n);
 
         if a % 4 == 3 && n % 4 == 3 {
             t = -t;
@@ -142,9 +140,7 @@ pub fn sqrt_mod(a: i128, p: i128) -> Result<Vec<i128>, ModError> {
         }
 
         if i == 0 {
-            return Err(ModError::NoSolution(format!(
-                "Failed to find modular square root"
-            )));
+            return Err(ModError::NoSolution("Failed to find modular square root".to_string()));
         }
 
         let b = mod_pow(c, 1_i128 << (m - i - 1), p)?;

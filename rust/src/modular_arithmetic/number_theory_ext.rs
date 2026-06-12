@@ -128,12 +128,11 @@ pub fn primitive_roots(n: i128) -> Result<Vec<i128>, ModError> {
     // Find the first primitive root
     let mut g = -1;
     for i in 2..n {
-        if gcd(i, n) == 1 {
-            if is_primitive_root(i, n)? {
+        if gcd(i, n) == 1
+            && is_primitive_root(i, n)? {
                 g = i;
                 break;
             }
-        }
     }
 
     if g == -1 {

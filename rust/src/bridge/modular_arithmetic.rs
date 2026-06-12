@@ -1,5 +1,4 @@
 use crate::modular_arithmetic::{evaluator, parser};
-use crate::shared::history;
 use flutter_rust_bridge::frb;
 
 /// Represents the result of a modular calculation
@@ -68,6 +67,13 @@ pub struct ElementOrderPair {
 }
 
 #[frb]
+pub struct CayleyTable {
+    pub operation: String,
+    pub headers: Vec<String>,
+    pub rows: Vec<Vec<String>>,
+}
+
+#[frb]
 pub struct StructureAnalysis {
     pub label: String,
     pub order: String,
@@ -85,7 +91,7 @@ pub struct StructureAnalysis {
     pub nilpotents: Vec<String>,
     pub inverses: Vec<InversePair>,
     pub element_orders: Vec<ElementOrderPair>,
-    pub cayley_table: Option<String>,
+    pub cayley_table: Option<CayleyTable>,
     pub classification: String,
     pub is_truncated: bool,
 }
@@ -163,17 +169,16 @@ pub fn analyze_structure(
 
             let cayley = if modulus <= 25 {
                 if let Ok(table) = crate::modular_arithmetic::cayley::addition_table(modulus) {
-                    let mut s = String::new();
-                    for row in table {
-                        s.push_str(
-                            &row.iter()
-                                .map(|num| format!("{:3}", num))
-                                .collect::<Vec<_>>()
-                                .join(" "),
-                        );
-                        s.push('\n');
-                    }
-                    Some(s)
+                    let headers = (0..modulus).map(|x| x.to_string()).collect();
+                    let rows = table
+                        .into_iter()
+                        .map(|row| row.into_iter().map(|num| num.to_string()).collect())
+                        .collect();
+                    Some(CayleyTable {
+                        operation: "+".to_string(),
+                        headers,
+                        rows,
+                    })
                 } else {
                     None
                 }
@@ -237,17 +242,16 @@ pub fn analyze_structure(
             let cayley = if units.len() <= 25 {
                 if let Ok((_, table)) = crate::modular_arithmetic::cayley::unit_group_table(modulus)
                 {
-                    let mut s = String::new();
-                    for row in table {
-                        s.push_str(
-                            &row.iter()
-                                .map(|num| format!("{:3}", num))
-                                .collect::<Vec<_>>()
-                                .join(" "),
-                        );
-                        s.push('\n');
-                    }
-                    Some(s)
+                    let headers = units.iter().map(|x| x.to_string()).collect();
+                    let rows = table
+                        .into_iter()
+                        .map(|row| row.into_iter().map(|num| num.to_string()).collect())
+                        .collect();
+                    Some(CayleyTable {
+                        operation: "*".to_string(),
+                        headers,
+                        rows,
+                    })
                 } else {
                     None
                 }

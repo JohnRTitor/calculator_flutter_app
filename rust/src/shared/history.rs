@@ -19,6 +19,12 @@ pub struct HistoryManager {
     history: Mutex<Vec<HistoryEntry>>,
 }
 
+impl Default for HistoryManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl HistoryManager {
     pub const fn new() -> Self {
         Self {
@@ -28,11 +34,10 @@ impl HistoryManager {
 
     pub fn add(&self, category: String, preview: String, snapshot: String) {
         if let Ok(mut history) = self.history.lock() {
-            if let Some(last) = history.last() {
-                if last.category == category && last.preview == preview {
+            if let Some(last) = history.last()
+                && last.category == category && last.preview == preview {
                     return; // Avoid duplicate consecutive history entries
                 }
-            }
 
             let timestamp = SystemTime::now()
                 .duration_since(UNIX_EPOCH)
@@ -105,11 +110,10 @@ impl HistoryManager {
             .map_err(|e| CalcError::IoError(format!("File read error: {}", e)))?;
         
         // Attempt to deserialize, ignoring failure to allow clean wipe on bad schema
-        if let Ok(loaded_history) = serde_json::from_str::<Vec<HistoryEntry>>(&json) {
-            if let Ok(mut history) = self.history.lock() {
+        if let Ok(loaded_history) = serde_json::from_str::<Vec<HistoryEntry>>(&json)
+            && let Ok(mut history) = self.history.lock() {
                 *history = loaded_history;
             }
-        }
         Ok(())
     }
 }

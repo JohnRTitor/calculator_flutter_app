@@ -26,6 +26,30 @@ StructureAnalysisResponse analyzeStructure({
   n: n,
 );
 
+class CayleyTable {
+  final String operation;
+  final List<String> headers;
+  final List<List<String>> rows;
+
+  const CayleyTable({
+    required this.operation,
+    required this.headers,
+    required this.rows,
+  });
+
+  @override
+  int get hashCode => operation.hashCode ^ headers.hashCode ^ rows.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CayleyTable &&
+          runtimeType == other.runtimeType &&
+          operation == other.operation &&
+          headers == other.headers &&
+          rows == other.rows;
+}
+
 class ElementOrderPair {
   final String element;
   final String order;
@@ -108,7 +132,7 @@ class StructureAnalysis {
   final List<String> nilpotents;
   final List<InversePair> inverses;
   final List<ElementOrderPair> elementOrders;
-  final String? cayleyTable;
+  final CayleyTable? cayleyTable;
   final String classification;
   final bool isTruncated;
 

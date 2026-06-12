@@ -9,16 +9,10 @@ mod tests {
         assert_eq!(analysis.label, "Z_12");
         assert_eq!(analysis.order, "|Z_12| = 12");
         assert_eq!(analysis.is_cyclic, true);
-        assert!(analysis.units.as_ref().unwrap().contains("1, 5, 7, 11"));
-        assert!(
-            analysis
-                .zero_divisors
-                .as_ref()
-                .unwrap()
-                .contains("2, 3, 4, 6, 8, 9, 10")
-        );
-        assert!(analysis.idempotents.as_ref().unwrap().contains("4, 9"));
-        assert!(analysis.nilpotents.as_ref().unwrap().contains("6"));
+        assert_eq!(analysis.units, vec!["1", "5", "7", "11"]);
+        assert_eq!(analysis.zero_divisors, vec!["2", "3", "4", "6", "8", "9", "10"]);
+        assert_eq!(analysis.idempotents, vec!["0", "1", "4", "9"]);
+        assert_eq!(analysis.nilpotents, vec!["0", "6"]);
     }
 
     #[test]
@@ -28,7 +22,7 @@ mod tests {
         assert_eq!(analysis.label, "U(10)");
         assert_eq!(analysis.order, "|U(10)| = φ(10) = 4");
         assert_eq!(analysis.is_cyclic, true);
-        assert!(analysis.generators.as_ref().unwrap().contains("3, 7"));
+        assert_eq!(analysis.generators, vec!["3", "7"]);
     }
 
     #[test]

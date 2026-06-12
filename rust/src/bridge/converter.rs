@@ -124,9 +124,9 @@ pub fn calculate_bmi(weight_kg: f64, height_m: f64) -> BmiResult {
 
     let category = if bmi < 18.5 {
         "Underweight"
-    } else if bmi >= 18.5 && bmi < 25.0 {
+    } else if (18.5..25.0).contains(&bmi) {
         "Normal"
-    } else if bmi >= 25.0 && bmi < 30.0 {
+    } else if (25.0..30.0).contains(&bmi) {
         "Overweight"
     } else {
         "Obese"

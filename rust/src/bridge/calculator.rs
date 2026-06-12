@@ -1,5 +1,4 @@
 use crate::calculator::{evaluator, memory, parser};
-use crate::shared::history;
 pub use crate::shared::history::HistoryEntry;
 use flutter_rust_bridge::frb;
 
@@ -146,11 +145,9 @@ pub fn extract_variables(expression: String) -> Result<Vec<String>, String> {
 }
 
 fn is_variable(ident: &str) -> bool {
-    match ident.to_lowercase().as_str() {
+    !matches!(
+        ident.to_lowercase().as_str(),
         "mod" | "sin" | "cos" | "tan" | "asin" | "acos" | "atan" | "sinh" | "cosh" | "tanh"
-        | "asinh" | "acosh" | "atanh" | "log" | "log_" | "ln" | "sqrt" | "pi" | "e" | "ans" => {
-            false
-        }
-        _ => true,
-    }
+            | "asinh" | "acosh" | "atanh" | "log" | "log_" | "ln" | "sqrt" | "pi" | "e" | "ans"
+    )
 }

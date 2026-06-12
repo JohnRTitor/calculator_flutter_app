@@ -81,6 +81,7 @@ impl CalcValue {
     }
 
     /// Adds two `CalcValue`s, preserving rationality if possible.
+    #[allow(clippy::should_implement_trait)]
     pub fn add(self, other: CalcValue) -> CalcValue {
         match (self, other) {
             (CalcValue::Rational(r1), CalcValue::Rational(r2)) => CalcValue::Rational(r1 + r2),
@@ -92,6 +93,7 @@ impl CalcValue {
     }
 
     /// Subtracts `other` from `self`, preserving rationality if possible.
+    #[allow(clippy::should_implement_trait)]
     pub fn sub(self, other: CalcValue) -> CalcValue {
         match (self, other) {
             (CalcValue::Rational(r1), CalcValue::Rational(r2)) => CalcValue::Rational(r1 - r2),
@@ -103,6 +105,7 @@ impl CalcValue {
     }
 
     /// Multiplies two `CalcValue`s, preserving rationality if possible.
+    #[allow(clippy::should_implement_trait)]
     pub fn mul(self, other: CalcValue) -> CalcValue {
         match (self, other) {
             (CalcValue::Rational(r1), CalcValue::Rational(r2)) => CalcValue::Rational(r1 * r2),
@@ -116,6 +119,8 @@ impl CalcValue {
 
     /// Divides `self` by `other`, preserving rationality if possible.
     /// Returns an error if dividing by zero.
+    #[allow(clippy::should_implement_trait)]
+    #[allow(clippy::result_unit_err)]
     pub fn div(self, other: CalcValue) -> Result<CalcValue, ()> {
         let other_f = other.to_float();
         if other_f == 0.0 {
@@ -133,6 +138,7 @@ impl CalcValue {
     }
 
     /// Computes `self % other`. Attempts exact integer modulo if possible.
+    #[allow(clippy::result_unit_err)]
     pub fn modulo(self, other: CalcValue) -> Result<CalcValue, ()> {
         if other.to_float() == 0.0 {
             return Err(());
@@ -171,8 +177,8 @@ impl CalcValue {
                         CalcValue::Rational(r1.pow(exp))
                     } else {
                         CalcValue::Rational(BigRational::new(
-                            r1.denom().pow(exp.abs() as u32),
-                            r1.numer().pow(exp.abs() as u32),
+                            r1.denom().pow(exp.unsigned_abs()),
+                            r1.numer().pow(exp.unsigned_abs()),
                         ))
                     }
                 } else {

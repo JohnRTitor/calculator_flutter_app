@@ -3,6 +3,7 @@ import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/generated/rust/bridge/modular_arithmetic.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/shared/widgets/app_dialog.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/widgets/modular_arithmetic/cayley_table_view.dart';
 
 class ModularArithmeticAnalysisGrid extends StatefulWidget {
   final UiStyle uiStyle;
@@ -329,17 +330,17 @@ class _ModularArithmeticAnalysisGridState
             ),
           if (widget.analysis.cayleyTable != null)
             _ExpandableDataSection(
+              key: const ValueKey('cayley_table'),
               uiStyle: widget.uiStyle,
               title: 'Cayley Table',
               count: '1',
-              isExpanded: false,
+              isExpanded: true,
               onExpansionChanged: (_) {},
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Text(
-                  widget.analysis.cayleyTable!,
-                  style: const TextStyle(fontFamily: 'monospace'),
-                ),
+              child: CayleyTableView(
+                uiStyle: widget.uiStyle,
+                cayleyTable: widget.analysis.cayleyTable!,
+                identity: widget.analysis.identity,
+                inverses: widget.analysis.inverses,
               ),
             ),
         ],

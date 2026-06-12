@@ -1077,6 +1077,20 @@ impl SseDecode for crate::bridge::calculator::CalcResult {
     }
 }
 
+impl SseDecode for crate::bridge::modular_arithmetic::CayleyTable {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_operation = <String>::sse_decode(deserializer);
+        let mut var_headers = <Vec<String>>::sse_decode(deserializer);
+        let mut var_rows = <Vec<Vec<String>>>::sse_decode(deserializer);
+        return crate::bridge::modular_arithmetic::CayleyTable {
+            operation: var_operation,
+            headers: var_headers,
+            rows: var_rows,
+        };
+    }
+}
+
 impl SseDecode for crate::bridge::converter::DateDiffResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1314,6 +1328,18 @@ impl SseDecode for Vec<crate::bridge::modular_arithmetic::InversePair> {
     }
 }
 
+impl SseDecode for Vec<Vec<String>> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ {
+            ans_.push(<Vec<String>>::sse_decode(deserializer));
+        }
+        return ans_;
+    }
+}
+
 impl SseDecode for Vec<u8> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1379,6 +1405,19 @@ impl SseDecode for Option<String> {
     }
 }
 
+impl SseDecode for Option<crate::bridge::modular_arithmetic::CayleyTable> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(
+                <crate::bridge::modular_arithmetic::CayleyTable>::sse_decode(deserializer),
+            );
+        } else {
+            return None;
+        }
+    }
+}
+
 impl SseDecode for Option<f64> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1433,7 +1472,8 @@ impl SseDecode for crate::bridge::modular_arithmetic::StructureAnalysis {
             <Vec<crate::bridge::modular_arithmetic::InversePair>>::sse_decode(deserializer);
         let mut var_elementOrders =
             <Vec<crate::bridge::modular_arithmetic::ElementOrderPair>>::sse_decode(deserializer);
-        let mut var_cayleyTable = <Option<String>>::sse_decode(deserializer);
+        let mut var_cayleyTable =
+            <Option<crate::bridge::modular_arithmetic::CayleyTable>>::sse_decode(deserializer);
         let mut var_classification = <String>::sse_decode(deserializer);
         let mut var_isTruncated = <bool>::sse_decode(deserializer);
         return crate::bridge::modular_arithmetic::StructureAnalysis {
@@ -1628,6 +1668,28 @@ impl flutter_rust_bridge::IntoIntoDart<crate::bridge::calculator::CalcResult>
     for crate::bridge::calculator::CalcResult
 {
     fn into_into_dart(self) -> crate::bridge::calculator::CalcResult {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::bridge::modular_arithmetic::CayleyTable {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.operation.into_into_dart().into_dart(),
+            self.headers.into_into_dart().into_dart(),
+            self.rows.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::bridge::modular_arithmetic::CayleyTable
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::bridge::modular_arithmetic::CayleyTable>
+    for crate::bridge::modular_arithmetic::CayleyTable
+{
+    fn into_into_dart(self) -> crate::bridge::modular_arithmetic::CayleyTable {
         self
     }
 }
@@ -1983,6 +2045,15 @@ impl SseEncode for crate::bridge::calculator::CalcResult {
     }
 }
 
+impl SseEncode for crate::bridge::modular_arithmetic::CayleyTable {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.operation, serializer);
+        <Vec<String>>::sse_encode(self.headers, serializer);
+        <Vec<Vec<String>>>::sse_encode(self.rows, serializer);
+    }
+}
+
 impl SseEncode for crate::bridge::converter::DateDiffResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -2151,6 +2222,16 @@ impl SseEncode for Vec<crate::bridge::modular_arithmetic::InversePair> {
     }
 }
 
+impl SseEncode for Vec<Vec<String>> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <Vec<String>>::sse_encode(item, serializer);
+        }
+    }
+}
+
 impl SseEncode for Vec<u8> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -2196,6 +2277,16 @@ impl SseEncode for Option<String> {
         <bool>::sse_encode(self.is_some(), serializer);
         if let Some(value) = self {
             <String>::sse_encode(value, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<crate::bridge::modular_arithmetic::CayleyTable> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <crate::bridge::modular_arithmetic::CayleyTable>::sse_encode(value, serializer);
         }
     }
 }
@@ -2253,7 +2344,10 @@ impl SseEncode for crate::bridge::modular_arithmetic::StructureAnalysis {
             self.element_orders,
             serializer,
         );
-        <Option<String>>::sse_encode(self.cayley_table, serializer);
+        <Option<crate::bridge::modular_arithmetic::CayleyTable>>::sse_encode(
+            self.cayley_table,
+            serializer,
+        );
         <String>::sse_encode(self.classification, serializer);
         <bool>::sse_encode(self.is_truncated, serializer);
     }

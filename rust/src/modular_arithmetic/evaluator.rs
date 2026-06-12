@@ -62,24 +62,22 @@ pub enum StructureMode {
     Crt,
 }
 
+#[allow(clippy::collapsible_if)]
 pub fn evaluate_mod_expr(
     expr: &ModExpr,
     context_modulus: Option<i128>,
     mode: StructureMode,
     show_steps: bool,
 ) -> Result<ModResult, ModError> {
-    match mode {
-        StructureMode::Field => {
-            if let Some(m) = context_modulus {
-                if !mod_arith::is_prime(m) {
-                    return Err(ModError::NotPrime(format!(
-                        "{} is not prime. Field mode requires a prime modulus.",
-                        m
-                    )));
-                }
+    if let StructureMode::Field = mode {
+        if let Some(m) = context_modulus {
+            if !mod_arith::is_prime(m) {
+                return Err(ModError::NotPrime(format!(
+                    "{} is not prime. Field mode requires a prime modulus.",
+                    m
+                )));
             }
         }
-        _ => {}
     }
 
     let result = eval(expr, context_modulus)?;
@@ -399,7 +397,7 @@ fn eval(expr: &ModExpr, context_modulus: Option<i128>) -> Result<i128, ModError>
                         "Negative exponent without modulus".to_string(),
                     ));
                 }
-                if val_b > std::u32::MAX as i128 {
+                if val_b > u32::MAX as i128 {
                     return Err(ModError::Overflow);
                 }
                 val_a.checked_pow(val_b as u32).ok_or(ModError::Overflow)

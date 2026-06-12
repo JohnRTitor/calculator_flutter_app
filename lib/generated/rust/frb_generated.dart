@@ -1064,6 +1064,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  CayleyTable dco_decode_box_autoadd_cayley_table(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_cayley_table(raw);
+  }
+
+  @protected
   double dco_decode_box_autoadd_f_64(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as double;
@@ -1091,6 +1097,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       value: dco_decode_f_64(arr[0]),
       formatted: dco_decode_String(arr[1]),
       exactFraction: dco_decode_opt_String(arr[2]),
+    );
+  }
+
+  @protected
+  CayleyTable dco_decode_cayley_table(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    return CayleyTable(
+      operation: dco_decode_String(arr[0]),
+      headers: dco_decode_list_String(arr[1]),
+      rows: dco_decode_list_list_String(arr[2]),
     );
   }
 
@@ -1276,6 +1295,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  List<List<String>> dco_decode_list_list_String(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_list_String).toList();
+  }
+
+  @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as Uint8List;
@@ -1318,6 +1343,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   String? dco_decode_opt_String(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_String(raw);
+  }
+
+  @protected
+  CayleyTable? dco_decode_opt_box_autoadd_cayley_table(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_cayley_table(raw);
   }
 
   @protected
@@ -1367,7 +1398,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       nilpotents: dco_decode_list_String(arr[13]),
       inverses: dco_decode_list_inverse_pair(arr[14]),
       elementOrders: dco_decode_list_element_order_pair(arr[15]),
-      cayleyTable: dco_decode_opt_String(arr[16]),
+      cayleyTable: dco_decode_opt_box_autoadd_cayley_table(arr[16]),
       classification: dco_decode_String(arr[17]),
       isTruncated: dco_decode_bool(arr[18]),
     );
@@ -1439,6 +1470,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  CayleyTable sse_decode_box_autoadd_cayley_table(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_cayley_table(deserializer));
+  }
+
+  @protected
   double sse_decode_box_autoadd_f_64(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_f_64(deserializer));
@@ -1468,6 +1507,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       value: var_value,
       formatted: var_formatted,
       exactFraction: var_exactFraction,
+    );
+  }
+
+  @protected
+  CayleyTable sse_decode_cayley_table(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_operation = sse_decode_String(deserializer);
+    var var_headers = sse_decode_list_String(deserializer);
+    var var_rows = sse_decode_list_list_String(deserializer);
+    return CayleyTable(
+      operation: var_operation,
+      headers: var_headers,
+      rows: var_rows,
     );
   }
 
@@ -1693,6 +1745,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  List<List<String>> sse_decode_list_list_String(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <List<String>>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_list_String(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var len_ = sse_decode_i_32(deserializer);
@@ -1753,6 +1817,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  CayleyTable? sse_decode_opt_box_autoadd_cayley_table(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_cayley_table(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
   double? sse_decode_opt_box_autoadd_f_64(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
@@ -1805,7 +1882,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_nilpotents = sse_decode_list_String(deserializer);
     var var_inverses = sse_decode_list_inverse_pair(deserializer);
     var var_elementOrders = sse_decode_list_element_order_pair(deserializer);
-    var var_cayleyTable = sse_decode_opt_String(deserializer);
+    var var_cayleyTable = sse_decode_opt_box_autoadd_cayley_table(deserializer);
     var var_classification = sse_decode_String(deserializer);
     var var_isTruncated = sse_decode_bool(deserializer);
     return StructureAnalysis(
@@ -1901,6 +1978,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_cayley_table(
+    CayleyTable self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_cayley_table(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_f_64(double self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_f_64(self, serializer);
@@ -1927,6 +2013,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_f_64(self.value, serializer);
     sse_encode_String(self.formatted, serializer);
     sse_encode_opt_String(self.exactFraction, serializer);
+  }
+
+  @protected
+  void sse_encode_cayley_table(CayleyTable self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.operation, serializer);
+    sse_encode_list_String(self.headers, serializer);
+    sse_encode_list_list_String(self.rows, serializer);
   }
 
   @protected
@@ -2107,6 +2201,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_list_list_String(
+    List<List<String>> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_list_String(item, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_list_prim_u_8_strict(
     Uint8List self,
     SseSerializer serializer,
@@ -2152,6 +2258,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_bool(self != null, serializer);
     if (self != null) {
       sse_encode_String(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_box_autoadd_cayley_table(
+    CayleyTable? self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_cayley_table(self, serializer);
     }
   }
 
@@ -2210,7 +2329,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_list_String(self.nilpotents, serializer);
     sse_encode_list_inverse_pair(self.inverses, serializer);
     sse_encode_list_element_order_pair(self.elementOrders, serializer);
-    sse_encode_opt_String(self.cayleyTable, serializer);
+    sse_encode_opt_box_autoadd_cayley_table(self.cayleyTable, serializer);
     sse_encode_String(self.classification, serializer);
     sse_encode_bool(self.isTruncated, serializer);
   }
