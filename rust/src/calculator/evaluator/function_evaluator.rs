@@ -1,6 +1,6 @@
 use crate::calculator::error::CalcError;
 use crate::calculator::evaluator::Evaluator;
-use crate::calculator::rational::{CalcValue, Rational};
+use crate::calculator::rational::CalcValue;
 use std::collections::HashMap;
 
 use flutter_rust_bridge::frb;
@@ -23,9 +23,9 @@ impl Evaluator for FunctionEvaluator {
         if let Some(&val) = self.vars.get(name) {
             // Support rational arithmetic internally if the variable is an exact integer
             if val.fract() == 0.0 && val >= (i128::MIN as f64) && val <= (i128::MAX as f64) {
-                Ok(CalcValue::Rational(Rational::new(val as i128, 1)))
+                Ok(CalcValue::from_i128(val as i128, 1))
             } else {
-                Ok(CalcValue::Float(val))
+                Ok(CalcValue::from_f64(val))
             }
         } else {
             Err(CalcError::InvalidExpression(format!(

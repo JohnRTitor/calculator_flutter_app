@@ -3,11 +3,12 @@ pub mod function_evaluator;
 
 use crate::calculator::error::CalcError;
 use crate::calculator::parser::Expr;
-use crate::calculator::rational::{CalcValue, Rational};
+use crate::calculator::rational::CalcValue;
 use std::collections::HashSet;
 
 pub use basic_evaluator::BasicEvaluator;
 pub use function_evaluator::FunctionEvaluator;
+use num_traits::{Zero, One};
 
 /// Defines the capabilities of an evaluator, specifically how it resolves variables.
 pub trait Evaluator {
@@ -34,21 +35,21 @@ pub fn evaluate_expr(
     match expr {
         Expr::Number(n) => {
             if n.fract() == 0.0 && *n >= (i128::MIN as f64) && *n <= (i128::MAX as f64) {
-                Ok(CalcValue::Rational(Rational::new(*n as i128, 1)))
+                Ok(CalcValue::from_i128(*n as i128, 1))
             } else {
-                Ok(CalcValue::Float(*n))
+                Ok(CalcValue::from_f64(*n))
             }
         }
-        Expr::Pi => Ok(CalcValue::PiRational(Rational::new(1, 1))),
-        Expr::E => Ok(CalcValue::Float(std::f64::consts::E)),
+        Expr::Pi => Ok(CalcValue::pi_from_i128(1, 1)),
+        Expr::E => Ok(CalcValue::from_f64(std::f64::consts::E)),
         Expr::Ans => {
             if ans_value.fract() == 0.0
                 && ans_value >= (i128::MIN as f64)
                 && ans_value <= (i128::MAX as f64)
             {
-                Ok(CalcValue::Rational(Rational::new(ans_value as i128, 1)))
+                Ok(CalcValue::from_i128(ans_value as i128, 1))
             } else {
-                Ok(CalcValue::Float(ans_value))
+                Ok(CalcValue::from_f64(ans_value))
             }
         }
         Expr::Variable(name) => evaluator.resolve_variable(name),
@@ -68,11 +69,14 @@ pub fn evaluate_expr(
                 let exp = evaluate_expr(exp_expr, evaluator, is_degree, ans_value)?;
                 let modulus = evaluate_expr(r, evaluator, is_degree, ans_value)?;
 
-                if let (CalcValue::Rational(b), CalcValue::Rational(e), CalcValue::Rational(m)) = (base, exp, modulus) {
-                    if b.den == 1 && e.den == 1 && m.den == 1 && m.num > 0 {
-                        // Use modular arithmetic engine
-                        if let Ok(res) = crate::modular_math::mod_arith::mod_pow(b.num, e.num, m.num) {
-                            return Ok(CalcValue::Rational(Rational::new(res, 1)));
+                if let (CalcValue::Rational(b), CalcValue::Rational(e), CalcValue::Rational(m)) = (&base, &exp, &modulus) {
+                    if b.is_integer() && e.is_integer() && m.is_integer() && m.numer() > &num_bigint::BigInt::zero() {
+                        use num_traits::{ToPrimitive, Zero};
+                        if let (Some(b_i128), Some(e_i128), Some(m_i128)) = (b.numer().to_i128(), e.numer().to_i128(), m.numer().to_i128()) {
+                            // Use modular arithmetic engine
+                            if let Ok(res) = crate::modular_math::mod_arith::mod_pow(b_i128, e_i128, m_i128) {
+                                return Ok(CalcValue::from_i128(res, 1));
+                            }
                         }
                     }
                 }
@@ -92,24 +96,29 @@ pub fn evaluate_expr(
         }
         Expr::Negate(e) => Ok(evaluate_expr(e, evaluator, is_degree, ans_value)?.negate()),
         Expr::Factorial(e) => {
-            let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
-            if val < 0.0 || val.fract() != 0.0 {
-                return Err(CalcError::DomainError(
-                    "Factorial is only defined for non-negative integers".to_string(),
-                ));
+            let val = evaluate_expr(e, evaluator, is_degree, ans_value)?;
+            if let CalcValue::Rational(r) = val {
+                if r.is_integer() && r.numer() >= &num_bigint::BigInt::zero() {
+                    let mut result = num_bigint::BigInt::one();
+                    let mut i = num_bigint::BigInt::one();
+                    let n = r.numer();
+                    // Arbitrary limit to prevent DOS from user putting 99999999999!
+                    use num_traits::ToPrimitive;
+                    if n.to_u32().unwrap_or(u32::MAX) > 10000 {
+                         return Err(CalcError::Overflow);
+                    }
+                    while &i <= n {
+                        result *= &i;
+                        i += num_bigint::BigInt::one();
+                    }
+                    return Ok(CalcValue::Rational(num_rational::BigRational::from_integer(result)));
+                }
             }
-            if val > 170.0 {
-                return Err(CalcError::Overflow);
-            }
-            let mut result = 1.0;
-            for i in 2..=(val as u64) {
-                result *= i as f64;
-            }
-            Ok(CalcValue::Float(result))
+            return Err(CalcError::DomainError("Factorial requires positive integer".to_string()));
         }
         Expr::Percentage(e) => {
             let val = evaluate_expr(e, evaluator, is_degree, ans_value)?;
-            val.div(CalcValue::Rational(Rational::new(100, 1)))
+            val.div(CalcValue::from_i128(100, 1))
                 .map_err(|_| CalcError::DivisionByZero)
         }
         Expr::Sin(e) => {
@@ -122,7 +131,7 @@ pub fn evaluate_expr(
             if is_degree && val % 180.0 == 0.0 {
                 res = 0.0;
             }
-            Ok(CalcValue::Float(res))
+            Ok(CalcValue::from_f64(res))
         }
         Expr::Cos(e) => {
             let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
@@ -134,7 +143,7 @@ pub fn evaluate_expr(
             if is_degree && (val - 90.0) % 180.0 == 0.0 {
                 res = 0.0;
             }
-            Ok(CalcValue::Float(res))
+            Ok(CalcValue::from_f64(res))
         }
         Expr::Tan(e) => {
             let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
@@ -149,7 +158,7 @@ pub fn evaluate_expr(
             if is_degree && val % 180.0 == 0.0 {
                 res = 0.0;
             }
-            Ok(CalcValue::Float(res))
+            Ok(CalcValue::from_f64(res))
         }
         Expr::Asin(e) => {
             let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
@@ -159,7 +168,7 @@ pub fn evaluate_expr(
                 ));
             }
             let res = val.asin();
-            Ok(CalcValue::Float(if is_degree {
+            Ok(CalcValue::from_f64(if is_degree {
                 res.to_degrees()
             } else {
                 res
@@ -173,7 +182,7 @@ pub fn evaluate_expr(
                 ));
             }
             let res = val.acos();
-            Ok(CalcValue::Float(if is_degree {
+            Ok(CalcValue::from_f64(if is_degree {
                 res.to_degrees()
             } else {
                 res
@@ -182,28 +191,28 @@ pub fn evaluate_expr(
         Expr::Atan(e) => {
             let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
             let res = val.atan();
-            Ok(CalcValue::Float(if is_degree {
+            Ok(CalcValue::from_f64(if is_degree {
                 res.to_degrees()
             } else {
                 res
             }))
         }
-        Expr::Sinh(e) => Ok(CalcValue::Float(
+        Expr::Sinh(e) => Ok(CalcValue::from_f64(
             evaluate_expr(e, evaluator, is_degree, ans_value)?
                 .to_float()
                 .sinh(),
         )),
-        Expr::Cosh(e) => Ok(CalcValue::Float(
+        Expr::Cosh(e) => Ok(CalcValue::from_f64(
             evaluate_expr(e, evaluator, is_degree, ans_value)?
                 .to_float()
                 .cosh(),
         )),
-        Expr::Tanh(e) => Ok(CalcValue::Float(
+        Expr::Tanh(e) => Ok(CalcValue::from_f64(
             evaluate_expr(e, evaluator, is_degree, ans_value)?
                 .to_float()
                 .tanh(),
         )),
-        Expr::Asinh(e) => Ok(CalcValue::Float(
+        Expr::Asinh(e) => Ok(CalcValue::from_f64(
             evaluate_expr(e, evaluator, is_degree, ans_value)?
                 .to_float()
                 .asinh(),
@@ -215,7 +224,7 @@ pub fn evaluate_expr(
                     "Acosh is only defined for numbers >= 1".to_string(),
                 ));
             }
-            Ok(CalcValue::Float(val.acosh()))
+            Ok(CalcValue::from_f64(val.acosh()))
         }
         Expr::Atanh(e) => {
             let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
@@ -224,7 +233,7 @@ pub fn evaluate_expr(
                     "Atanh is only defined for domain (-1, 1)".to_string(),
                 ));
             }
-            Ok(CalcValue::Float(val.atanh()))
+            Ok(CalcValue::from_f64(val.atanh()))
         }
         Expr::Log10(e) => {
             let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
@@ -233,7 +242,7 @@ pub fn evaluate_expr(
                     "Log is only defined for positive numbers".to_string(),
                 ));
             }
-            Ok(CalcValue::Float(val.log10()))
+            Ok(CalcValue::from_f64(val.log10()))
         }
         Expr::Log { base, value } => {
             let b = evaluate_expr(base, evaluator, is_degree, ans_value)?.to_float();
@@ -246,7 +255,7 @@ pub fn evaluate_expr(
                     "Logarithm value must be positive".to_string(),
                 ));
             }
-            Ok(CalcValue::Float(v.ln() / b.ln()))
+            Ok(CalcValue::from_f64(v.ln() / b.ln()))
         }
         Expr::Ln(e) => {
             let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
@@ -255,7 +264,7 @@ pub fn evaluate_expr(
                     "Ln is only defined for positive numbers".to_string(),
                 ));
             }
-            Ok(CalcValue::Float(val.ln()))
+            Ok(CalcValue::from_f64(val.ln()))
         }
         Expr::Sqrt(e) => {
             let val = evaluate_expr(e, evaluator, is_degree, ans_value)?.to_float();
@@ -264,7 +273,7 @@ pub fn evaluate_expr(
                     "Square root is not defined for negative numbers".to_string(),
                 ));
             }
-            Ok(CalcValue::Float(val.sqrt()))
+            Ok(CalcValue::from_f64(val.sqrt()))
         }
     }
 }

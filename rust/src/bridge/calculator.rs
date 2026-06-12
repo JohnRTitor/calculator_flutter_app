@@ -38,9 +38,14 @@ fn perform_evaluation<E: evaluator::Evaluator>(
         return Err("Result is undefined or too large".to_string());
     }
 
+    let formatted = match &calc_val {
+        crate::calculator::rational::CalcValue::Rational(r) if r.is_integer() => r.numer().to_string(),
+        _ => format_result(val, 10),
+    };
+
     Ok(CalcResult {
         value: val,
-        formatted: format_result(val, 10),
+        formatted,
         exact_fraction: calc_val.to_exact_fraction_string(),
     })
 }

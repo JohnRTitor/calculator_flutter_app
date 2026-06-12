@@ -1,58 +1,50 @@
-/// Calculates the Greatest Common Divisor (GCD) of two integers.
-pub fn gcd(mut a: i128, mut b: i128) -> i128 {
-    a = a.abs();
-    b = b.abs();
-    while b != 0 {
-        let t = b;
-        b = a % b;
-        a = t;
-    }
-    a.max(1)
-}
-
-/// Represents a rational number with a numerator and denominator.
-/// Used to maintain precision in calculations instead of falling back to floats immediately.
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Rational {
-    pub num: i128,
-    pub den: i128,
-}
-
-impl Rational {
-    /// Creates a new `Rational` number in its simplest form.
-    pub fn new(num: i128, den: i128) -> Self {
-        if den == 0 {
-            return Self { num, den }; // Let upper levels handle division by zero or infinity
-        }
-        let g = gcd(num, den);
-        let mut n = num / g;
-        let mut d = den / g;
-        if d < 0 {
-            n = -n;
-            d = -d;
-        }
-        Self { num: n, den: d }
-    }
-}
+use bigdecimal::{BigDecimal, ToPrimitive};
+use num_bigint::BigInt;
+use num_rational::BigRational;
+use num_traits::{Signed, ToPrimitive as _, Zero, One};
 
 /// Represents the evaluated value of an expression.
-/// Can be a precise Rational, a multiple of Pi, or a fallback floating point value.
-#[derive(Clone, Copy, Debug, PartialEq)]
+/// Can be a precise Rational, a multiple of Pi, or a fallback decimal value.
+#[derive(Clone, Debug, PartialEq)]
 pub enum CalcValue {
-    Rational(Rational),
-    PiRational(Rational),
-    Float(f64),
+    Rational(BigRational),
+    PiRational(BigRational),
+    Float(BigDecimal),
 }
 
 impl CalcValue {
     /// Converts this `CalcValue` into a standard `f64` float.
-    pub fn to_float(self) -> f64 {
+    pub fn to_float(&self) -> f64 {
         match self {
-            CalcValue::Rational(r) => r.num as f64 / r.den as f64,
+            CalcValue::Rational(r) => r.to_f64().unwrap_or(f64::NAN),
+            CalcValue::PiRational(r) => r.to_f64().unwrap_or(f64::NAN) * std::f64::consts::PI,
+            CalcValue::Float(f) => f.to_f64().unwrap_or(f64::NAN),
+        }
+    }
+    
+    pub fn from_f64(f: f64) -> Self {
+        CalcValue::Float(BigDecimal::try_from(f).unwrap_or_default())
+    }
 
-            CalcValue::PiRational(r) => (r.num as f64 / r.den as f64) * std::f64::consts::PI,
+    pub fn from_i128(n: i128, d: i128) -> Self {
+        CalcValue::Rational(BigRational::new(BigInt::from(n), BigInt::from(d)))
+    }
 
-            CalcValue::Float(f) => f,
+    pub fn pi_from_i128(n: i128, d: i128) -> Self {
+        CalcValue::PiRational(BigRational::new(BigInt::from(n), BigInt::from(d)))
+    }
+
+    pub fn to_big_decimal(&self) -> BigDecimal {
+        match self {
+            CalcValue::Rational(r) => {
+                let f = self.to_float();
+                BigDecimal::try_from(f).unwrap_or_default()
+            }
+            CalcValue::PiRational(_) => {
+                let f = self.to_float();
+                BigDecimal::try_from(f).unwrap_or_default()
+            }
+            CalcValue::Float(f) => f.clone()
         }
     }
 
@@ -60,27 +52,27 @@ impl CalcValue {
     pub fn to_exact_fraction_string(&self) -> Option<String> {
         match self {
             CalcValue::Rational(r) => {
-                if r.den != 1 {
-                    Some(format!("{}/{}", r.num, r.den))
+                if !r.is_integer() {
+                    Some(format!("{}/{}", r.numer(), r.denom()))
                 } else {
                     None
                 }
             }
             CalcValue::PiRational(r) => {
-                if r.num == 0 {
+                if r.is_zero() {
                     Some("0".to_string())
                 } else {
-                    let num_str = if r.num == 1 {
+                    let num_str = if r.numer() == &BigInt::one() {
                         "π".to_string()
-                    } else if r.num == -1 {
+                    } else if r.numer() == &-BigInt::one() {
                         "-π".to_string()
                     } else {
-                        format!("{}π", r.num)
+                        format!("{}π", r.numer())
                     };
-                    if r.den == 1 {
+                    if r.denom() == &BigInt::one() {
                         Some(num_str)
                     } else {
-                        Some(format!("{}/{}", num_str, r.den))
+                        Some(format!("{}/{}", num_str, r.denom()))
                     }
                 }
             }
@@ -92,34 +84,12 @@ impl CalcValue {
     pub fn add(self, other: CalcValue) -> CalcValue {
         match (self, other) {
             (CalcValue::Rational(r1), CalcValue::Rational(r2)) => {
-                let num = r1
-                    .num
-                    .checked_mul(r2.den)
-                    .and_then(|n| n.checked_add(r2.num.checked_mul(r1.den)?));
-
-                let den = r1.den.checked_mul(r2.den);
-
-                match (num, den) {
-                    (Some(n), Some(d)) => CalcValue::Rational(Rational::new(n, d)),
-                    _ => CalcValue::Float(self.to_float() + other.to_float()), // overflow fallback
-                }
+                CalcValue::Rational(r1 + r2)
             }
-
             (CalcValue::PiRational(r1), CalcValue::PiRational(r2)) => {
-                let num = r1
-                    .num
-                    .checked_mul(r2.den)
-                    .and_then(|n| n.checked_add(r2.num.checked_mul(r1.den)?));
-
-                let den = r1.den.checked_mul(r2.den);
-
-                match (num, den) {
-                    (Some(n), Some(d)) => CalcValue::PiRational(Rational::new(n, d)),
-                    _ => CalcValue::Float(self.to_float() + other.to_float()),
-                }
+                CalcValue::PiRational(r1 + r2)
             }
-
-            _ => CalcValue::Float(self.to_float() + other.to_float()),
+            (a, b) => CalcValue::Float(a.to_big_decimal() + b.to_big_decimal()),
         }
     }
 
@@ -127,34 +97,12 @@ impl CalcValue {
     pub fn sub(self, other: CalcValue) -> CalcValue {
         match (self, other) {
             (CalcValue::Rational(r1), CalcValue::Rational(r2)) => {
-                let num = r1
-                    .num
-                    .checked_mul(r2.den)
-                    .and_then(|n| n.checked_sub(r2.num.checked_mul(r1.den)?));
-
-                let den = r1.den.checked_mul(r2.den);
-
-                match (num, den) {
-                    (Some(n), Some(d)) => CalcValue::Rational(Rational::new(n, d)),
-                    _ => CalcValue::Float(self.to_float() - other.to_float()),
-                }
+                CalcValue::Rational(r1 - r2)
             }
-
             (CalcValue::PiRational(r1), CalcValue::PiRational(r2)) => {
-                let num = r1
-                    .num
-                    .checked_mul(r2.den)
-                    .and_then(|n| n.checked_sub(r2.num.checked_mul(r1.den)?));
-
-                let den = r1.den.checked_mul(r2.den);
-
-                match (num, den) {
-                    (Some(n), Some(d)) => CalcValue::PiRational(Rational::new(n, d)),
-                    _ => CalcValue::Float(self.to_float() - other.to_float()),
-                }
+                CalcValue::PiRational(r1 - r2)
             }
-
-            _ => CalcValue::Float(self.to_float() - other.to_float()),
+            (a, b) => CalcValue::Float(a.to_big_decimal() - b.to_big_decimal()),
         }
     }
 
@@ -162,132 +110,98 @@ impl CalcValue {
     pub fn mul(self, other: CalcValue) -> CalcValue {
         match (self, other) {
             (CalcValue::Rational(r1), CalcValue::Rational(r2)) => {
-                let num = r1.num.checked_mul(r2.num);
-                let den = r1.den.checked_mul(r2.den);
-
-                match (num, den) {
-                    (Some(n), Some(d)) => CalcValue::Rational(Rational::new(n, d)),
-                    _ => CalcValue::Float(self.to_float() * other.to_float()),
-                }
+                CalcValue::Rational(r1 * r2)
             }
-
             (CalcValue::Rational(r1), CalcValue::PiRational(r2))
             | (CalcValue::PiRational(r2), CalcValue::Rational(r1)) => {
-                let num = r1.num.checked_mul(r2.num);
-                let den = r1.den.checked_mul(r2.den);
-
-                match (num, den) {
-                    (Some(n), Some(d)) => CalcValue::PiRational(Rational::new(n, d)),
-                    _ => CalcValue::Float(self.to_float() * other.to_float()),
-                }
+                CalcValue::PiRational(r1 * r2)
             }
-
-            _ => CalcValue::Float(self.to_float() * other.to_float()),
+            (a, b) => CalcValue::Float(a.to_big_decimal() * b.to_big_decimal()),
         }
     }
 
     /// Divides `self` by `other`, preserving rationality if possible.
     /// Returns an error if dividing by zero.
     pub fn div(self, other: CalcValue) -> Result<CalcValue, ()> {
-        let other_float = other.to_float();
-        if other_float == 0.0 {
-            return Err(()); // Division by zero handled in upper levels
+        let other_f = other.to_float();
+        if other_f == 0.0 {
+            return Err(());
         }
         Ok(match (self, other) {
             (CalcValue::Rational(r1), CalcValue::Rational(r2)) => {
-                let num = r1.num.checked_mul(r2.den);
-                let den = r1.den.checked_mul(r2.num);
-
-                match (num, den) {
-                    (Some(n), Some(d)) => CalcValue::Rational(Rational::new(n, d)),
-                    _ => CalcValue::Float(self.to_float() / other_float),
-                }
+                CalcValue::Rational(r1 / r2)
             }
-
             (CalcValue::PiRational(r1), CalcValue::Rational(r2)) => {
-                let num = r1.num.checked_mul(r2.den);
-                let den = r1.den.checked_mul(r2.num);
-
-                match (num, den) {
-                    (Some(n), Some(d)) => CalcValue::PiRational(Rational::new(n, d)),
-                    _ => CalcValue::Float(self.to_float() / other_float),
-                }
+                CalcValue::PiRational(r1 / r2)
             }
-
             (CalcValue::PiRational(r1), CalcValue::PiRational(r2)) => {
-                let num = r1.num.checked_mul(r2.den);
-                let den = r1.den.checked_mul(r2.num);
-
-                match (num, den) {
-                    // Pi cancels out
-                    (Some(n), Some(d)) => CalcValue::Rational(Rational::new(n, d)),
-                    _ => CalcValue::Float(self.to_float() / other_float),
-                }
+                CalcValue::Rational(r1 / r2)
             }
-
-            _ => CalcValue::Float(self.to_float() / other_float),
+            (a, b) => {
+                let res = a.to_float() / b.to_float();
+                CalcValue::Float(BigDecimal::try_from(res).unwrap_or_default())
+            }
         })
     }
 
     /// Computes `self % other`. Attempts exact integer modulo if possible.
     pub fn modulo(self, other: CalcValue) -> Result<CalcValue, ()> {
-        let other_float = other.to_float();
-        if other_float == 0.0 {
+        if other.to_float() == 0.0 {
             return Err(());
         }
         
         match (self, other) {
-            (CalcValue::Rational(r1), CalcValue::Rational(r2)) if r1.den == 1 && r2.den == 1 => {
-                let mut res = r1.num % r2.num;
-                if res < 0 {
-                    if r2.num > 0 {
-                        res += r2.num;
+            (CalcValue::Rational(r1), CalcValue::Rational(r2)) if r1.is_integer() && r2.is_integer() => {
+                let mut res = r1.numer() % r2.numer();
+                if res < BigInt::zero() {
+                    if r2.numer() > &BigInt::zero() {
+                        res += r2.numer();
                     } else {
-                        res -= r2.num;
+                        res -= r2.numer();
                     }
                 }
-                Ok(CalcValue::Rational(Rational::new(res, 1)))
+                Ok(CalcValue::Rational(BigRational::from_integer(res)))
             }
-            _ => Ok(CalcValue::Float(self.to_float() % other_float)),
+            (a, b) => {
+                let res = a.to_float() % b.to_float();
+                Ok(CalcValue::Float(BigDecimal::try_from(res).unwrap_or_default()))
+            }
         }
     }
 
     /// Raises `self` to the power of `other`, attempting to preserve rationality for integer exponents.
     pub fn pow(self, other: CalcValue) -> CalcValue {
-        match (self, other) {
-            (CalcValue::Rational(r1), CalcValue::Rational(r2)) if r2.den == 1 => {
+        match (self.clone(), other.clone()) {
+            (CalcValue::Rational(r1), CalcValue::Rational(r2)) if r2.is_integer() => {
                 // Integer exponent
-                if r2.num >= 0 && r2.num <= u32::MAX as i128 {
-                    let num = r1.num.checked_pow(r2.num as u32);
-                    let den = r1.den.checked_pow(r2.num as u32);
-
-                    if let (Some(n), Some(d)) = (num, den) {
-                        return CalcValue::Rational(Rational::new(n, d));
+                if let Some(exp) = r2.numer().to_i32() {
+                    if exp >= 0 {
+                        CalcValue::Rational(r1.pow(exp))
+                    } else {
+                        CalcValue::Rational(BigRational::new(
+                            r1.denom().pow(exp.abs() as u32),
+                            r1.numer().pow(exp.abs() as u32)
+                        ))
                     }
-                } else if r2.num < 0 && r2.num.abs() <= u32::MAX as i128 {
-                    // Negative exponent
-                    let exp = r2.num.abs() as u32;
-                    let num = r1.den.checked_pow(exp);
-                    let den = r1.num.checked_pow(exp);
-
-                    if let (Some(n), Some(d)) = (num, den) {
-                        return CalcValue::Rational(Rational::new(n, d));
-                    }
+                } else {
+                    let f_self = self.to_float();
+                    let f_other = other.to_float();
+                    let res = f_self.powf(f_other);
+                    CalcValue::Float(BigDecimal::try_from(res).unwrap_or_default())
                 }
-                CalcValue::Float(self.to_float().powf(other.to_float()))
             }
-
-            _ => CalcValue::Float(self.to_float().powf(other.to_float())),
+            (a, b) => {
+                let res = a.to_float().powf(b.to_float());
+                CalcValue::Float(BigDecimal::try_from(res).unwrap_or_default())
+            }
         }
     }
 
     /// Negates this `CalcValue`.
     pub fn negate(self) -> CalcValue {
         match self {
-            CalcValue::Rational(r) => CalcValue::Rational(Rational::new(-r.num, r.den)),
-
-            CalcValue::PiRational(r) => CalcValue::PiRational(Rational::new(-r.num, r.den)),
-
+            CalcValue::Rational(r) => CalcValue::Rational(-r),
+            CalcValue::PiRational(r) => CalcValue::PiRational(-r),
             CalcValue::Float(f) => CalcValue::Float(-f),
         }
     }
