@@ -5,6 +5,9 @@ import 'package:calculator_flutter_app/features/calculator/presentation/provider
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/shared/widgets/app_dropdown_menu.dart';
+import 'package:calculator_flutter_app/shared/widgets/app_button.dart';
+import 'package:calculator_flutter_app/shared/widgets/app_dialog.dart';
 
 class StructureExplorer extends ConsumerStatefulWidget {
   const StructureExplorer({super.key});
@@ -51,16 +54,31 @@ class _StructureExplorerState extends ConsumerState<StructureExplorer> {
                 child: _buildNInput(context, state, uiStyle),
               ),
               const SizedBox(width: 8),
-              FilledButton.icon(
-                onPressed: () {
-                  ref.read(modularWorkspaceProvider.notifier).analyzeStructure();
-                },
-                icon: const Icon(Icons.analytics),
-                label: const Text('Analyze'),
+              SizedBox(
+                width: 140,
+                height: 56,
+                child: AppCalcButton(
+                  text: 'Analyze',
+                  type: ButtonType.equals,
+                  uiStyle: uiStyle,
+                  onPressed: () {
+                    ref.read(modularWorkspaceProvider.notifier).analyzeStructure();
+                    return true;
+                  },
+                  icon: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.analytics, size: 20),
+                      SizedBox(width: 8),
+                      Text('Analyze', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
               ),
               IconButton(
                 icon: const Icon(Icons.info_outline),
-                onPressed: () => _showInfoDialog(context),
+                onPressed: () => _showInfoDialog(context, uiStyle),
                 tooltip: 'Supported Notation',
               )
             ],
@@ -74,85 +92,79 @@ class _StructureExplorerState extends ConsumerState<StructureExplorer> {
     );
   }
 
-  void _showInfoDialog(BuildContext context) {
-    showDialog(
+  void _showInfoDialog(BuildContext context, UiStyle uiStyle) {
+    showAppDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Supported Notation'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('You can enter simple numbers, and the system will automatically convert them based on your selected type. Or, use any of the standard math notations:'),
-                const SizedBox(height: 16),
-                DataTable(
-                  headingRowHeight: 40,
-                  dataRowMinHeight: 40,
-                  dataRowMaxHeight: 60,
-                  columns: const [
-                    DataColumn(label: Text('Type', style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(label: Text('Accepted Forms', style: TextStyle(fontWeight: FontWeight.bold))),
-                  ],
-                  rows: const [
-                    DataRow(cells: [
-                      DataCell(Text('Z₁₂')),
-                      DataCell(Text('Z_12, Z12, Z(12), Z/12Z')),
-                    ]),
-                    DataRow(cells: [
-                      DataCell(Text('U(85)')),
-                      DataCell(Text('U(85), Units(85), Z_85*')),
-                    ]),
-                    DataRow(cells: [
-                      DataCell(Text('GF(7)')),
-                      DataCell(Text('GF(7), GF7, F7')),
-                    ]),
-                    DataRow(cells: [
-                      DataCell(Text('GF(2⁸)')),
-                      DataCell(Text('GF(2^8), F(2^8)')),
-                    ]),
-                  ],
-                ),
-              ],
-            ),
+      title: 'Supported Notation',
+      icon: Icons.info_outline,
+      uiStyle: uiStyle,
+      primaryButtonText: 'Close',
+      scrollable: true,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('You can enter simple numbers, and the system will automatically convert them based on your selected type. Or, use any of the standard math notations:'),
+          const SizedBox(height: 16),
+          DataTable(
+            headingRowHeight: 40,
+            dataRowMinHeight: 40,
+            dataRowMaxHeight: 60,
+            columns: const [
+              DataColumn(label: Text('Type', style: TextStyle(fontWeight: FontWeight.bold))),
+              DataColumn(label: Text('Accepted Forms', style: TextStyle(fontWeight: FontWeight.bold))),
+            ],
+            rows: const [
+              DataRow(cells: [
+                DataCell(Text('Z₁₂')),
+                DataCell(Text('Z_12, Z12, Z(12), Z/12Z')),
+              ]),
+              DataRow(cells: [
+                DataCell(Text('U(85)')),
+                DataCell(Text('U(85), Units(85), Z_85*')),
+              ]),
+              DataRow(cells: [
+                DataCell(Text('GF(7)')),
+                DataCell(Text('GF(7), GF7, F7')),
+              ]),
+              DataRow(cells: [
+                DataCell(Text('GF(2⁸)')),
+                DataCell(Text('GF(2^8), F(2^8)')),
+              ]),
+            ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
+        ],
+      ),
     );
   }
 
   Widget _buildTypeSelector(BuildContext context, ModularWorkspaceState state, UiStyle uiStyle) {
-    final theme = Theme.of(context);
-    return SharedSurface(
+    String currentLabel;
+    switch (state.explorerType) {
+      case 'ring': currentLabel = 'Z_n (Ring)'; break;
+      case 'group': currentLabel = 'Z_n* (Group)'; break;
+      case 'field': currentLabel = 'GF(p) (Field)'; break;
+      default: currentLabel = 'Z_n (Ring)';
+    }
+
+    return AppDropdownMenu(
+      label: currentLabel,
       uiStyle: uiStyle,
-      glassRole: GlassSurfaceRole.card,
-      frosted: true,
-      borderRadius: BorderRadius.circular(16),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: state.explorerType,
-          isExpanded: true,
-          dropdownColor: theme.colorScheme.surfaceContainerHighest,
-          items: const [
-            DropdownMenuItem(value: 'ring', child: Text('Z_n (Ring)')),
-            DropdownMenuItem(value: 'group', child: Text('Z_n* (Group)')),
-            DropdownMenuItem(value: 'field', child: Text('GF(p) (Field)')),
-          ],
-          onChanged: (type) {
-            if (type != null) {
-              ref.read(modularWorkspaceProvider.notifier).setExplorerType(type);
-            }
-          },
+      isExpanded: true,
+      entries: [
+        AppDropdownMenuEntry(
+          label: 'Z_n (Ring)',
+          onPressed: () => ref.read(modularWorkspaceProvider.notifier).setExplorerType('ring'),
         ),
-      ),
+        AppDropdownMenuEntry(
+          label: 'Z_n* (Group)',
+          onPressed: () => ref.read(modularWorkspaceProvider.notifier).setExplorerType('group'),
+        ),
+        AppDropdownMenuEntry(
+          label: 'GF(p) (Field)',
+          onPressed: () => ref.read(modularWorkspaceProvider.notifier).setExplorerType('field'),
+        ),
+      ],
     );
   }
 

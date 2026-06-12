@@ -9,6 +9,8 @@ import 'package:calculator_flutter_app/features/calculator/presentation/widgets/
 import 'package:calculator_flutter_app/features/calculator/presentation/widgets/supported_operations_dialog.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/widgets/modular_onboarding_overlay.dart';
 import 'package:calculator_flutter_app/shared/widgets/app_tab_bar.dart';
+import 'package:calculator_flutter_app/shared/widgets/app_dropdown_menu.dart';
+import 'package:calculator_flutter_app/shared/widgets/app_button.dart';
 
 class ModularWorkspaceScreen extends ConsumerStatefulWidget {
   const ModularWorkspaceScreen({super.key});
@@ -66,7 +68,7 @@ class _ModularWorkspaceScreenState extends ConsumerState<ModularWorkspaceScreen>
               IconButton(
                 icon: const Icon(Icons.help_outline),
                 tooltip: 'Supported Operations',
-                onPressed: () => SupportedOperationsDialog.show(context),
+                onPressed: () => SupportedOperationsDialog.show(context, uiStyle: uiStyle),
               ),
             ],
           ),
@@ -127,30 +129,31 @@ class _ModularWorkspaceScreenState extends ConsumerState<ModularWorkspaceScreen>
   }
 
   Widget _buildModeSelector(BuildContext context, ModularWorkspaceState state, UiStyle uiStyle) {
-    final theme = Theme.of(context);
-    return SharedSurface(
+    String currentLabel;
+    switch (state.mode) {
+      case ModularMode.ring: currentLabel = 'Z/nZ (Ring)'; break;
+      case ModularMode.field: currentLabel = 'GF(p) (Field)'; break;
+      case ModularMode.crt: currentLabel = 'CRT Solver'; break;
+    }
+
+    return AppDropdownMenu(
+      label: currentLabel,
       uiStyle: uiStyle,
-      glassRole: GlassSurfaceRole.card,
-      frosted: true,
-      borderRadius: BorderRadius.circular(16),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<ModularMode>(
-          value: state.mode,
-          isExpanded: true,
-          dropdownColor: theme.colorScheme.surfaceContainerHighest,
-          items: const [
-            DropdownMenuItem(value: ModularMode.ring, child: Text('Z/nZ (Ring)')),
-            DropdownMenuItem(value: ModularMode.field, child: Text('GF(p) (Field)')),
-            DropdownMenuItem(value: ModularMode.crt, child: Text('CRT Solver')),
-          ],
-          onChanged: (mode) {
-            if (mode != null) {
-              ref.read(modularWorkspaceProvider.notifier).setMode(mode);
-            }
-          },
+      isExpanded: true,
+      entries: [
+        AppDropdownMenuEntry(
+          label: 'Z/nZ (Ring)',
+          onPressed: () => ref.read(modularWorkspaceProvider.notifier).setMode(ModularMode.ring),
         ),
-      ),
+        AppDropdownMenuEntry(
+          label: 'GF(p) (Field)',
+          onPressed: () => ref.read(modularWorkspaceProvider.notifier).setMode(ModularMode.field),
+        ),
+        AppDropdownMenuEntry(
+          label: 'CRT Solver',
+          onPressed: () => ref.read(modularWorkspaceProvider.notifier).setMode(ModularMode.crt),
+        ),
+      ],
     );
   }
 
@@ -264,12 +267,27 @@ class _ModularWorkspaceScreenState extends ConsumerState<ModularWorkspaceScreen>
           const SizedBox(height: 16),
           Align(
             alignment: Alignment.bottomRight,
-            child: FilledButton.icon(
-              onPressed: () {
-                ref.read(modularWorkspaceProvider.notifier).evaluate();
-              },
-              icon: const Icon(Icons.calculate),
-              label: const Text('Evaluate'),
+            child: SizedBox(
+              width: 160,
+              height: 56,
+              child: AppCalcButton(
+                text: 'Evaluate',
+                type: ButtonType.equals,
+                uiStyle: uiStyle,
+                onPressed: () {
+                  ref.read(modularWorkspaceProvider.notifier).evaluate();
+                  return true;
+                },
+                icon: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.calculate, size: 20),
+                    SizedBox(width: 8),
+                    Text('Evaluate', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ),
             ),
           ),
         ],

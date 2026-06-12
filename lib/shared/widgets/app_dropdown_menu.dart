@@ -15,18 +15,24 @@ class AppDropdownMenuEntry {
 }
 
 class AppDropdownMenu extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
+  final String? label;
   final UiStyle uiStyle;
   final List<AppDropdownMenuEntry> entries;
   final String? tooltip;
+  final bool showArrow;
+  final bool isExpanded;
 
   const AppDropdownMenu({
     super.key,
-    required this.icon,
+    this.icon,
+    this.label,
     required this.uiStyle,
     required this.entries,
     this.tooltip,
-  });
+    this.showArrow = true,
+    this.isExpanded = false,
+  }) : assert(icon != null || label != null, 'Must provide either an icon or a label');
 
   @override
   Widget build(BuildContext context) {
@@ -57,12 +63,69 @@ class AppDropdownMenu extends StatelessWidget {
       }).toList();
     }
 
+    Widget buildTrigger(MenuController controller, Color? fgColor) {
+      if (label != null) {
+        return InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () {
+            if (controller.isOpen) {
+              controller.close();
+            } else {
+              controller.open();
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            child: Row(
+              mainAxisSize: isExpanded ? MainAxisSize.max : MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Text(
+                    label!,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: fgColor ?? colorScheme.onSurface,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                if (showArrow) ...[
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.arrow_drop_down,
+                    color: fgColor ?? colorScheme.onSurfaceVariant,
+                  ),
+                ]
+              ],
+            ),
+          ),
+        );
+      }
+
+      return IconButton(
+        tooltip: tooltip,
+        icon: Icon(
+          icon,
+          size: 22,
+          color: fgColor ?? colorScheme.onSurfaceVariant,
+        ),
+        onPressed: () {
+          if (controller.isOpen) {
+            controller.close();
+          } else {
+            controller.open();
+          }
+        },
+      );
+    }
+
     if (isGlass) {
       return SharedSurface(
         uiStyle: uiStyle,
-        glassRole: GlassSurfaceRole.button,
+        glassRole: label != null ? GlassSurfaceRole.card : GlassSurfaceRole.button,
         frosted: true,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(label != null ? 16 : 24),
         child: MenuAnchor(
           style: const MenuStyle(
             backgroundColor: WidgetStatePropertyAll(Colors.transparent),
@@ -70,21 +133,7 @@ class AppDropdownMenu extends StatelessWidget {
             padding: WidgetStatePropertyAll(EdgeInsets.zero),
           ),
           builder: (context, controller, child) {
-            return IconButton(
-              tooltip: tooltip,
-              icon: Icon(
-                icon,
-                size: 22,
-                color: glassCard.foregroundColor,
-              ),
-              onPressed: () {
-                if (controller.isOpen) {
-                  controller.close();
-                } else {
-                  controller.open();
-                }
-              },
-            );
+            return buildTrigger(controller, glassCard.foregroundColor);
           },
           menuChildren: [
             SharedSurface(
@@ -118,20 +167,12 @@ class AppDropdownMenu extends StatelessWidget {
         padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 8)),
       ),
       builder: (context, controller, child) {
-        return IconButton(
-          tooltip: tooltip,
-          icon: Icon(
-            icon,
-            size: 22,
-            color: colorScheme.onSurfaceVariant,
-          ),
-          onPressed: () {
-            if (controller.isOpen) {
-              controller.close();
-            } else {
-              controller.open();
-            }
-          },
+        return Container(
+          decoration: label != null ? BoxDecoration(
+            color: colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(16),
+          ) : null,
+          child: buildTrigger(controller, null),
         );
       },
       menuChildren: buildMenuItems(),

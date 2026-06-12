@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:calculator_flutter_app/shared/widgets/app_dialog.dart' as import_app_dialog;
+import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 
 class SupportedOperationsDialog extends StatefulWidget {
   const SupportedOperationsDialog({super.key});
 
-  static void show(BuildContext context) {
-    showDialog(
+  static void show(BuildContext context, {required UiStyle uiStyle}) {
+    import_app_dialog.showAppDialog(
       context: context,
-      builder: (context) => const SupportedOperationsDialog(),
+      title: 'Supported Operations',
+      icon: Icons.help_outline,
+      uiStyle: uiStyle,
+      scrollable: false,
+      primaryButtonText: 'Close',
+      content: const SizedBox(
+        height: 500, // Constrain height since scrollable is false
+        child: SupportedOperationsDialog(),
+      ),
     );
   }
 
@@ -77,109 +87,81 @@ class _SupportedOperationsDialogState extends State<SupportedOperationsDialog> {
     final theme = Theme.of(context);
     final filteredCategories = _getFilteredCategories();
 
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 500, maxHeight: 600),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
+    return Column(
+      children: [
+        TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            hintText: 'Search operations...',
+            prefixIcon: const Icon(Icons.search),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 0),
+          ),
+          onChanged: (val) {
+            setState(() {
+              _searchQuery = val.toLowerCase();
+            });
+          },
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: ListView.builder(
+            itemCount: filteredCategories.length,
+            itemBuilder: (context, index) {
+              final cat = filteredCategories[index];
+              final items = cat['items'] as List<Map<String, String>>;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.help_outline, size: 28),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Supported Operations',
-                    style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      cat['title'] as String,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                  const Spacer(),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search operations...',
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                ),
-                onChanged: (val) {
-                  setState(() {
-                    _searchQuery = val.toLowerCase();
-                  });
-                },
-              ),
-            ),
-            const SizedBox(height: 8),
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: filteredCategories.length,
-                itemBuilder: (context, index) {
-                  final cat = filteredCategories[index];
-                  final items = cat['items'] as List<Map<String, String>>;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Text(
-                          cat['title'] as String,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
+                  ...items.map((item) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12.0),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item['op']!,
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  fontFamily: 'monospace',
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(item['desc']!, style: theme.textTheme.bodyMedium),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Ex: ${item['example']}',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                      ...items.map((item) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12.0),
-                            child: Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.surfaceContainerHighest,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    item['op']!,
-                                    style: theme.textTheme.bodyLarge?.copyWith(
-                                      fontFamily: 'monospace',
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(item['desc']!, style: theme.textTheme.bodyMedium),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Ex: ${item['example']}',
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )),
-                    ],
-                  );
-                },
-              ),
-            ),
-          ],
+                      )),
+                ],
+              );
+            },
+          ),
         ),
-      ),
+      ],
     );
   }
 

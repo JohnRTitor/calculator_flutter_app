@@ -12,6 +12,7 @@ Future<T?> showAppDialog<T>({
   VoidCallback? onPrimaryButtonPressed,
   String? secondaryButtonText,
   VoidCallback? onSecondaryButtonPressed,
+  bool scrollable = true,
 }) {
   final colorScheme = Theme.of(context).colorScheme;
 
@@ -76,60 +77,33 @@ Future<T?> showAppDialog<T>({
                           ),
                     ),
                     const SizedBox(height: 12),
-                    Flexible(child: SingleChildScrollView(child: content)),
+                    Flexible(
+                      child: scrollable
+                          ? SingleChildScrollView(child: content)
+                          : content,
+                    ),
                     const SizedBox(height: 32),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         if (secondaryButtonText != null) ...[
-                          TextButton(
-                            onPressed: () {
-                              if (onSecondaryButtonPressed != null) {
-                                onSecondaryButtonPressed();
-                              } else {
-                                Navigator.of(context).pop();
-                              }
-                            },
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 12,
-                              ),
-                              minimumSize: const Size(0, 48),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24),
-                              ),
-                            ),
-                            child: Text(
-                              secondaryButtonText,
-                              style: const TextStyle(fontWeight: FontWeight.w600),
-                            ),
+                          _buildButton(
+                            context: context,
+                            text: secondaryButtonText,
+                            onPressed: onSecondaryButtonPressed,
+                            uiStyle: uiStyle,
+                            isPrimary: false,
+                            colorScheme: colorScheme,
                           ),
                           const SizedBox(width: 8),
                         ],
-                        FilledButton(
-                          onPressed: () {
-                            if (onPrimaryButtonPressed != null) {
-                              onPrimaryButtonPressed();
-                            } else {
-                              Navigator.of(context).pop();
-                            }
-                          },
-                          style: FilledButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                            minimumSize: const Size(0, 48),
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                          ),
-                          child: Text(
-                            primaryButtonText,
-                            style: const TextStyle(fontWeight: FontWeight.w600),
-                          ),
+                        _buildButton(
+                          context: context,
+                          text: primaryButtonText,
+                          onPressed: onPrimaryButtonPressed,
+                          uiStyle: uiStyle,
+                          isPrimary: true,
+                          colorScheme: colorScheme,
                         ),
                       ],
                     ),
@@ -142,4 +116,68 @@ Future<T?> showAppDialog<T>({
       );
     },
   );
+}
+
+Widget _buildButton({
+  required BuildContext context,
+  required String text,
+  VoidCallback? onPressed,
+  required UiStyle uiStyle,
+  required bool isPrimary,
+  required ColorScheme colorScheme,
+}) {
+  final handlePress = onPressed ?? () => Navigator.of(context).pop();
+
+  if (uiStyle == UiStyle.liquidGlass) {
+    final style = resolveGlassStyle(
+      colorScheme,
+      brightness: Theme.of(context).brightness,
+      role: isPrimary ? GlassSurfaceRole.primary : GlassSurfaceRole.accent,
+      isSelected: true, // We make them pop
+    );
+
+    return SharedSurface(
+      uiStyle: uiStyle,
+      glassRole: isPrimary ? GlassSurfaceRole.primary : GlassSurfaceRole.accent,
+      isInteractive: true,
+      isSelected: true,
+      onTap: handlePress,
+      borderRadius: BorderRadius.circular(24),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: style.foregroundColor,
+        ),
+      ),
+    );
+  } else {
+    if (isPrimary) {
+      return FilledButton(
+        onPressed: handlePress,
+        style: FilledButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          minimumSize: const Size(0, 48),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+        ),
+        child: Text(text, style: const TextStyle(fontWeight: FontWeight.w600)),
+      );
+    } else {
+      return TextButton(
+        onPressed: handlePress,
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          minimumSize: const Size(0, 48),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+        ),
+        child: Text(text, style: const TextStyle(fontWeight: FontWeight.w600)),
+      );
+    }
+  }
 }
