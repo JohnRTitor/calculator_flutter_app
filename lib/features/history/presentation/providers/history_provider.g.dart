@@ -42,7 +42,7 @@ final class HistoryProvider
   History create() => History();
 }
 
-String _$historyHash() => r'332da9d9b4777e84981f2f74a2b136ab305b5beb';
+String _$historyHash() => r'3a9e40b51ccc249ce26aaf1e9191ea977b2e5551';
 
 /// A Riverpod Notifier that manages the history of calculations.
 ///

@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/providers/modular_workspace_state.dart';
 import 'package:calculator_flutter_app/generated/rust/bridge/modular_math.dart' as rust;
 import 'package:calculator_flutter_app/features/history/presentation/providers/history_provider.dart';
+import 'package:calculator_flutter_app/features/settings/presentation/providers/settings_provider.dart';
 
 part 'modular_workspace_provider.g.dart';
 
@@ -81,6 +82,7 @@ class ModularWorkspace extends _$ModularWorkspace {
         expression: state.expression,
         contextModulus: state.modulus.isEmpty ? null : state.modulus,
         mode: state.mode.name,
+        showSteps: false, // Don't compute steps for preview
       );
       state = state.copyWith(preview: res.value);
     } catch (e) {
@@ -92,10 +94,13 @@ class ModularWorkspace extends _$ModularWorkspace {
     if (state.expression.trim().isEmpty) return;
 
     try {
+      final showSteps = ref.read(educationalModeProvider);
+      
       final res = rust.modularEvaluate(
         expression: state.expression,
         contextModulus: state.modulus.isEmpty ? null : state.modulus,
         mode: state.mode.name,
+        showSteps: showSteps,
       );
       
       final historyExpr = _formatHistoryExpression();
@@ -111,6 +116,7 @@ class ModularWorkspace extends _$ModularWorkspace {
         result: res.value,
         details: res.details,
         modulusUsed: res.modulusUsed,
+        steps: res.steps,
         showResult: true,
         clearError: true,
       );
@@ -126,5 +132,40 @@ class ModularWorkspace extends _$ModularWorkspace {
       return '${state.expression} (mod ${state.modulus})';
     }
     return state.expression;
+  }
+
+  void setExplorerN(String n) {
+    state = state.copyWith(explorerN: n, clearExplorerError: true);
+  }
+
+  void setExplorerType(String type) {
+    state = state.copyWith(explorerType: type, clearExplorerError: true);
+  }
+
+  void analyzeStructure() {
+    if (state.explorerN.trim().isEmpty) return;
+    
+    try {
+      final res = rust.analyzeStructure(
+        structureType: state.explorerType,
+        n: state.explorerN,
+      );
+      
+      // Also add to rich history
+      rust.modularHistoryAdd(
+        expression: 'analyze(Z_${state.explorerN}${state.explorerType == "group" ? "*" : ""})',
+        result: res.classification,
+      );
+      ref.invalidate(historyProvider);
+      
+      state = state.copyWith(
+        explorerResult: res,
+        clearExplorerError: true,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        explorerError: e.toString().replaceAll('AnyhowException(', '').replaceAll(')', ''),
+      );
+    }
   }
 }

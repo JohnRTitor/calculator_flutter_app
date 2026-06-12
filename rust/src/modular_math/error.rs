@@ -11,6 +11,9 @@ pub enum ModError {
     InvalidExpression(String),
     InvalidPolynomial(String),
     Overflow,
+    NoSolution(String),
+    TooLarge(String),
+    NoPrimitiveRoot(String),
 }
 
 impl fmt::Display for ModError {
@@ -24,6 +27,9 @@ impl fmt::Display for ModError {
             ModError::InvalidExpression(msg) => write!(f, "Invalid Expression: {}", msg),
             ModError::InvalidPolynomial(msg) => write!(f, "Invalid Polynomial: {}", msg),
             ModError::Overflow => write!(f, "Overflow"),
+            ModError::NoSolution(msg) => write!(f, "No Solution: {}", msg),
+            ModError::TooLarge(msg) => write!(f, "Value too large: {}", msg),
+            ModError::NoPrimitiveRoot(msg) => write!(f, "No primitive root: {}", msg),
         }
     }
 }

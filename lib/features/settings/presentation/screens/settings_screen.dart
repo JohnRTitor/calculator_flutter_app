@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
+import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/features/settings/presentation/providers/settings_provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 /// The settings screen where users can configure the application's appearance.
@@ -26,6 +27,7 @@ class SettingsScreen extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
     final uiStyle = ref.watch(uiStyleProvider);
     final colorOption = ref.watch(appColorProvider);
+    final isEducationalMode = ref.watch(educationalModeProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -132,7 +134,26 @@ class SettingsScreen extends ConsumerWidget {
                       onStyleChanged: (style) =>
                           ref.read(uiStyleProvider.notifier).setUiStyle(style),
                     ),
+                    const SizedBox(height: 28),
 
+                    // ── Educational Settings Section ──
+                    _SectionHeader(
+                      label: 'Educational Settings',
+                      colorScheme: colorScheme,
+                      textTheme: theme.textTheme,
+                    ),
+                    const SizedBox(height: 8),
+                    _SettingsSwitchCard(
+                      label: 'Educational Mode',
+                      description: 'Show step-by-step explanations in Modular workspace',
+                      icon: Icons.school_outlined,
+                      value: isEducationalMode,
+                      uiStyle: uiStyle,
+                      colorScheme: colorScheme,
+                      onChanged: (val) => ref
+                          .read(educationalModeProvider.notifier)
+                          .setEducationalMode(val),
+                    ),
                   ]
                   .animate(interval: 50.ms)
                   .fade(duration: 400.ms)
@@ -569,6 +590,79 @@ class _SettingsOptionCard extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+// ── Settings Switch Card ──
+class _SettingsSwitchCard extends StatelessWidget {
+  final String label;
+  final String description;
+  final IconData icon;
+  final bool value;
+  final UiStyle uiStyle;
+  final ColorScheme colorScheme;
+  final ValueChanged<bool> onChanged;
+
+  const _SettingsSwitchCard({
+    required this.label,
+    required this.description,
+    required this.icon,
+    required this.value,
+    required this.uiStyle,
+    required this.colorScheme,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (uiStyle == UiStyle.liquidGlass) {
+      return SharedSurface(
+        uiStyle: uiStyle,
+        isInteractive: false,
+        glassRole: GlassSurfaceRole.card,
+        borderRadius: BorderRadius.circular(16),
+        child: _buildContent(),
+      );
+    } else {
+      return Container(
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: _buildContent(),
+      );
+    }
+  }
+
+  Widget _buildContent() {
+    return SwitchListTile(
+      value: value,
+      onChanged: onChanged,
+      title: Text(
+        label,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: colorScheme.onSurface,
+        ),
+      ),
+      subtitle: Text(
+        description,
+        style: TextStyle(
+          fontSize: 13,
+          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+        ),
+      ),
+      secondary: Icon(
+        icon,
+        color: colorScheme.primary,
+        size: 28,
+      ),
+      activeColor: colorScheme.onPrimary,
+      activeTrackColor: colorScheme.primary,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     );
   }
 }

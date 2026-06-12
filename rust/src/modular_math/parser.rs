@@ -14,6 +14,23 @@ pub enum ModToken {
     Gcd,
     Egcd,
     Crt,
+    Totient,
+    Order,
+    PrimitiveRoots,
+    Units,
+    ZeroDivisors,
+    Idempotents,
+    Nilpotents,
+    AdditiveInverse,
+    Legendre,
+    Jacobi,
+    SqrtMod,
+    SolveCongruence,
+    QuadraticResidues,
+    DiscreteLog,
+    Analyze,
+    CayleyAdd,
+    CayleyMul,
     Comma,
     LParen,
     RParen,
@@ -33,6 +50,23 @@ pub enum ModExpr {
     Gcd(Box<ModExpr>, Box<ModExpr>),
     Egcd(Box<ModExpr>, Box<ModExpr>),
     Crt(Vec<(Box<ModExpr>, Box<ModExpr>)>),
+    Totient(Box<ModExpr>),
+    Order(Box<ModExpr>, Box<ModExpr>),
+    PrimitiveRoots(Box<ModExpr>),
+    Units(Box<ModExpr>),
+    ZeroDivisors(Box<ModExpr>),
+    Idempotents(Box<ModExpr>),
+    Nilpotents(Box<ModExpr>),
+    AdditiveInverse(Box<ModExpr>, Box<ModExpr>),
+    Legendre(Box<ModExpr>, Box<ModExpr>),
+    Jacobi(Box<ModExpr>, Box<ModExpr>),
+    SqrtMod(Box<ModExpr>, Box<ModExpr>),
+    SolveCongruence(Box<ModExpr>, Box<ModExpr>, Box<ModExpr>),
+    QuadraticResidues(Box<ModExpr>),
+    DiscreteLog(Box<ModExpr>, Box<ModExpr>, Box<ModExpr>),
+    Analyze(Box<ModExpr>),
+    CayleyAdd(Box<ModExpr>),
+    CayleyMul(Box<ModExpr>),
     Negate(Box<ModExpr>),
 }
 
@@ -73,6 +107,23 @@ pub fn tokenize(input: &str) -> Result<Vec<ModToken>, ModError> {
                 "gcd" => tokens.push(ModToken::Gcd),
                 "egcd" => tokens.push(ModToken::Egcd),
                 "crt" => tokens.push(ModToken::Crt),
+                "totient" | "phi" => tokens.push(ModToken::Totient),
+                "order" | "ord" => tokens.push(ModToken::Order),
+                "primitive_roots" => tokens.push(ModToken::PrimitiveRoots),
+                "units" | "u" => tokens.push(ModToken::Units),
+                "zero_divisors" => tokens.push(ModToken::ZeroDivisors),
+                "idempotents" => tokens.push(ModToken::Idempotents),
+                "nilpotents" => tokens.push(ModToken::Nilpotents),
+                "additive_inverse" => tokens.push(ModToken::AdditiveInverse),
+                "legendre" => tokens.push(ModToken::Legendre),
+                "jacobi" => tokens.push(ModToken::Jacobi),
+                "sqrt_mod" => tokens.push(ModToken::SqrtMod),
+                "solve" => tokens.push(ModToken::SolveCongruence),
+                "quadratic_residues" => tokens.push(ModToken::QuadraticResidues),
+                "dlog" | "log" => tokens.push(ModToken::DiscreteLog),
+                "analyze" => tokens.push(ModToken::Analyze),
+                "cayley_add" => tokens.push(ModToken::CayleyAdd),
+                "cayley_mul" => tokens.push(ModToken::CayleyMul),
                 _ => return Err(ModError::InvalidExpression(format!("Unknown function or operator: {}", ident))),
             }
             continue;
@@ -244,7 +295,7 @@ fn parse_primary(tokens: &[ModToken], pos: &mut usize) -> Result<ModExpr, ModErr
             loop {
                 let rem = parse_expression(tokens, pos)?;
                 // Allow "mod" or comma as separator between rem and mod
-                let has_mod_token = if *pos < tokens.len() && tokens[*pos] == ModToken::Mod {
+                let _has_mod_token = if *pos < tokens.len() && tokens[*pos] == ModToken::Mod {
                     *pos += 1;
                     true
                 } else {
@@ -264,6 +315,61 @@ fn parse_primary(tokens: &[ModToken], pos: &mut usize) -> Result<ModExpr, ModErr
             
             expect_token(tokens, pos, ModToken::RParen)?;
             Ok(ModExpr::Crt(pairs))
+        }
+        ModToken::Totient | ModToken::PrimitiveRoots | ModToken::Units | ModToken::ZeroDivisors | 
+        ModToken::Idempotents | ModToken::Nilpotents | ModToken::QuadraticResidues | ModToken::Analyze | 
+        ModToken::CayleyAdd | ModToken::CayleyMul => {
+            let token = tokens[*pos].clone();
+            *pos += 1;
+            expect_token(tokens, pos, ModToken::LParen)?;
+            let a = parse_expression(tokens, pos)?;
+            expect_token(tokens, pos, ModToken::RParen)?;
+            match token {
+                ModToken::Totient => Ok(ModExpr::Totient(Box::new(a))),
+                ModToken::PrimitiveRoots => Ok(ModExpr::PrimitiveRoots(Box::new(a))),
+                ModToken::Units => Ok(ModExpr::Units(Box::new(a))),
+                ModToken::ZeroDivisors => Ok(ModExpr::ZeroDivisors(Box::new(a))),
+                ModToken::Idempotents => Ok(ModExpr::Idempotents(Box::new(a))),
+                ModToken::Nilpotents => Ok(ModExpr::Nilpotents(Box::new(a))),
+                ModToken::QuadraticResidues => Ok(ModExpr::QuadraticResidues(Box::new(a))),
+                ModToken::Analyze => Ok(ModExpr::Analyze(Box::new(a))),
+                ModToken::CayleyAdd => Ok(ModExpr::CayleyAdd(Box::new(a))),
+                ModToken::CayleyMul => Ok(ModExpr::CayleyMul(Box::new(a))),
+                _ => unreachable!(),
+            }
+        }
+        ModToken::Order | ModToken::AdditiveInverse | ModToken::Legendre | ModToken::Jacobi | ModToken::SqrtMod => {
+            let token = tokens[*pos].clone();
+            *pos += 1;
+            expect_token(tokens, pos, ModToken::LParen)?;
+            let a = parse_expression(tokens, pos)?;
+            expect_token(tokens, pos, ModToken::Comma)?;
+            let b = parse_expression(tokens, pos)?;
+            expect_token(tokens, pos, ModToken::RParen)?;
+            match token {
+                ModToken::Order => Ok(ModExpr::Order(Box::new(a), Box::new(b))),
+                ModToken::AdditiveInverse => Ok(ModExpr::AdditiveInverse(Box::new(a), Box::new(b))),
+                ModToken::Legendre => Ok(ModExpr::Legendre(Box::new(a), Box::new(b))),
+                ModToken::Jacobi => Ok(ModExpr::Jacobi(Box::new(a), Box::new(b))),
+                ModToken::SqrtMod => Ok(ModExpr::SqrtMod(Box::new(a), Box::new(b))),
+                _ => unreachable!(),
+            }
+        }
+        ModToken::SolveCongruence | ModToken::DiscreteLog => {
+            let token = tokens[*pos].clone();
+            *pos += 1;
+            expect_token(tokens, pos, ModToken::LParen)?;
+            let a = parse_expression(tokens, pos)?;
+            expect_token(tokens, pos, ModToken::Comma)?;
+            let b = parse_expression(tokens, pos)?;
+            expect_token(tokens, pos, ModToken::Comma)?;
+            let c = parse_expression(tokens, pos)?;
+            expect_token(tokens, pos, ModToken::RParen)?;
+            match token {
+                ModToken::SolveCongruence => Ok(ModExpr::SolveCongruence(Box::new(a), Box::new(b), Box::new(c))),
+                ModToken::DiscreteLog => Ok(ModExpr::DiscreteLog(Box::new(a), Box::new(b), Box::new(c))),
+                _ => unreachable!(),
+            }
         }
         _ => Err(ModError::InvalidExpression(format!("Unexpected token: {:?}", tokens[*pos]))),
     }

@@ -41,7 +41,7 @@ final class ModularWorkspaceProvider
   }
 }
 
-String _$modularWorkspaceHash() => r'c823e345a487caa79ba881700138e5fb912cb3ca';
+String _$modularWorkspaceHash() => r'f5a6bfc956d00190a57da6570ce6cdabffddc09e';
 
 abstract class _$ModularWorkspace extends $Notifier<ModularWorkspaceState> {
   ModularWorkspaceState build();

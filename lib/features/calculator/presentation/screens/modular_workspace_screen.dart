@@ -5,6 +5,10 @@ import 'package:calculator_flutter_app/features/calculator/presentation/provider
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/widgets/structure_explorer.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/widgets/supported_operations_dialog.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/widgets/modular_onboarding_overlay.dart';
+import 'package:calculator_flutter_app/shared/widgets/app_tab_bar.dart';
 
 class ModularWorkspaceScreen extends ConsumerStatefulWidget {
   const ModularWorkspaceScreen({super.key});
@@ -13,20 +17,27 @@ class ModularWorkspaceScreen extends ConsumerStatefulWidget {
   ConsumerState<ModularWorkspaceScreen> createState() => _ModularWorkspaceScreenState();
 }
 
-class _ModularWorkspaceScreenState extends ConsumerState<ModularWorkspaceScreen> {
+class _ModularWorkspaceScreenState extends ConsumerState<ModularWorkspaceScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   late TextEditingController _exprController;
   late TextEditingController _modController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     final state = ref.read(modularWorkspaceProvider);
     _exprController = TextEditingController(text: state.expression);
     _modController = TextEditingController(text: state.modulus);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ModularOnboardingOverlay.checkAndShow(context);
+    });
   }
 
   @override
   void dispose() {
+    _tabController.dispose();
     _exprController.dispose();
     _modController.dispose();
     super.dispose();
@@ -34,6 +45,46 @@ class _ModularWorkspaceScreenState extends ConsumerState<ModularWorkspaceScreen>
 
   @override
   Widget build(BuildContext context) {
+    final uiStyle = ref.watch(uiStyleProvider);
+
+    return Column(
+      children: [
+        const SizedBox(height: 8),
+        Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AppTabBar(
+                controller: _tabController,
+                uiStyle: uiStyle,
+                width: 300,
+                tabs: const [
+                  Tab(text: 'Evaluator'),
+                  Tab(text: 'Structure Explorer'),
+                ],
+              ),
+              IconButton(
+                icon: const Icon(Icons.help_outline),
+                tooltip: 'Supported Operations',
+                onPressed: () => SupportedOperationsDialog.show(context),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildEvaluatorTab(),
+              const StructureExplorer(),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEvaluatorTab() {
     final state = ref.watch(modularWorkspaceProvider);
     final uiStyle = ref.watch(uiStyleProvider);
 
@@ -182,6 +233,23 @@ class _ModularWorkspaceScreenState extends ConsumerState<ModularWorkspaceScreen>
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
+                if (state.steps != null) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      state.steps!,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontFamily: 'monospace',
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ],
               ],
             )
           else if (state.preview.isNotEmpty)
@@ -199,8 +267,6 @@ class _ModularWorkspaceScreenState extends ConsumerState<ModularWorkspaceScreen>
             child: FilledButton.icon(
               onPressed: () {
                 ref.read(modularWorkspaceProvider.notifier).evaluate();
-                // update text field to result if needed or keep it?
-                // we'll keep the expression
               },
               icon: const Icon(Icons.calculate),
               label: const Text('Evaluate'),
@@ -211,3 +277,4 @@ class _ModularWorkspaceScreenState extends ConsumerState<ModularWorkspaceScreen>
     );
   }
 }
+

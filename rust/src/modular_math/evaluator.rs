@@ -7,6 +7,7 @@ pub struct ModResult {
     pub value: String,
     pub details: Option<String>,
     pub modulus_used: Option<i128>,
+    pub steps: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -16,7 +17,7 @@ pub enum StructureMode {
     Crt,
 }
 
-pub fn evaluate_mod_expr(expr: &ModExpr, context_modulus: Option<i128>, mode: StructureMode) -> Result<ModResult, ModError> {
+pub fn evaluate_mod_expr(expr: &ModExpr, context_modulus: Option<i128>, mode: StructureMode, show_steps: bool) -> Result<ModResult, ModError> {
     match mode {
         StructureMode::Field => {
             if let Some(m) = context_modulus {
@@ -36,10 +37,16 @@ pub fn evaluate_mod_expr(expr: &ModExpr, context_modulus: Option<i128>, mode: St
             let val_a = eval(a, context_modulus)?;
             let val_b = eval(b, context_modulus)?;
             let (g, x, y) = number_theory::extended_gcd(val_a, val_b);
+            let steps = if show_steps {
+                Some(format!("Using Extended Euclidean Algorithm on {} and {}", val_a, val_b))
+            } else {
+                None
+            };
             Ok(ModResult {
                 value: g.to_string(),
                 details: Some(format!("Bézout: {}({}) + {}({}) = {}", val_a, x, val_b, y, g)),
                 modulus_used: None,
+                steps,
             })
         }
         ModExpr::Crt(pairs) => {
@@ -54,6 +61,204 @@ pub fn evaluate_mod_expr(expr: &ModExpr, context_modulus: Option<i128>, mode: St
                 value: sol.to_string(),
                 details: Some(format!("Solution modulo {}", m)),
                 modulus_used: Some(m),
+                steps: None,
+            })
+        }
+        ModExpr::Totient(a) => {
+            let val_a = eval(a, context_modulus)?;
+            let phi = crate::modular_math::number_theory_ext::euler_totient(val_a);
+            let steps = if show_steps {
+                let factors = crate::modular_math::number_theory_ext::prime_factorization(val_a);
+                let mut s = format!("Prime factorization of {}:\n", val_a);
+                for (p, e) in &factors {
+                    s.push_str(&format!("{}^{} ", p, e));
+                }
+                Some(s)
+            } else { None };
+            Ok(ModResult {
+                value: phi.to_string(),
+                details: Some(format!("φ({}) = {}", val_a, phi)),
+                modulus_used: None,
+                steps,
+            })
+        }
+        ModExpr::Order(a, m) => {
+            let val_a = eval(a, context_modulus)?;
+            let val_m = eval(m, context_modulus)?;
+            let ord = crate::modular_math::number_theory_ext::element_order(val_a, val_m)?;
+            Ok(ModResult {
+                value: ord.to_string(),
+                details: Some(format!("ord({}) mod {}", val_a, val_m)),
+                modulus_used: Some(val_m),
+                steps: None,
+            })
+        }
+        ModExpr::PrimitiveRoots(m) => {
+            let val_m = eval(m, context_modulus)?;
+            let roots = crate::modular_math::number_theory_ext::primitive_roots(val_m)?;
+            let roots_str = format!("{{{}}}", roots.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(", "));
+            Ok(ModResult {
+                value: roots_str,
+                details: Some(format!("{} generators for Z_{}*", roots.len(), val_m)),
+                modulus_used: Some(val_m),
+                steps: None,
+            })
+        }
+        ModExpr::Units(m) => {
+            let val_m = eval(m, context_modulus)?;
+            let u = crate::modular_math::number_theory_ext::unit_group(val_m);
+            let u_str = format!("{{{}}}", u.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(", "));
+            Ok(ModResult {
+                value: u_str,
+                details: Some(format!("|Z_{}*| = {}", val_m, u.len())),
+                modulus_used: Some(val_m),
+                steps: None,
+            })
+        }
+        ModExpr::ZeroDivisors(m) => {
+            let val_m = eval(m, context_modulus)?;
+            let zd = crate::modular_math::ring_analysis::zero_divisors(val_m);
+            let zd_str = format!("{{{}}}", zd.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(", "));
+            Ok(ModResult {
+                value: zd_str,
+                details: Some(format!("{} zero divisors in Z_{}", zd.len(), val_m)),
+                modulus_used: Some(val_m),
+                steps: None,
+            })
+        }
+        ModExpr::Idempotents(m) => {
+            let val_m = eval(m, context_modulus)?;
+            let id = crate::modular_math::ring_analysis::idempotents(val_m);
+            let id_str = format!("{{{}}}", id.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(", "));
+            Ok(ModResult {
+                value: id_str,
+                details: Some(format!("{} idempotents in Z_{}", id.len(), val_m)),
+                modulus_used: Some(val_m),
+                steps: None,
+            })
+        }
+        ModExpr::Nilpotents(m) => {
+            let val_m = eval(m, context_modulus)?;
+            let ni = crate::modular_math::ring_analysis::nilpotents(val_m);
+            let ni_str = format!("{{{}}}", ni.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(", "));
+            Ok(ModResult {
+                value: ni_str,
+                details: Some(format!("{} nilpotents in Z_{}", ni.len(), val_m)),
+                modulus_used: Some(val_m),
+                steps: None,
+            })
+        }
+        ModExpr::AdditiveInverse(a, m) => {
+            let val_a = eval(a, context_modulus)?;
+            let val_m = eval(m, context_modulus)?;
+            let inv = crate::modular_math::number_theory_ext::additive_inverse(val_a, val_m);
+            Ok(ModResult {
+                value: inv.to_string(),
+                details: Some(format!("Additive inverse of {} mod {}", val_a, val_m)),
+                modulus_used: Some(val_m),
+                steps: None,
+            })
+        }
+        ModExpr::Legendre(a, p) => {
+            let val_a = eval(a, context_modulus)?;
+            let val_p = eval(p, context_modulus)?;
+            let l = crate::modular_math::quadratic::legendre_symbol(val_a, val_p)?;
+            Ok(ModResult {
+                value: l.to_string(),
+                details: Some(format!("({} / {}) Legendre symbol", val_a, val_p)),
+                modulus_used: Some(val_p),
+                steps: None,
+            })
+        }
+        ModExpr::Jacobi(a, n) => {
+            let val_a = eval(a, context_modulus)?;
+            let val_n = eval(n, context_modulus)?;
+            let j = crate::modular_math::quadratic::jacobi_symbol(val_a, val_n)?;
+            Ok(ModResult {
+                value: j.to_string(),
+                details: Some(format!("({} / {}) Jacobi symbol", val_a, val_n)),
+                modulus_used: Some(val_n),
+                steps: None,
+            })
+        }
+        ModExpr::SqrtMod(a, p) => {
+            let val_a = eval(a, context_modulus)?;
+            let val_p = eval(p, context_modulus)?;
+            let roots = crate::modular_math::quadratic::sqrt_mod(val_a, val_p)?;
+            let roots_str = format!("{{{}}}", roots.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(", "));
+            Ok(ModResult {
+                value: roots_str,
+                details: Some(format!("Square roots of {} mod {}", val_a, val_p)),
+                modulus_used: Some(val_p),
+                steps: None,
+            })
+        }
+        ModExpr::SolveCongruence(a, b, m) => {
+            let val_a = eval(a, context_modulus)?;
+            let val_b = eval(b, context_modulus)?;
+            let val_m = eval(m, context_modulus)?;
+            let sols = crate::modular_math::number_theory_ext::solve_linear_congruence(val_a, val_b, val_m)?;
+            let sols_str = format!("{{{}}}", sols.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(", "));
+            Ok(ModResult {
+                value: sols_str,
+                details: Some(format!("Solutions for {}x ≡ {} (mod {})", val_a, val_b, val_m)),
+                modulus_used: Some(val_m),
+                steps: None,
+            })
+        }
+        ModExpr::DiscreteLog(g, a, p) => {
+            let val_g = eval(g, context_modulus)?;
+            let val_a = eval(a, context_modulus)?;
+            let val_p = eval(p, context_modulus)?;
+            let log = crate::modular_math::number_theory_ext::discrete_log(val_g, val_a, val_p)?;
+            Ok(ModResult {
+                value: log.to_string(),
+                details: Some(format!("x = {}, such that {}^x ≡ {} (mod {})", log, val_g, val_a, val_p)),
+                modulus_used: Some(val_p),
+                steps: None,
+            })
+        }
+        ModExpr::QuadraticResidues(m) => {
+            let val_m = eval(m, context_modulus)?;
+            let qr = crate::modular_math::quadratic::quadratic_residues(val_m);
+            let qr_str = format!("{{{}}}", qr.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(", "));
+            Ok(ModResult {
+                value: qr_str,
+                details: Some(format!("{} quadratic residues mod {}", qr.len(), val_m)),
+                modulus_used: Some(val_m),
+                steps: None,
+            })
+        }
+        ModExpr::Analyze(m) => {
+            let val_m = eval(m, context_modulus)?;
+            let info = crate::modular_math::ring_analysis::ring_classify(val_m);
+            Ok(ModResult {
+                value: format!("Z_{} Analysis", val_m),
+                details: Some(format!("Classification: {}\nIntegral Domain: {}\nField: {}\n|Units|: {}\n|Zero Divisors|: {}", 
+                    info.classification, info.is_integral_domain, info.is_field, info.units.len(), info.zero_divisors.len())),
+                modulus_used: Some(val_m),
+                steps: None,
+            })
+        }
+        ModExpr::CayleyAdd(m) | ModExpr::CayleyMul(m) => {
+            let val_m = eval(m, context_modulus)?;
+            let is_add = matches!(expr, ModExpr::CayleyAdd(_));
+            let table = if is_add {
+                crate::modular_math::cayley::addition_table(val_m)?
+            } else {
+                crate::modular_math::cayley::multiplication_table(val_m)?
+            };
+            
+            let mut s = String::new();
+            for row in table {
+                s.push_str(&row.iter().map(|n| format!("{:3}", n)).collect::<Vec<_>>().join(" "));
+                s.push('\n');
+            }
+            Ok(ModResult {
+                value: if is_add { "Addition Table".to_string() } else { "Multiplication Table".to_string() },
+                details: Some(s),
+                modulus_used: Some(val_m),
+                steps: None,
             })
         }
         _ => {
@@ -74,6 +279,7 @@ pub fn evaluate_mod_expr(expr: &ModExpr, context_modulus: Option<i128>, mode: St
                 value: final_val.to_string(),
                 details: None,
                 modulus_used: m_used,
+                steps: None,
             })
         }
     }
@@ -186,6 +392,16 @@ fn eval(expr: &ModExpr, context_modulus: Option<i128>) -> Result<i128, ModError>
             } else {
                 Ok(-val_a)
             }
+        }
+        ModExpr::Totient(a) | ModExpr::Order(a, _) | ModExpr::PrimitiveRoots(a) | 
+        ModExpr::Units(a) | ModExpr::ZeroDivisors(a) | ModExpr::Idempotents(a) | 
+        ModExpr::Nilpotents(a) | ModExpr::AdditiveInverse(a, _) | ModExpr::Legendre(a, _) | 
+        ModExpr::Jacobi(a, _) | ModExpr::SqrtMod(a, _) | ModExpr::SolveCongruence(a, _, _) | 
+        ModExpr::DiscreteLog(a, _, _) | ModExpr::Analyze(a) | ModExpr::CayleyAdd(a) | 
+        ModExpr::CayleyMul(a) | ModExpr::QuadraticResidues(a) => {
+            // eval should only be called on inner expression when computing final value recursively, 
+            // but these functions are evaluated at the top level evaluate_mod_expr
+            eval(a, context_modulus)
         }
     }
 }

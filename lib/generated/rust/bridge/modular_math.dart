@@ -11,10 +11,20 @@ ModularResult modularEvaluate({
   required String expression,
   String? contextModulus,
   required String mode,
+  required bool showSteps,
 }) => RustLib.instance.api.crateBridgeModularMathModularEvaluate(
   expression: expression,
   contextModulus: contextModulus,
   mode: mode,
+  showSteps: showSteps,
+);
+
+StructureAnalysis analyzeStructure({
+  required String structureType,
+  required String n,
+}) => RustLib.instance.api.crateBridgeModularMathAnalyzeStructure(
+  structureType: structureType,
+  n: n,
 );
 
 /// Adds a history entry from Flutter for modular arithmetic.
@@ -49,11 +59,18 @@ class ModularResult {
   final String value;
   final String? details;
   final String? modulusUsed;
+  final String? steps;
 
-  const ModularResult({required this.value, this.details, this.modulusUsed});
+  const ModularResult({
+    required this.value,
+    this.details,
+    this.modulusUsed,
+    this.steps,
+  });
 
   @override
-  int get hashCode => value.hashCode ^ details.hashCode ^ modulusUsed.hashCode;
+  int get hashCode =>
+      value.hashCode ^ details.hashCode ^ modulusUsed.hashCode ^ steps.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -62,5 +79,77 @@ class ModularResult {
           runtimeType == other.runtimeType &&
           value == other.value &&
           details == other.details &&
-          modulusUsed == other.modulusUsed;
+          modulusUsed == other.modulusUsed &&
+          steps == other.steps;
+}
+
+class StructureAnalysis {
+  final String label;
+  final String order;
+  final bool isCyclic;
+  final String identity;
+  final String elements;
+  final String? generators;
+  final String? units;
+  final String? zeroDivisors;
+  final String? idempotents;
+  final String? nilpotents;
+  final String? inverses;
+  final String? elementOrders;
+  final String? cayleyTable;
+  final String classification;
+
+  const StructureAnalysis({
+    required this.label,
+    required this.order,
+    required this.isCyclic,
+    required this.identity,
+    required this.elements,
+    this.generators,
+    this.units,
+    this.zeroDivisors,
+    this.idempotents,
+    this.nilpotents,
+    this.inverses,
+    this.elementOrders,
+    this.cayleyTable,
+    required this.classification,
+  });
+
+  @override
+  int get hashCode =>
+      label.hashCode ^
+      order.hashCode ^
+      isCyclic.hashCode ^
+      identity.hashCode ^
+      elements.hashCode ^
+      generators.hashCode ^
+      units.hashCode ^
+      zeroDivisors.hashCode ^
+      idempotents.hashCode ^
+      nilpotents.hashCode ^
+      inverses.hashCode ^
+      elementOrders.hashCode ^
+      cayleyTable.hashCode ^
+      classification.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is StructureAnalysis &&
+          runtimeType == other.runtimeType &&
+          label == other.label &&
+          order == other.order &&
+          isCyclic == other.isCyclic &&
+          identity == other.identity &&
+          elements == other.elements &&
+          generators == other.generators &&
+          units == other.units &&
+          zeroDivisors == other.zeroDivisors &&
+          idempotents == other.idempotents &&
+          nilpotents == other.nilpotents &&
+          inverses == other.inverses &&
+          elementOrders == other.elementOrders &&
+          cayleyTable == other.cayleyTable &&
+          classification == other.classification;
 }

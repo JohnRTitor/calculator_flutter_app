@@ -33,7 +33,7 @@ final class FunctionHistoryProvider
   FunctionHistory create() => FunctionHistory();
 }
 
-String _$functionHistoryHash() => r'c6e3dc7616e9845840b4d853e340b4864c7a4267';
+String _$functionHistoryHash() => r'4076850c7bc02fde5ae991f86817277f178738e5';
 
 abstract class _$FunctionHistory extends $AsyncNotifier<List<HistoryEntry>> {
   FutureOr<List<HistoryEntry>> build();
