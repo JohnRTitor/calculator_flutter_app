@@ -1,5 +1,4 @@
 use crate::calculator::error::CalcError;
-use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::sync::Mutex;
@@ -14,19 +13,19 @@ pub struct HistoryEntry {
 #[macro_export]
 macro_rules! history_bridge {
     ($add:ident, $get_all:ident, $clear:ident, $delete:ident, $save:ident, $load:ident, $history:expr) => {
-        #[frb(sync)]
+        #[flutter_rust_bridge::frb(sync)]
         pub fn $add(expression: String, result: String) {
             $history.add(expression, result);
         }
-        #[frb(sync)]
+        #[flutter_rust_bridge::frb(sync)]
         pub fn $get_all() -> Vec<crate::shared::history::HistoryEntry> {
             $history.get_all()
         }
-        #[frb(sync)]
+        #[flutter_rust_bridge::frb(sync)]
         pub fn $clear() {
             $history.clear();
         }
-        #[frb(sync)]
+        #[flutter_rust_bridge::frb(sync)]
         pub fn $delete(index: usize) {
             $history.delete(index);
         }

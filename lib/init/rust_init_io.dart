@@ -10,7 +10,7 @@ Future<void> initializeRust() async {
     final libPath = path.join(
       path.dirname(executable),
       'lib',
-      'librust_lib_calculator_flutter_app.so',
+      'librust_calc_core.so',
     );
     if (File(libPath).existsSync()) {
       externalLibrary = ExternalLibrary.open(libPath);
