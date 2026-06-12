@@ -58,38 +58,35 @@ class PillSwitcher extends StatelessWidget {
       glassRole: GlassSurfaceRole.card,
       frosted: true,
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-      child: SizedBox(
-        width: 260,
-        height: 40,
-        child: Row(
-          children: [
-            Expanded(
-              child: _buildToggleChip(
-                context: context,
-                label: label1,
-                isSelected: isFirstSelected,
-                onTap: () {
-                  if (!isFirstSelected) {
-                    onChanged(true);
-                  }
-                },
-              ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: _buildToggleChip(
+              context: context,
+              label: label1,
+              isSelected: isFirstSelected,
+              onTap: () {
+                if (!isFirstSelected) {
+                  onChanged(true);
+                }
+              },
             ),
-            const SizedBox(width: 4),
-            Expanded(
-              child: _buildToggleChip(
-                context: context,
-                label: label2,
-                isSelected: !isFirstSelected,
-                onTap: () {
-                  if (isFirstSelected) {
-                    onChanged(false);
-                  }
-                },
-              ),
+          ),
+          const SizedBox(width: 4),
+          Flexible(
+            child: _buildToggleChip(
+              context: context,
+              label: label2,
+              isSelected: !isFirstSelected,
+              onTap: () {
+                if (isFirstSelected) {
+                  onChanged(false);
+                }
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -110,15 +107,28 @@ class PillSwitcher extends StatelessWidget {
     return Material(
       color: bgColor,
       borderRadius: BorderRadius.circular(20),
+      animationDuration: const Duration(milliseconds: 200),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
-        child: Center(
-          child: Text(
-            label,
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: fgColor,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        child: AnimatedSize(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutCubic,
+              style: theme.textTheme.labelLarge!.copyWith(
+                color: fgColor,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ),

@@ -44,31 +44,28 @@ class MultiPillSwitcher extends StatelessWidget {
       glassRole: GlassSurfaceRole.card,
       frosted: true,
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-      child: SizedBox(
-        width: 100.0 * labels.length,
-        height: 40,
-        child: Row(
-          children: labels.asMap().entries.map((entry) {
-            final isSelected = entry.key == selectedIndex;
-            return Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  right: entry.key < labels.length - 1 ? 4.0 : 0.0,
-                ),
-                child: _buildToggleChip(
-                  context: context,
-                  label: entry.value,
-                  isSelected: isSelected,
-                  onTap: () {
-                    if (!isSelected) {
-                      onChanged(entry.key);
-                    }
-                  },
-                ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: labels.asMap().entries.map((entry) {
+          final isSelected = entry.key == selectedIndex;
+          return Flexible(
+            child: Padding(
+              padding: EdgeInsets.only(
+                right: entry.key < labels.length - 1 ? 4.0 : 0.0,
               ),
-            );
-          }).toList(),
-        ),
+              child: _buildToggleChip(
+                context: context,
+                label: entry.value,
+                isSelected: isSelected,
+                onTap: () {
+                  if (!isSelected) {
+                    onChanged(entry.key);
+                  }
+                },
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -89,15 +86,28 @@ class MultiPillSwitcher extends StatelessWidget {
     return Material(
       color: bgColor,
       borderRadius: BorderRadius.circular(20),
+      animationDuration: const Duration(milliseconds: 200),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
-        child: Center(
-          child: Text(
-            label,
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: fgColor,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        child: AnimatedSize(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutCubic,
+              style: theme.textTheme.labelMedium!.copyWith(
+                color: fgColor,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ),
