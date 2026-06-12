@@ -6,6 +6,7 @@
 import 'bridge/calculator.dart';
 import 'bridge/converter.dart';
 import 'bridge/currency.dart';
+import 'bridge/history.dart';
 import 'bridge/modular_arithmetic.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -68,7 +69,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => -267255599;
+  int get rustContentHash => 894277077;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -84,6 +85,28 @@ abstract class RustLibApi extends BaseApi {
     required String structureType,
     required String n,
   });
+
+  void crateBridgeHistoryAppHistoryAdd({
+    required String category,
+    required String preview,
+    required String snapshot,
+  });
+
+  void crateBridgeHistoryAppHistoryClearAll();
+
+  void crateBridgeHistoryAppHistoryClearCategory({required String category});
+
+  void crateBridgeHistoryAppHistoryDelete({required String id});
+
+  List<HistoryEntry> crateBridgeHistoryAppHistoryGetAll();
+
+  List<HistoryEntry> crateBridgeHistoryAppHistoryGetByCategory({
+    required String category,
+  });
+
+  Future<void> crateBridgeHistoryAppHistoryLoad({required String path});
+
+  Future<void> crateBridgeHistoryAppHistorySave({required String path});
 
   BmiResult crateBridgeConverterCalculateBmi({
     required double weightKg,
@@ -159,37 +182,7 @@ abstract class RustLibApi extends BaseApi {
     required int maxPrecision,
   });
 
-  void crateBridgeCalculatorFuncHistoryAdd({
-    required String expression,
-    required String result,
-  });
-
-  void crateBridgeCalculatorFuncHistoryClear();
-
-  void crateBridgeCalculatorFuncHistoryDelete({required BigInt index});
-
-  List<HistoryEntry> crateBridgeCalculatorFuncHistoryGetAll();
-
-  Future<void> crateBridgeCalculatorFuncHistoryLoad({required String path});
-
-  Future<void> crateBridgeCalculatorFuncHistorySave({required String path});
-
   List<FfiConverterCategory> crateBridgeConverterGetConverterCategories();
-
-  void crateBridgeCalculatorHistoryAdd({
-    required String expression,
-    required String result,
-  });
-
-  void crateBridgeCalculatorHistoryClear();
-
-  void crateBridgeCalculatorHistoryDelete({required BigInt index});
-
-  List<HistoryEntry> crateBridgeCalculatorHistoryGetAll();
-
-  Future<void> crateBridgeCalculatorHistoryLoad({required String path});
-
-  Future<void> crateBridgeCalculatorHistorySave({required String path});
 
   void crateBridgeCalculatorMemoryAdd({required double value});
 
@@ -206,27 +199,6 @@ abstract class RustLibApi extends BaseApi {
     String? contextModulus,
     required String mode,
     required bool showSteps,
-  });
-
-  void crateBridgeModularArithmeticModularHistoryAdd({
-    required String expression,
-    required String result,
-  });
-
-  void crateBridgeModularArithmeticModularHistoryClear();
-
-  void crateBridgeModularArithmeticModularHistoryDelete({
-    required BigInt index,
-  });
-
-  List<HistoryEntry> crateBridgeModularArithmeticModularHistoryGetAll();
-
-  Future<void> crateBridgeModularArithmeticModularHistoryLoad({
-    required String path,
-  });
-
-  Future<void> crateBridgeModularArithmeticModularHistorySave({
-    required String path,
   });
 }
 
@@ -269,6 +241,215 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  void crateBridgeHistoryAppHistoryAdd({
+    required String category,
+    required String preview,
+    required String snapshot,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(category, serializer);
+          sse_encode_String(preview, serializer);
+          sse_encode_String(snapshot, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 2)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateBridgeHistoryAppHistoryAddConstMeta,
+        argValues: [category, preview, snapshot],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateBridgeHistoryAppHistoryAddConstMeta =>
+      const TaskConstMeta(
+        debugName: "app_history_add",
+        argNames: ["category", "preview", "snapshot"],
+      );
+
+  @override
+  void crateBridgeHistoryAppHistoryClearAll() {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 3)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateBridgeHistoryAppHistoryClearAllConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateBridgeHistoryAppHistoryClearAllConstMeta =>
+      const TaskConstMeta(debugName: "app_history_clear_all", argNames: []);
+
+  @override
+  void crateBridgeHistoryAppHistoryClearCategory({required String category}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(category, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 4)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateBridgeHistoryAppHistoryClearCategoryConstMeta,
+        argValues: [category],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateBridgeHistoryAppHistoryClearCategoryConstMeta =>
+      const TaskConstMeta(
+        debugName: "app_history_clear_category",
+        argNames: ["category"],
+      );
+
+  @override
+  void crateBridgeHistoryAppHistoryDelete({required String id}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(id, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 5)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateBridgeHistoryAppHistoryDeleteConstMeta,
+        argValues: [id],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateBridgeHistoryAppHistoryDeleteConstMeta =>
+      const TaskConstMeta(debugName: "app_history_delete", argNames: ["id"]);
+
+  @override
+  List<HistoryEntry> crateBridgeHistoryAppHistoryGetAll() {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_history_entry,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateBridgeHistoryAppHistoryGetAllConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateBridgeHistoryAppHistoryGetAllConstMeta =>
+      const TaskConstMeta(debugName: "app_history_get_all", argNames: []);
+
+  @override
+  List<HistoryEntry> crateBridgeHistoryAppHistoryGetByCategory({
+    required String category,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(category, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 7)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_history_entry,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateBridgeHistoryAppHistoryGetByCategoryConstMeta,
+        argValues: [category],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateBridgeHistoryAppHistoryGetByCategoryConstMeta =>
+      const TaskConstMeta(
+        debugName: "app_history_get_by_category",
+        argNames: ["category"],
+      );
+
+  @override
+  Future<void> crateBridgeHistoryAppHistoryLoad({required String path}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 8,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateBridgeHistoryAppHistoryLoadConstMeta,
+        argValues: [path],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateBridgeHistoryAppHistoryLoadConstMeta =>
+      const TaskConstMeta(debugName: "app_history_load", argNames: ["path"]);
+
+  @override
+  Future<void> crateBridgeHistoryAppHistorySave({required String path}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 9,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateBridgeHistoryAppHistorySaveConstMeta,
+        argValues: [path],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateBridgeHistoryAppHistorySaveConstMeta =>
+      const TaskConstMeta(debugName: "app_history_save", argNames: ["path"]);
+
+  @override
   BmiResult crateBridgeConverterCalculateBmi({
     required double weightKg,
     required double heightM,
@@ -279,7 +460,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_f_64(weightKg, serializer);
           sse_encode_f_64(heightM, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 2)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 10)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_bmi_result,
@@ -309,7 +490,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_i_64(startTimestampMs, serializer);
           sse_encode_i_64(endTimestampMs, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 3)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 11)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_date_diff_result,
@@ -339,7 +520,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_f_64(originalPrice, serializer);
           sse_encode_f_64(discountPercentage, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 4)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 12)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_discount_result,
@@ -371,7 +552,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_f_64(amount, serializer);
           sse_encode_f_64(gstPercentage, serializer);
           sse_encode_bool(addGst, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 5)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 13)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_gst_result,
@@ -405,7 +586,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_f_64(annualInterestRate, serializer);
           sse_encode_f_64(years, serializer);
           sse_encode_f_64(compoundsPerYear, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 14)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_investment_result,
@@ -442,7 +623,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_f_64(monthlyContribution, serializer);
           sse_encode_f_64(annualInterestRate, serializer);
           sse_encode_f_64(years, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 7)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 15)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_investment_result,
@@ -474,7 +655,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_f_64(principal, serializer);
           sse_encode_f_64(annualInterestRate, serializer);
           sse_encode_i_32(tenureMonths, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 8)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 16)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_loan_result,
@@ -506,7 +687,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_String(value, serializer);
           sse_encode_u_32(fromBase, serializer);
           sse_encode_u_32(toBase, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 9)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 17)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_opt_String,
@@ -538,7 +719,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_f_64(value, serializer);
           sse_encode_box_autoadd_ffi_unit(fromUnit, serializer);
           sse_encode_box_autoadd_ffi_unit(toUnit, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 10)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 18)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_f_64,
@@ -570,7 +751,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_String(expression, serializer);
           sse_encode_bool(isDegree, serializer);
           sse_encode_f_64(ansValue, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 11)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 19)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_calc_result,
@@ -604,7 +785,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_Map_String_f_64_None(vars, serializer);
           sse_encode_bool(isDegree, serializer);
           sse_encode_f_64(ansValue, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 12)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 20)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_calc_result,
@@ -632,7 +813,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(expression, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 13)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 21)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_list_String,
@@ -662,7 +843,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_f_64(value, serializer);
           sse_encode_u_32(maxPrecision, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 14)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 22)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -682,168 +863,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  void crateBridgeCalculatorFuncHistoryAdd({
-    required String expression,
-    required String result,
-  }) {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(expression, serializer);
-          sse_encode_String(result, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 15)!;
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateBridgeCalculatorFuncHistoryAddConstMeta,
-        argValues: [expression, result],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateBridgeCalculatorFuncHistoryAddConstMeta =>
-      const TaskConstMeta(
-        debugName: "func_history_add",
-        argNames: ["expression", "result"],
-      );
-
-  @override
-  void crateBridgeCalculatorFuncHistoryClear() {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 16)!;
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateBridgeCalculatorFuncHistoryClearConstMeta,
-        argValues: [],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateBridgeCalculatorFuncHistoryClearConstMeta =>
-      const TaskConstMeta(debugName: "func_history_clear", argNames: []);
-
-  @override
-  void crateBridgeCalculatorFuncHistoryDelete({required BigInt index}) {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_usize(index, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 17)!;
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateBridgeCalculatorFuncHistoryDeleteConstMeta,
-        argValues: [index],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateBridgeCalculatorFuncHistoryDeleteConstMeta =>
-      const TaskConstMeta(
-        debugName: "func_history_delete",
-        argNames: ["index"],
-      );
-
-  @override
-  List<HistoryEntry> crateBridgeCalculatorFuncHistoryGetAll() {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 18)!;
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_list_history_entry,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateBridgeCalculatorFuncHistoryGetAllConstMeta,
-        argValues: [],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateBridgeCalculatorFuncHistoryGetAllConstMeta =>
-      const TaskConstMeta(debugName: "func_history_get_all", argNames: []);
-
-  @override
-  Future<void> crateBridgeCalculatorFuncHistoryLoad({required String path}) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(path, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 19,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: sse_decode_String,
-        ),
-        constMeta: kCrateBridgeCalculatorFuncHistoryLoadConstMeta,
-        argValues: [path],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateBridgeCalculatorFuncHistoryLoadConstMeta =>
-      const TaskConstMeta(debugName: "func_history_load", argNames: ["path"]);
-
-  @override
-  Future<void> crateBridgeCalculatorFuncHistorySave({required String path}) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(path, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 20,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: sse_decode_String,
-        ),
-        constMeta: kCrateBridgeCalculatorFuncHistorySaveConstMeta,
-        argValues: [path],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateBridgeCalculatorFuncHistorySaveConstMeta =>
-      const TaskConstMeta(debugName: "func_history_save", argNames: ["path"]);
-
-  @override
   List<FfiConverterCategory> crateBridgeConverterGetConverterCategories() {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 21)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 23)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_list_ffi_converter_category,
@@ -860,166 +885,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "get_converter_categories", argNames: []);
 
   @override
-  void crateBridgeCalculatorHistoryAdd({
-    required String expression,
-    required String result,
-  }) {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(expression, serializer);
-          sse_encode_String(result, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 22)!;
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateBridgeCalculatorHistoryAddConstMeta,
-        argValues: [expression, result],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateBridgeCalculatorHistoryAddConstMeta =>
-      const TaskConstMeta(
-        debugName: "history_add",
-        argNames: ["expression", "result"],
-      );
-
-  @override
-  void crateBridgeCalculatorHistoryClear() {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 23)!;
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateBridgeCalculatorHistoryClearConstMeta,
-        argValues: [],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateBridgeCalculatorHistoryClearConstMeta =>
-      const TaskConstMeta(debugName: "history_clear", argNames: []);
-
-  @override
-  void crateBridgeCalculatorHistoryDelete({required BigInt index}) {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_usize(index, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 24)!;
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateBridgeCalculatorHistoryDeleteConstMeta,
-        argValues: [index],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateBridgeCalculatorHistoryDeleteConstMeta =>
-      const TaskConstMeta(debugName: "history_delete", argNames: ["index"]);
-
-  @override
-  List<HistoryEntry> crateBridgeCalculatorHistoryGetAll() {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 25)!;
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_list_history_entry,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateBridgeCalculatorHistoryGetAllConstMeta,
-        argValues: [],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateBridgeCalculatorHistoryGetAllConstMeta =>
-      const TaskConstMeta(debugName: "history_get_all", argNames: []);
-
-  @override
-  Future<void> crateBridgeCalculatorHistoryLoad({required String path}) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(path, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 26,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: sse_decode_String,
-        ),
-        constMeta: kCrateBridgeCalculatorHistoryLoadConstMeta,
-        argValues: [path],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateBridgeCalculatorHistoryLoadConstMeta =>
-      const TaskConstMeta(debugName: "history_load", argNames: ["path"]);
-
-  @override
-  Future<void> crateBridgeCalculatorHistorySave({required String path}) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(path, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 27,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: sse_decode_String,
-        ),
-        constMeta: kCrateBridgeCalculatorHistorySaveConstMeta,
-        argValues: [path],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateBridgeCalculatorHistorySaveConstMeta =>
-      const TaskConstMeta(debugName: "history_save", argNames: ["path"]);
-
-  @override
   void crateBridgeCalculatorMemoryAdd({required double value}) {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_f_64(value, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 28)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 24)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
@@ -1041,7 +913,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 29)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 25)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
@@ -1063,7 +935,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 30)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 26)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_opt_box_autoadd_f_64,
@@ -1086,7 +958,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_f_64(value, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 31)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 27)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
@@ -1109,7 +981,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_f_64(value, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 32)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 28)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
@@ -1140,7 +1012,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_opt_String(contextModulus, serializer);
           sse_encode_String(mode, serializer);
           sse_encode_bool(showSteps, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 33)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 29)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_modular_result,
@@ -1157,176 +1029,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(
         debugName: "modular_evaluate",
         argNames: ["expression", "contextModulus", "mode", "showSteps"],
-      );
-
-  @override
-  void crateBridgeModularArithmeticModularHistoryAdd({
-    required String expression,
-    required String result,
-  }) {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(expression, serializer);
-          sse_encode_String(result, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 34)!;
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateBridgeModularArithmeticModularHistoryAddConstMeta,
-        argValues: [expression, result],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateBridgeModularArithmeticModularHistoryAddConstMeta =>
-      const TaskConstMeta(
-        debugName: "modular_history_add",
-        argNames: ["expression", "result"],
-      );
-
-  @override
-  void crateBridgeModularArithmeticModularHistoryClear() {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 35)!;
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateBridgeModularArithmeticModularHistoryClearConstMeta,
-        argValues: [],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateBridgeModularArithmeticModularHistoryClearConstMeta =>
-      const TaskConstMeta(debugName: "modular_history_clear", argNames: []);
-
-  @override
-  void crateBridgeModularArithmeticModularHistoryDelete({
-    required BigInt index,
-  }) {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_usize(index, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 36)!;
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateBridgeModularArithmeticModularHistoryDeleteConstMeta,
-        argValues: [index],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta
-  get kCrateBridgeModularArithmeticModularHistoryDeleteConstMeta =>
-      const TaskConstMeta(
-        debugName: "modular_history_delete",
-        argNames: ["index"],
-      );
-
-  @override
-  List<HistoryEntry> crateBridgeModularArithmeticModularHistoryGetAll() {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 37)!;
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_list_history_entry,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateBridgeModularArithmeticModularHistoryGetAllConstMeta,
-        argValues: [],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta
-  get kCrateBridgeModularArithmeticModularHistoryGetAllConstMeta =>
-      const TaskConstMeta(debugName: "modular_history_get_all", argNames: []);
-
-  @override
-  Future<void> crateBridgeModularArithmeticModularHistoryLoad({
-    required String path,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(path, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 38,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: sse_decode_String,
-        ),
-        constMeta: kCrateBridgeModularArithmeticModularHistoryLoadConstMeta,
-        argValues: [path],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateBridgeModularArithmeticModularHistoryLoadConstMeta =>
-      const TaskConstMeta(
-        debugName: "modular_history_load",
-        argNames: ["path"],
-      );
-
-  @override
-  Future<void> crateBridgeModularArithmeticModularHistorySave({
-    required String path,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(path, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 39,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: sse_decode_String,
-        ),
-        constMeta: kCrateBridgeModularArithmeticModularHistorySaveConstMeta,
-        argValues: [path],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateBridgeModularArithmeticModularHistorySaveConstMeta =>
-      const TaskConstMeta(
-        debugName: "modular_history_save",
-        argNames: ["path"],
       );
 
   @protected
@@ -1484,11 +1186,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   HistoryEntry dco_decode_history_entry(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 2)
-      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
     return HistoryEntry(
-      expression: dco_decode_String(arr[0]),
-      result: dco_decode_String(arr[1]),
+      id: dco_decode_String(arr[0]),
+      category: dco_decode_String(arr[1]),
+      timestamp: dco_decode_i_64(arr[2]),
+      preview: dco_decode_String(arr[3]),
+      snapshot: dco_decode_String(arr[4]),
+      version: dco_decode_u_32(arr[5]),
     );
   }
 
@@ -1703,12 +1409,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  BigInt dco_decode_usize(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return dcoDecodeU64(raw);
-  }
-
-  @protected
   Map<String, double> sse_decode_Map_String_f_64_None(
     SseDeserializer deserializer,
   ) {
@@ -1865,9 +1565,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   HistoryEntry sse_decode_history_entry(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    var var_expression = sse_decode_String(deserializer);
-    var var_result = sse_decode_String(deserializer);
-    return HistoryEntry(expression: var_expression, result: var_result);
+    var var_id = sse_decode_String(deserializer);
+    var var_category = sse_decode_String(deserializer);
+    var var_timestamp = sse_decode_i_64(deserializer);
+    var var_preview = sse_decode_String(deserializer);
+    var var_snapshot = sse_decode_String(deserializer);
+    var var_version = sse_decode_u_32(deserializer);
+    return HistoryEntry(
+      id: var_id,
+      category: var_category,
+      timestamp: var_timestamp,
+      preview: var_preview,
+      snapshot: var_snapshot,
+      version: var_version,
+    );
   }
 
   @protected
@@ -2159,12 +1870,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  BigInt sse_decode_usize(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return deserializer.buffer.getBigUint64();
-  }
-
-  @protected
   void sse_encode_Map_String_f_64_None(
     Map<String, double> self,
     SseSerializer serializer,
@@ -2297,8 +2002,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   void sse_encode_history_entry(HistoryEntry self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_String(self.expression, serializer);
-    sse_encode_String(self.result, serializer);
+    sse_encode_String(self.id, serializer);
+    sse_encode_String(self.category, serializer);
+    sse_encode_i_64(self.timestamp, serializer);
+    sse_encode_String(self.preview, serializer);
+    sse_encode_String(self.snapshot, serializer);
+    sse_encode_u_32(self.version, serializer);
   }
 
   @protected
@@ -2534,11 +2243,5 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   void sse_encode_unit(void self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-  }
-
-  @protected
-  void sse_encode_usize(BigInt self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    serializer.buffer.putBigUint64(self);
   }
 }

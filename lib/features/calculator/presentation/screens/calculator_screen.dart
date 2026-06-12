@@ -6,6 +6,7 @@ import 'package:calculator_flutter_app/shared/layouts/responsive_keypad_layout.d
 
 import 'package:calculator_flutter_app/features/calculator/presentation/screens/function_evaluator_screen.dart';
 import 'package:calculator_flutter_app/features/history/presentation/screens/history_screen.dart';
+import 'package:calculator_flutter_app/features/history/domain/history_category.dart';
 import 'package:calculator_flutter_app/app/navigation/route_transitions.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
@@ -98,14 +99,26 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
     );
 
     void onPressed() async {
-      final result = await Navigator.push<bool>(
+      final initialCategory = selectedTabIndex == 1
+          ? HistoryCategory.functionEvaluator
+          : selectedTabIndex == 2
+              ? HistoryCategory.modularArithmetic
+              : HistoryCategory.calculator;
+
+      final result = await Navigator.push<HistoryCategory>(
         context,
         FadePageRoute(
-          page: HistoryScreen(initialIsFuncMode: selectedTabIndex == 1),
+          page: HistoryScreen(initialCategory: initialCategory),
         ),
       );
-      if (result != null && result != (selectedTabIndex == 1)) {
-        ref.read(selectedTabProvider.notifier).update(result ? 1 : 0);
+      
+      if (result != null) {
+        int nextIndex = 0;
+        if (result == HistoryCategory.functionEvaluator) nextIndex = 1;
+        if (result == HistoryCategory.modularArithmetic) nextIndex = 2;
+        if (nextIndex != selectedTabIndex) {
+          ref.read(selectedTabProvider.notifier).update(nextIndex);
+        }
       }
     }
 

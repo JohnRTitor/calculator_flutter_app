@@ -107,6 +107,18 @@ class _FunctionEvaluatorScreenState
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(
+      functionEvaluatorProvider.select((state) => state.funcExpression),
+      (previous, next) {
+        if (_controller.text != next) {
+          _controller.value = TextEditingValue(
+            text: next,
+            selection: TextSelection.collapsed(offset: next.length),
+          );
+        }
+      },
+    );
+
     final state = ref.watch(functionEvaluatorProvider);
     final uiStyle = ref.watch(uiStyleProvider);
     final theme = Theme.of(context);

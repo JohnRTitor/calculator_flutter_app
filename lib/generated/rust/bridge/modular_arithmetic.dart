@@ -4,7 +4,6 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
-import '../shared/history.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 ModularResult modularEvaluate({
@@ -26,27 +25,6 @@ StructureAnalysisResponse analyzeStructure({
   structureType: structureType,
   n: n,
 );
-
-void modularHistoryAdd({required String expression, required String result}) =>
-    RustLib.instance.api.crateBridgeModularArithmeticModularHistoryAdd(
-      expression: expression,
-      result: result,
-    );
-
-List<HistoryEntry> modularHistoryGetAll() =>
-    RustLib.instance.api.crateBridgeModularArithmeticModularHistoryGetAll();
-
-void modularHistoryClear() =>
-    RustLib.instance.api.crateBridgeModularArithmeticModularHistoryClear();
-
-void modularHistoryDelete({required BigInt index}) => RustLib.instance.api
-    .crateBridgeModularArithmeticModularHistoryDelete(index: index);
-
-Future<void> modularHistorySave({required String path}) => RustLib.instance.api
-    .crateBridgeModularArithmeticModularHistorySave(path: path);
-
-Future<void> modularHistoryLoad({required String path}) => RustLib.instance.api
-    .crateBridgeModularArithmeticModularHistoryLoad(path: path);
 
 class ElementOrderPair {
   final String element;

@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/providers/calculator_state.dart';
 import 'package:calculator_flutter_app/generated/rust/bridge/calculator.dart'
     as rust;
+import 'package:calculator_flutter_app/generated/rust/bridge/history.dart'
+    as rust_history;
 import 'package:calculator_flutter_app/features/history/presentation/providers/history_provider.dart';
 
 part 'calculator_provider.g.dart';
@@ -337,17 +340,27 @@ class Calculator extends _$Calculator {
 
       // Save history
       final newResult = res.exactFraction ?? res.formatted;
-      final history = rust.historyGetAll();
-      if (history.isEmpty ||
-          history.last.expression != currentExpression ||
-          history.last.result != newResult) {
-        rust.historyAdd(expression: currentExpression, result: newResult);
+      rust_history.appHistoryAdd(
+        category: 'calculator',
+        preview: jsonEncode({
+          'expression': currentExpression,
+          'result': newResult,
+        }),
+        snapshot: jsonEncode({
+          'tokens': state.tokens,
+          'cursorIndex': state.cursorIndex,
+          'isDegreeMode': state.isDegreeMode,
+          'isScientificMode': state.isScientificMode,
+          'ansValue': state.ansValue,
+          'result': res.formatted,
+          'exactResult': res.exactFraction,
+        }),
+      );
 
-        // Wait to get valid path and save
-        final historyNotifier = ref.read(historyProvider.notifier);
-        await historyNotifier.saveHistoryToFile();
-        historyNotifier.refresh();
-      }
+      // Wait to get valid path and save
+      final historyNotifier = ref.read(historyProvider.notifier);
+      await historyNotifier.saveHistoryToFile();
+      historyNotifier.refresh();
 
       return true;
     } catch (e) {
@@ -486,5 +499,27 @@ class Calculator extends _$Calculator {
       );
     }
     _updatePreview();
+  }
+
+  /// Restores the calculator state from a history snapshot.
+  void restoreSnapshot(String snapshotJson) {
+    try {
+      final Map<String, dynamic> data = jsonDecode(snapshotJson);
+      state = state.copyWith(
+        tokens: List<String>.from(data['tokens'] ?? []),
+        cursorIndex: data['cursorIndex'] as int? ?? 0,
+        isDegreeMode: data['isDegreeMode'] as bool? ?? false,
+        isScientificMode: data['isScientificMode'] as bool? ?? false,
+        ansValue: (data['ansValue'] as num?)?.toDouble() ?? 0.0,
+        result: data['result'] as String? ?? '',
+        exactResult: data['exactResult'] as String?,
+        showResult: true,
+        displayAsFraction: data['exactResult'] != null,
+        preview: '',
+        clearError: true,
+      );
+    } catch (_) {
+      // Failed to restore snapshot, ignore
+    }
   }
 }

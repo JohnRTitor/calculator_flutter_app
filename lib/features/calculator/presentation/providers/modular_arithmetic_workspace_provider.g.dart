@@ -49,7 +49,7 @@ final class ModularArithmeticWorkspaceProvider
 }
 
 String _$modularArithmeticWorkspaceHash() =>
-    r'f3c2da5ccac9c89fc6c1f0200f4f6ac81f8fd803';
+    r'f4af1e8f310a63cf442fb258c1df2c9df2f6e97e';
 
 abstract class _$ModularArithmeticWorkspace
     extends $Notifier<ModularArithmeticWorkspaceState> {

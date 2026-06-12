@@ -9,6 +9,7 @@
 import 'bridge/calculator.dart';
 import 'bridge/converter.dart';
 import 'bridge/currency.dart';
+import 'bridge/history.dart';
 import 'bridge/modular_arithmetic.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -144,9 +145,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void dco_decode_unit(dynamic raw);
 
   @protected
-  BigInt dco_decode_usize(dynamic raw);
-
-  @protected
   Map<String, double> sse_decode_Map_String_f_64_None(
     SseDeserializer deserializer,
   );
@@ -280,9 +278,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_decode_unit(SseDeserializer deserializer);
-
-  @protected
-  BigInt sse_decode_usize(SseDeserializer deserializer);
 
   @protected
   void sse_encode_Map_String_f_64_None(
@@ -451,9 +446,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_unit(void self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_usize(BigInt self, SseSerializer serializer);
 }
 
 // Section: wire_class

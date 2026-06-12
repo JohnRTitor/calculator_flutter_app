@@ -113,24 +113,6 @@ pub fn memory_clear() {
     memory::clear();
 }
 
-crate::history_bridge!(
-    history_add,
-    history_get_all,
-    history_clear,
-    history_delete,
-    history_save,
-    history_load,
-    history::BASIC_HISTORY
-);
-crate::history_bridge!(
-    func_history_add,
-    func_history_get_all,
-    func_history_clear,
-    func_history_delete,
-    func_history_save,
-    func_history_load,
-    history::FUNC_HISTORY
-);
 
 /// Extracts variables from an expression string.
 #[frb(sync)]

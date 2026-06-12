@@ -369,12 +369,3 @@ pub fn analyze_structure(
     })
 }
 
-crate::history_bridge!(
-    modular_history_add,
-    modular_history_get_all,
-    modular_history_clear,
-    modular_history_delete,
-    modular_history_save,
-    modular_history_load,
-    history::MOD_HISTORY
-);

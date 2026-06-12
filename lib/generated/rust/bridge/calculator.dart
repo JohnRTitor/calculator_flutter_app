@@ -4,7 +4,6 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
-import '../shared/history.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `is_variable`, `perform_evaluation`
@@ -59,46 +58,6 @@ void memorySubtract({required double value}) =>
 
 /// Clears the global calculator memory.
 void memoryClear() => RustLib.instance.api.crateBridgeCalculatorMemoryClear();
-
-void historyAdd({required String expression, required String result}) => RustLib
-    .instance
-    .api
-    .crateBridgeCalculatorHistoryAdd(expression: expression, result: result);
-
-List<HistoryEntry> historyGetAll() =>
-    RustLib.instance.api.crateBridgeCalculatorHistoryGetAll();
-
-void historyClear() => RustLib.instance.api.crateBridgeCalculatorHistoryClear();
-
-void historyDelete({required BigInt index}) =>
-    RustLib.instance.api.crateBridgeCalculatorHistoryDelete(index: index);
-
-Future<void> historySave({required String path}) =>
-    RustLib.instance.api.crateBridgeCalculatorHistorySave(path: path);
-
-Future<void> historyLoad({required String path}) =>
-    RustLib.instance.api.crateBridgeCalculatorHistoryLoad(path: path);
-
-void funcHistoryAdd({required String expression, required String result}) =>
-    RustLib.instance.api.crateBridgeCalculatorFuncHistoryAdd(
-      expression: expression,
-      result: result,
-    );
-
-List<HistoryEntry> funcHistoryGetAll() =>
-    RustLib.instance.api.crateBridgeCalculatorFuncHistoryGetAll();
-
-void funcHistoryClear() =>
-    RustLib.instance.api.crateBridgeCalculatorFuncHistoryClear();
-
-void funcHistoryDelete({required BigInt index}) =>
-    RustLib.instance.api.crateBridgeCalculatorFuncHistoryDelete(index: index);
-
-Future<void> funcHistorySave({required String path}) =>
-    RustLib.instance.api.crateBridgeCalculatorFuncHistorySave(path: path);
-
-Future<void> funcHistoryLoad({required String path}) =>
-    RustLib.instance.api.crateBridgeCalculatorFuncHistoryLoad(path: path);
 
 /// Extracts variables from an expression string.
 List<String> extractVariables({required String expression}) => RustLib

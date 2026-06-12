@@ -53,7 +53,7 @@ final class CalculatorProvider
   }
 }
 
-String _$calculatorHash() => r'34ea0fca1ca075144fddd8d959433751d97e95db';
+String _$calculatorHash() => r'158c52e3c6eed4331bfc69e03f36059d4e339cf2';
 
 /// A Riverpod Notifier that manages the state of the calculator.
 ///

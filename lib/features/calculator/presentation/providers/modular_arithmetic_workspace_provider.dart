@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:calculator_flutter_app/features/calculator/presentation/providers/modular_arithmetic_workspace_state.dart';
 import 'package:calculator_flutter_app/generated/rust/bridge/modular_arithmetic.dart'
     as rust;
+import 'package:calculator_flutter_app/generated/rust/bridge/history.dart'
+    as rust_history;
 import 'package:calculator_flutter_app/features/history/presentation/providers/history_provider.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/settings_provider.dart';
 
@@ -98,11 +101,28 @@ class ModularArithmeticWorkspace extends _$ModularArithmeticWorkspace {
         showSteps: showSteps,
       );
 
-      final historyExpr = _formatHistoryExpression();
+      rust_history.appHistoryAdd(
+        category: 'modularArithmetic',
+        preview: jsonEncode({
+          'operation': state.mode.name,
+          'modulus': state.modulus,
+          'inputs': state.expression,
+          'result': res.value,
+        }),
+        snapshot: jsonEncode({
+          'expression': state.expression,
+          'modulus': state.modulus,
+          'mode': state.mode.name,
+          'result': res.value,
+          'details': res.details,
+          'modulusUsed': res.modulusUsed,
+          'steps': res.steps,
+        }),
+      );
 
-      rust.modularHistoryAdd(expression: historyExpr, result: res.value);
-
-      ref.invalidate(historyProvider);
+      final historyNotifier = ref.read(historyProvider.notifier);
+      historyNotifier.saveHistoryToFile();
+      historyNotifier.refresh();
 
       state = state.copyWith(
         result: res.value,
@@ -120,13 +140,6 @@ class ModularArithmeticWorkspace extends _$ModularArithmeticWorkspace {
             .replaceAll(')', ''),
       );
     }
-  }
-
-  String _formatHistoryExpression() {
-    if (state.modulus.isNotEmpty) {
-      return '${state.expression} (mod ${state.modulus})';
-    }
-    return state.expression;
   }
 
   void setExplorerN(String n) {
@@ -158,11 +171,23 @@ class ModularArithmeticWorkspace extends _$ModularArithmeticWorkspace {
 
       if (res.success && res.analysis != null) {
         // Also add to rich history
-        rust.modularHistoryAdd(
-          expression: 'analyze(${res.analysis!.label})',
-          result: res.analysis!.classification,
+        rust_history.appHistoryAdd(
+          category: 'modularArithmetic',
+          preview: jsonEncode({
+            'operation': 'analyze',
+            'modulus': state.explorerN,
+            'inputs': state.explorerType,
+            'result': res.analysis!.classification,
+          }),
+          snapshot: jsonEncode({
+            'explorerN': state.explorerN,
+            'explorerType': state.explorerType,
+          }), // Since structure explorer is just a tab, maybe we don't restore fully into it, or we could if we extend state
         );
-        ref.invalidate(historyProvider);
+
+        final historyNotifier = ref.read(historyProvider.notifier);
+        historyNotifier.saveHistoryToFile();
+        historyNotifier.refresh();
 
         state = state.copyWith(
           explorerResult: res.analysis,
@@ -190,6 +215,33 @@ class ModularArithmeticWorkspace extends _$ModularArithmeticWorkspace {
         clearExplorerSuggestion: true,
         clearExplorerInterpretedAs: true,
       );
+    }
+  }
+
+  /// Restores the evaluator state from a history snapshot.
+  void restoreSnapshot(String snapshotJson) {
+    try {
+      final Map<String, dynamic> data = jsonDecode(snapshotJson);
+      
+      final modeStr = data['mode'] as String? ?? 'ring';
+      final mode = ModularMode.values.firstWhere(
+        (m) => m.name == modeStr,
+        orElse: () => ModularMode.ring,
+      );
+
+      state = state.copyWith(
+        expression: data['expression'] as String? ?? '',
+        modulus: data['modulus'] as String? ?? '',
+        mode: mode,
+        result: data['result'] as String?,
+        details: data['details'] as String?,
+        modulusUsed: data['modulusUsed'] as String?,
+        steps: data['steps'] as String?,
+        showResult: data['result'] != null,
+        clearError: true,
+      );
+    } catch (_) {
+      // Failed to restore snapshot, ignore
     }
   }
 }

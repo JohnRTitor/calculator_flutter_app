@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:calculator_flutter_app/generated/rust/shared/history.dart';
-import 'package:calculator_flutter_app/generated/rust/bridge/calculator.dart'
+import 'package:calculator_flutter_app/generated/rust/bridge/history.dart'
     as bridge;
 
 part 'history_provider.g.dart';
@@ -16,35 +16,41 @@ class History extends _$History {
   Future<List<HistoryEntry>> build() async {
     try {
       final file = await _getHistoryFile();
-      await bridge.historyLoad(path: file.path);
+      await bridge.appHistoryLoad(path: file.path);
     } catch (_) {}
-    return bridge.historyGetAll();
+    return bridge.appHistoryGetAll();
   }
 
   Future<File> _getHistoryFile() async {
     final dir = await getApplicationDocumentsDirectory();
-    return File('${dir.path}/calc_history.json');
+    return File('${dir.path}/calc_app_history.json');
   }
 
   Future<void> saveHistoryToFile() async {
     try {
       final file = await _getHistoryFile();
-      await bridge.historySave(path: file.path);
+      await bridge.appHistorySave(path: file.path);
     } catch (_) {}
   }
 
   Future<void> refresh() async {
-    state = AsyncData(bridge.historyGetAll());
+    state = AsyncData(bridge.appHistoryGetAll());
   }
 
-  Future<void> delete(int index) async {
-    bridge.historyDelete(index: BigInt.from(index));
+  Future<void> delete(String id) async {
+    bridge.appHistoryDelete(id: id);
     await saveHistoryToFile();
     await refresh();
   }
 
-  Future<void> clear() async {
-    bridge.historyClear();
+  Future<void> clearCategory(String category) async {
+    bridge.appHistoryClearCategory(category: category);
+    await saveHistoryToFile();
+    await refresh();
+  }
+
+  Future<void> clearAll() async {
+    bridge.appHistoryClearAll();
     await saveHistoryToFile();
     await refresh();
   }

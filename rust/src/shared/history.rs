@@ -2,40 +2,17 @@ use crate::calculator::error::CalcError;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::sync::Mutex;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Represents a single calculation in the application history.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HistoryEntry {
-    pub expression: String,
-    pub result: String,
-}
-
-#[macro_export]
-macro_rules! history_bridge {
-    ($add:ident, $get_all:ident, $clear:ident, $delete:ident, $save:ident, $load:ident, $history:expr) => {
-        #[flutter_rust_bridge::frb(sync)]
-        pub fn $add(expression: String, result: String) {
-            $history.add(expression, result);
-        }
-        #[flutter_rust_bridge::frb(sync)]
-        pub fn $get_all() -> Vec<crate::shared::history::HistoryEntry> {
-            $history.get_all()
-        }
-        #[flutter_rust_bridge::frb(sync)]
-        pub fn $clear() {
-            $history.clear();
-        }
-        #[flutter_rust_bridge::frb(sync)]
-        pub fn $delete(index: usize) {
-            $history.delete(index);
-        }
-        pub fn $save(path: String) -> Result<(), String> {
-            $history.save(&path).map_err(|e| e.to_string())
-        }
-        pub fn $load(path: String) -> Result<(), String> {
-            $history.load(&path).map_err(|e| e.to_string())
-        }
-    };
+    pub id: String,
+    pub category: String,
+    pub timestamp: i64,
+    pub preview: String,
+    pub snapshot: String,
+    pub version: u32,
 }
 
 pub struct HistoryManager {
@@ -49,9 +26,31 @@ impl HistoryManager {
         }
     }
 
-    pub fn add(&self, expression: String, result: String) {
+    pub fn add(&self, category: String, preview: String, snapshot: String) {
         if let Ok(mut history) = self.history.lock() {
-            history.push(HistoryEntry { expression, result });
+            if let Some(last) = history.last() {
+                if last.category == category && last.preview == preview {
+                    return; // Avoid duplicate consecutive history entries
+                }
+            }
+
+            let timestamp = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_millis() as i64;
+            
+            // Generate a simple unique ID using timestamp + a random-like counter
+            // Since this is local, timestamp-based is fine. We append length just to avoid collisions in the exact same ms.
+            let id = format!("{}_{}", timestamp, history.len());
+
+            history.push(HistoryEntry {
+                id,
+                category,
+                timestamp,
+                preview,
+                snapshot,
+                version: 1,
+            });
         }
     }
 
@@ -63,17 +62,29 @@ impl HistoryManager {
         }
     }
 
-    pub fn clear(&self) {
+    pub fn get_by_category(&self, category: &str) -> Vec<HistoryEntry> {
+        if let Ok(history) = self.history.lock() {
+            history.iter().filter(|e| e.category == category).cloned().collect()
+        } else {
+            Vec::new()
+        }
+    }
+
+    pub fn clear_all(&self) {
         if let Ok(mut history) = self.history.lock() {
             history.clear();
         }
     }
 
-    pub fn delete(&self, index: usize) {
+    pub fn clear_category(&self, category: &str) {
         if let Ok(mut history) = self.history.lock() {
-            if index < history.len() {
-                history.remove(index);
-            }
+            history.retain(|e| e.category != category);
+        }
+    }
+
+    pub fn delete(&self, id: &str) {
+        if let Ok(mut history) = self.history.lock() {
+            history.retain(|e| e.id != id);
         }
     }
 
@@ -92,17 +103,16 @@ impl HistoryManager {
         }
         let json = fs::read_to_string(path)
             .map_err(|e| CalcError::IoError(format!("File read error: {}", e)))?;
-        let loaded_history: Vec<HistoryEntry> = serde_json::from_str(&json)
-            .map_err(|e| CalcError::IoError(format!("Deserialization error: {}", e)))?;
-
-        if let Ok(mut history) = self.history.lock() {
-            *history = loaded_history;
+        
+        // Attempt to deserialize, ignoring failure to allow clean wipe on bad schema
+        if let Ok(loaded_history) = serde_json::from_str::<Vec<HistoryEntry>>(&json) {
+            if let Ok(mut history) = self.history.lock() {
+                *history = loaded_history;
+            }
         }
         Ok(())
     }
 }
 
-// Global instances for different calculators
-pub static BASIC_HISTORY: HistoryManager = HistoryManager::new();
-pub static FUNC_HISTORY: HistoryManager = HistoryManager::new();
-pub static MOD_HISTORY: HistoryManager = HistoryManager::new();
+// Global instance for all calculators
+pub static APP_HISTORY: HistoryManager = HistoryManager::new();

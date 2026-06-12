@@ -8,19 +8,40 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 /// Represents a single calculation in the application history.
 class HistoryEntry {
-  final String expression;
-  final String result;
+  final String id;
+  final String category;
+  final PlatformInt64 timestamp;
+  final String preview;
+  final String snapshot;
+  final int version;
 
-  const HistoryEntry({required this.expression, required this.result});
+  const HistoryEntry({
+    required this.id,
+    required this.category,
+    required this.timestamp,
+    required this.preview,
+    required this.snapshot,
+    required this.version,
+  });
 
   @override
-  int get hashCode => expression.hashCode ^ result.hashCode;
+  int get hashCode =>
+      id.hashCode ^
+      category.hashCode ^
+      timestamp.hashCode ^
+      preview.hashCode ^
+      snapshot.hashCode ^
+      version.hashCode;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is HistoryEntry &&
           runtimeType == other.runtimeType &&
-          expression == other.expression &&
-          result == other.result;
+          id == other.id &&
+          category == other.category &&
+          timestamp == other.timestamp &&
+          preview == other.preview &&
+          snapshot == other.snapshot &&
+          version == other.version;
 }

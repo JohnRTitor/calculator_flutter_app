@@ -50,6 +50,30 @@ class _ModularArithmeticWorkspaceScreenState
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(
+      modularArithmeticWorkspaceProvider.select((state) => state.expression),
+      (previous, next) {
+        if (_exprController.text != next) {
+          _exprController.value = TextEditingValue(
+            text: next,
+            selection: TextSelection.collapsed(offset: next.length),
+          );
+        }
+      },
+    );
+
+    ref.listen(
+      modularArithmeticWorkspaceProvider.select((state) => state.modulus),
+      (previous, next) {
+        if (_modController.text != next) {
+          _modController.value = TextEditingValue(
+            text: next,
+            selection: TextSelection.collapsed(offset: next.length),
+          );
+        }
+      },
+    );
+
     final uiStyle = ref.watch(uiStyleProvider);
 
     return Column(
