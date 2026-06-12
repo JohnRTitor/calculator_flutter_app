@@ -13,6 +13,7 @@ Future<T?> showAppDialog<T>({
   String? secondaryButtonText,
   VoidCallback? onSecondaryButtonPressed,
   bool scrollable = true,
+  bool isDestructive = false,
 }) {
   final colorScheme = Theme.of(context).colorScheme;
 
@@ -59,12 +60,16 @@ Future<T?> showAppDialog<T>({
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer.withValues(
-                          alpha: 0.5,
-                        ),
+                        color: isDestructive 
+                            ? colorScheme.errorContainer.withValues(alpha: 0.5)
+                            : colorScheme.primaryContainer.withValues(alpha: 0.5),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(icon, color: colorScheme.primary, size: 28),
+                      child: Icon(
+                        icon, 
+                        color: isDestructive ? colorScheme.error : colorScheme.primary, 
+                        size: 28,
+                      ),
                     ),
                     const SizedBox(height: 20),
                     Text(
@@ -93,6 +98,7 @@ Future<T?> showAppDialog<T>({
                             onPressed: onSecondaryButtonPressed,
                             uiStyle: uiStyle,
                             isPrimary: false,
+                            isDestructive: false,
                             colorScheme: colorScheme,
                           ),
                           const SizedBox(width: 8),
@@ -103,6 +109,7 @@ Future<T?> showAppDialog<T>({
                           onPressed: onPrimaryButtonPressed,
                           uiStyle: uiStyle,
                           isPrimary: true,
+                          isDestructive: isDestructive,
                           colorScheme: colorScheme,
                         ),
                       ],
@@ -124,21 +131,26 @@ Widget _buildButton({
   VoidCallback? onPressed,
   required UiStyle uiStyle,
   required bool isPrimary,
+  required bool isDestructive,
   required ColorScheme colorScheme,
 }) {
   final handlePress = onPressed ?? () => Navigator.of(context).pop();
 
   if (uiStyle == UiStyle.liquidGlass) {
+    final role = isDestructive 
+        ? GlassSurfaceRole.destructive 
+        : (isPrimary ? GlassSurfaceRole.primary : GlassSurfaceRole.accent);
+
     final style = resolveGlassStyle(
       colorScheme,
       brightness: Theme.of(context).brightness,
-      role: isPrimary ? GlassSurfaceRole.primary : GlassSurfaceRole.accent,
+      role: role,
       isSelected: true, // We make them pop
     );
 
     return SharedSurface(
       uiStyle: uiStyle,
-      glassRole: isPrimary ? GlassSurfaceRole.primary : GlassSurfaceRole.accent,
+      glassRole: role,
       isInteractive: true,
       isSelected: true,
       onTap: handlePress,
@@ -157,6 +169,8 @@ Widget _buildButton({
       return FilledButton(
         onPressed: handlePress,
         style: FilledButton.styleFrom(
+          backgroundColor: isDestructive ? colorScheme.error : null,
+          foregroundColor: isDestructive ? colorScheme.onError : null,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           minimumSize: const Size(0, 48),
           elevation: 0,
