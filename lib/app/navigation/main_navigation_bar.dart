@@ -174,7 +174,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
           'https://github.com/JohnRTitor/calculator_flutter_app',
         );
         if (await canLaunchUrl(url)) {
-          await launchUrl(url);
+          await launchUrl(url, mode: LaunchMode.externalApplication);
         }
       },
       secondaryButtonText: 'Close',
