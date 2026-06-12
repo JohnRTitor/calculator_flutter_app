@@ -49,6 +49,15 @@ fn test_basic_arithmetic() {
 }
 
 #[test]
+fn test_modular_exponentiation() {
+    assert_eq!(eval("17^22 mod 21"), 4.0);
+    assert_eq!(eval("2^10 mod 1000"), 24.0);
+    assert_eq!(eval("5^117 mod 19"), 1.0);
+    assert_eq!(eval("7^128 mod 13"), 3.0);
+    assert_eq!(eval("3^0 mod 7"), 1.0);
+}
+
+#[test]
 fn test_implicit_multiplication() {
     assert_eq!(eval("2(3+4)"), 14.0);
     assert_eq!(eval("(2+3)(4+5)"), 45.0);

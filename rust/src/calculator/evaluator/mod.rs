@@ -61,9 +61,30 @@ pub fn evaluate_expr(
         Expr::Divide(l, r) => evaluate_expr(l, evaluator, is_degree, ans_value)?
             .div(evaluate_expr(r, evaluator, is_degree, ans_value)?)
             .map_err(|_| CalcError::DivisionByZero),
-        Expr::Modulo(l, r) => evaluate_expr(l, evaluator, is_degree, ans_value)?
-            .modulo(evaluate_expr(r, evaluator, is_degree, ans_value)?)
-            .map_err(|_| CalcError::DivisionByZero),
+        Expr::Modulo(l, r) => {
+            // Optimization for modular exponentiation to prevent overflow
+            if let Expr::Power(base_expr, exp_expr) = &**l {
+                let base = evaluate_expr(base_expr, evaluator, is_degree, ans_value)?;
+                let exp = evaluate_expr(exp_expr, evaluator, is_degree, ans_value)?;
+                let modulus = evaluate_expr(r, evaluator, is_degree, ans_value)?;
+
+                if let (CalcValue::Rational(b), CalcValue::Rational(e), CalcValue::Rational(m)) = (base, exp, modulus) {
+                    if b.den == 1 && e.den == 1 && m.den == 1 && m.num > 0 {
+                        // Use modular arithmetic engine
+                        if let Ok(res) = crate::modular_math::mod_arith::mod_pow(b.num, e.num, m.num) {
+                            return Ok(CalcValue::Rational(Rational::new(res, 1)));
+                        }
+                    }
+                }
+                
+                // Fallback to regular evaluation if not exact integers or modulus is negative/zero
+                return base.pow(exp).modulo(modulus).map_err(|_| CalcError::DivisionByZero);
+            }
+
+            evaluate_expr(l, evaluator, is_degree, ans_value)?
+                .modulo(evaluate_expr(r, evaluator, is_degree, ans_value)?)
+                .map_err(|_| CalcError::DivisionByZero)
+        }
         Expr::Power(l, r) => {
             let left = evaluate_expr(l, evaluator, is_degree, ans_value)?;
             let right = evaluate_expr(r, evaluator, is_degree, ans_value)?;

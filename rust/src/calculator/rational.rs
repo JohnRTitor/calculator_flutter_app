@@ -229,15 +229,27 @@ impl CalcValue {
         })
     }
 
-    /// Computes `self % other`. Always falls back to floating point evaluation.
+    /// Computes `self % other`. Attempts exact integer modulo if possible.
     pub fn modulo(self, other: CalcValue) -> Result<CalcValue, ()> {
         let other_float = other.to_float();
         if other_float == 0.0 {
             return Err(());
         }
-        // Keep modulo as float since it's rarely used exactly, but we can do exact modulo if both are rational and denominators match/etc
-        // For simplicity, just float modulo
-        Ok(CalcValue::Float(self.to_float() % other_float))
+        
+        match (self, other) {
+            (CalcValue::Rational(r1), CalcValue::Rational(r2)) if r1.den == 1 && r2.den == 1 => {
+                let mut res = r1.num % r2.num;
+                if res < 0 {
+                    if r2.num > 0 {
+                        res += r2.num;
+                    } else {
+                        res -= r2.num;
+                    }
+                }
+                Ok(CalcValue::Rational(Rational::new(res, 1)))
+            }
+            _ => Ok(CalcValue::Float(self.to_float() % other_float)),
+        }
     }
 
     /// Raises `self` to the power of `other`, attempting to preserve rationality for integer exponents.
