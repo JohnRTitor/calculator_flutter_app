@@ -9,10 +9,13 @@ class MultiPillSwitcher extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onChanged;
 
+  final List<String>? tooltips;
+
   const MultiPillSwitcher({
     super.key,
     required this.uiStyle,
     required this.labels,
+    this.tooltips,
     required this.selectedIndex,
     required this.onChanged,
   });
@@ -24,6 +27,7 @@ class MultiPillSwitcher extends StatelessWidget {
         segments: labels.asMap().entries.map((entry) {
           return ButtonSegment<int>(
             value: entry.key,
+            tooltip: tooltips?[entry.key],
             label: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
               child: Text(entry.value),
@@ -53,16 +57,30 @@ class MultiPillSwitcher extends StatelessWidget {
               padding: EdgeInsets.only(
                 right: entry.key < labels.length - 1 ? 4.0 : 0.0,
               ),
-              child: _buildToggleChip(
-                context: context,
-                label: entry.value,
-                isSelected: isSelected,
-                onTap: () {
-                  if (!isSelected) {
-                    onChanged(entry.key);
-                  }
-                },
-              ),
+              child: tooltips != null
+                  ? Tooltip(
+                      message: tooltips![entry.key],
+                      child: _buildToggleChip(
+                        context: context,
+                        label: entry.value,
+                        isSelected: isSelected,
+                        onTap: () {
+                          if (!isSelected) {
+                            onChanged(entry.key);
+                          }
+                        },
+                      ),
+                    )
+                  : _buildToggleChip(
+                      context: context,
+                      label: entry.value,
+                      isSelected: isSelected,
+                      onTap: () {
+                        if (!isSelected) {
+                          onChanged(entry.key);
+                        }
+                      },
+                    ),
             ),
           );
         }).toList(),

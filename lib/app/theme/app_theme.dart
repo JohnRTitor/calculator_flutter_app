@@ -170,6 +170,20 @@ class AppTheme {
           borderRadius: BorderRadius.circular(cardRadius),
         ),
       ),
+      tooltipTheme: TooltipThemeData(
+        decoration: BoxDecoration(
+          color: colorScheme.brightness == Brightness.dark
+              ? colorScheme.surfaceContainerHighest
+              : colorScheme.inverseSurface,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        textStyle: TextStyle(
+          color: colorScheme.brightness == Brightness.dark
+              ? colorScheme.onSurfaceVariant
+              : colorScheme.onInverseSurface,
+          fontSize: 12,
+        ),
+      ),
       extensions: [
         AppThemeExtension(
           calculatorCard: colorScheme.surfaceContainer,

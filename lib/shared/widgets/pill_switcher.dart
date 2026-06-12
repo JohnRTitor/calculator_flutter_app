@@ -15,11 +15,16 @@ class PillSwitcher extends StatelessWidget {
   final bool isFirstSelected;
   final ValueChanged<bool> onChanged;
 
+  final String? tooltip1;
+  final String? tooltip2;
+
   const PillSwitcher({
     super.key,
     required this.uiStyle,
     required this.label1,
     required this.label2,
+    this.tooltip1,
+    this.tooltip2,
     required this.isFirstSelected,
     required this.onChanged,
   });
@@ -31,6 +36,7 @@ class PillSwitcher extends StatelessWidget {
         segments: [
           ButtonSegment<bool>(
             value: true,
+            tooltip: tooltip1,
             label: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(label1),
@@ -38,6 +44,7 @@ class PillSwitcher extends StatelessWidget {
           ),
           ButtonSegment<bool>(
             value: false,
+            tooltip: tooltip2,
             label: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(label2),
@@ -62,29 +69,57 @@ class PillSwitcher extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Flexible(
-            child: _buildToggleChip(
-              context: context,
-              label: label1,
-              isSelected: isFirstSelected,
-              onTap: () {
-                if (!isFirstSelected) {
-                  onChanged(true);
-                }
-              },
-            ),
+            child: tooltip1 != null
+                ? Tooltip(
+                    message: tooltip1!,
+                    child: _buildToggleChip(
+                      context: context,
+                      label: label1,
+                      isSelected: isFirstSelected,
+                      onTap: () {
+                        if (!isFirstSelected) {
+                          onChanged(true);
+                        }
+                      },
+                    ),
+                  )
+                : _buildToggleChip(
+                    context: context,
+                    label: label1,
+                    isSelected: isFirstSelected,
+                    onTap: () {
+                      if (!isFirstSelected) {
+                        onChanged(true);
+                      }
+                    },
+                  ),
           ),
           const SizedBox(width: 4),
           Flexible(
-            child: _buildToggleChip(
-              context: context,
-              label: label2,
-              isSelected: !isFirstSelected,
-              onTap: () {
-                if (isFirstSelected) {
-                  onChanged(false);
-                }
-              },
-            ),
+            child: tooltip2 != null
+                ? Tooltip(
+                    message: tooltip2!,
+                    child: _buildToggleChip(
+                      context: context,
+                      label: label2,
+                      isSelected: !isFirstSelected,
+                      onTap: () {
+                        if (isFirstSelected) {
+                          onChanged(false);
+                        }
+                      },
+                    ),
+                  )
+                : _buildToggleChip(
+                    context: context,
+                    label: label2,
+                    isSelected: !isFirstSelected,
+                    onTap: () {
+                      if (isFirstSelected) {
+                        onChanged(false);
+                      }
+                    },
+                  ),
           ),
         ],
       ),

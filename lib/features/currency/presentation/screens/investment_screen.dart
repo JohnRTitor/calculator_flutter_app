@@ -236,8 +236,8 @@ class _InvestmentScreenState extends ConsumerState<InvestmentScreen>
       controller: _tabController,
       uiStyle: uiStyle,
       tabs: const [
-        Tab(text: 'One-Time'),
-        Tab(text: 'SIP'),
+        Tab(child: Tooltip(message: 'Lump sum investment', child: Text('One-Time'))),
+        Tab(child: Tooltip(message: 'Systematic Investment Plan', child: Text('SIP'))),
       ],
     );
   }

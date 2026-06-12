@@ -78,6 +78,11 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
     return MultiPillSwitcher(
       uiStyle: uiStyle,
       labels: const ['Calculator', 'Fn Evaluator', 'Mod'],
+      tooltips: const [
+        'Standard calculator for basic arithmetic',
+        'Function evaluator with variables',
+        'Modular arithmetic workspace'
+      ],
       selectedIndex: selectedTabIndex,
       onChanged: (index) {
         ref.read(selectedTabProvider.notifier).update(index);

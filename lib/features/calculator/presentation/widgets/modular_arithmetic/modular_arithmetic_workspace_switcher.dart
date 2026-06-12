@@ -22,7 +22,9 @@ class ModularArithmeticWorkspaceSwitcher extends StatelessWidget {
         child: PillSwitcher(
           uiStyle: uiStyle,
           label1: 'Evaluator',
+          tooltip1: 'Evaluate modular arithmetic expressions',
           label2: 'Structure Explorer',
+          tooltip2: 'Explore mathematical structures like Z_n and GF(p)',
           isFirstSelected: isEvaluatorSelected,
           onChanged: onEvaluatorSelected,
         ),

@@ -71,6 +71,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             child: MultiPillSwitcher(
               uiStyle: uiStyle,
               labels: HistoryCategory.values.map((c) => c.label).toList(),
+              tooltips: const [
+                'Basic calculator history',
+                'Function evaluator history',
+                'Modular arithmetic history'
+              ],
               selectedIndex: HistoryCategory.values.indexOf(_selectedCategory),
               onChanged: (index) {
                 setState(() {
