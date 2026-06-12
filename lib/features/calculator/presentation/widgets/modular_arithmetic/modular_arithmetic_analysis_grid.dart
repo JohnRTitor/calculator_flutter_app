@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/generated/rust/bridge/modular_arithmetic.dart';
 import 'package:calculator_flutter_app/shared/widgets/glass_utils.dart';
+import 'package:calculator_flutter_app/shared/widgets/app_dialog.dart';
 
-class ModularArithmeticAnalysisGrid extends StatelessWidget {
+class ModularArithmeticAnalysisGrid extends StatefulWidget {
   final UiStyle uiStyle;
   final StructureAnalysis analysis;
   final String? interpretedAs;
@@ -16,221 +17,550 @@ class ModularArithmeticAnalysisGrid extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+  State<ModularArithmeticAnalysisGrid> createState() =>
+      _ModularArithmeticAnalysisGridState();
+}
 
-    bool isField = analysis.classification.toLowerCase().contains('field');
-    final String typeStr = isField ? 'Field' : 'Ring';
+class _ModularArithmeticAnalysisGridState
+    extends State<ModularArithmeticAnalysisGrid> {
+  final ScrollController _scrollController = ScrollController();
 
-    return SingleChildScrollView(
-      child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (interpretedAs != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: Text(
-              interpretedAs!,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.primary,
-                fontStyle: FontStyle.italic,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        
-        Text(
-          'Analysis Results',
-          style: theme.textTheme.labelLarge?.copyWith(
-            color: uiStyle == UiStyle.liquidGlass ? Colors.white70 : theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 12),
-        
-        LayoutBuilder(
-          builder: (context, constraints) {
-            int crossAxisCount = constraints.maxWidth > 600 ? 3 : 2;
-            double width = (constraints.maxWidth - (8 * (crossAxisCount - 1))) / crossAxisCount;
-            
-            return Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                SizedBox(
-                  width: width,
-                  child: _ModularPropertyCard(
-                    uiStyle: uiStyle,
-                    title: 'Type:',
-                    value: typeStr,
-                  ),
-                ),
-                SizedBox(
-                  width: width,
-                  child: _ModularPropertyCard(
-                    uiStyle: uiStyle,
-                    title: 'Elements:',
-                    value: analysis.order,
-                  ),
-                ),
-                if (analysis.units != null)
-                  SizedBox(
-                    width: width,
-                    child: _ModularPropertyCard(
-                      uiStyle: uiStyle,
-                      title: 'Units:',
-                      value: _countItems(analysis.units),
-                    ),
-                  ),
-                SizedBox(
-                  width: width,
-                  child: _ModularPropertyCard(
-                    uiStyle: uiStyle,
-                    title: 'Characteristic:',
-                    value: analysis.identity, // Assuming identity is used for characteristic here based on old code, wait old code used identity for Identity, let's just show identity
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-        const SizedBox(height: 24),
+  final GlobalKey _generatorsKey = GlobalKey();
+  final GlobalKey _unitsKey = GlobalKey();
+  final GlobalKey _zeroDivisorsKey = GlobalKey();
+  final GlobalKey _idempotentsKey = GlobalKey();
+  final GlobalKey _nilpotentsKey = GlobalKey();
+  final GlobalKey _inversesKey = GlobalKey();
+  final GlobalKey _elementOrdersKey = GlobalKey();
 
-        _ModularExpandableSection(
-          uiStyle: uiStyle,
-          title: '[ Show Advanced Properties ]',
-          initiallyExpanded: false,
-          children: [
-            _ModularPropertyCard(
-              uiStyle: uiStyle,
-              title: 'Is Cyclic',
-              value: analysis.isCyclic ? 'Yes' : 'No',
-            ),
-            if (analysis.generators != null)
-              _ModularPropertyCard(
-                uiStyle: uiStyle,
-                title: 'Generators',
-                value: _countItems(analysis.generators),
-                subtitle: analysis.generators,
-              ),
-            if (analysis.zeroDivisors != null)
-              _ModularPropertyCard(
-                uiStyle: uiStyle,
-                title: 'Zero Divisors',
-                value: _countItems(analysis.zeroDivisors),
-                subtitle: analysis.zeroDivisors,
-              ),
-            if (analysis.idempotents != null)
-              _ModularPropertyCard(
-                uiStyle: uiStyle,
-                title: 'Idempotents',
-                value: _countItems(analysis.idempotents),
-                subtitle: analysis.idempotents,
-              ),
-            if (analysis.nilpotents != null)
-              _ModularPropertyCard(
-                uiStyle: uiStyle,
-                title: 'Nilpotents',
-                value: _countItems(analysis.nilpotents),
-                subtitle: analysis.nilpotents,
-              ),
-            if (analysis.inverses != null)
-              _ModularPropertyCard(
-                uiStyle: uiStyle,
-                title: 'Inverses',
-                value: 'View Details',
-                subtitle: analysis.inverses,
-                fullWidth: true,
-              ),
-            if (analysis.elementOrders != null)
-              _ModularPropertyCard(
-                uiStyle: uiStyle,
-                title: 'Element Orders',
-                value: 'View Details',
-                subtitle: analysis.elementOrders,
-                fullWidth: true,
-              ),
-            if (analysis.cayleyTable != null)
-              _ModularPropertyCard(
-                uiStyle: uiStyle,
-                title: 'Cayley Table',
-                value: 'View Table',
-                subtitle: analysis.cayleyTable,
-                fullWidth: true,
-                isMonospace: true,
-              ),
-          ],
-        ),
-      ],
-    ),
+  bool _generatorsExpanded = false;
+  bool _unitsExpanded = false;
+  bool _zeroDivisorsExpanded = false;
+  bool _idempotentsExpanded = false;
+  bool _nilpotentsExpanded = false;
+  bool _inversesExpanded = false;
+  bool _elementOrdersExpanded = false;
+
+  void _scrollToAndExpand(GlobalKey key, Function() expandAction) {
+    expandAction();
+    // Allow time for expansion animation before scrolling
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (key.currentContext != null) {
+        Scrollable.ensureVisible(
+          key.currentContext!,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          alignment: 0.1, // Scroll so it's near the top
+        );
+      }
+    });
+  }
+
+  void _showTruncationInfo() {
+    showAppDialog(
+      context: context,
+      uiStyle: widget.uiStyle,
+      title: 'Data Truncated',
+      icon: Icons.info_outline_rounded,
+      content: const Text(
+          'Because this mathematical structure is very large, detailed lists of elements (such as inverses or zero divisors) have been capped at 10,000 items to preserve app performance. The counts shown in the metrics grid represent the true mathematical counts.'),
+      primaryButtonText: 'Understood',
+      onPrimaryButtonPressed: () => Navigator.of(context).pop(),
     );
   }
 
-  String _countItems(String? commaSeparatedList) {
-    if (commaSeparatedList == null ||
-        commaSeparatedList.isEmpty ||
-        commaSeparatedList == 'None') {
-      return '0';
-    }
-    // Very simple heuristic to count items
-    return commaSeparatedList.split(',').length.toString();
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isField = widget.analysis.classification.toLowerCase().contains('field');
+    final typeStr = isField ? 'Field' : 'Ring';
+
+    return SingleChildScrollView(
+      controller: _scrollController,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (widget.interpretedAs != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Text(
+                widget.interpretedAs!,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontStyle: FontStyle.italic,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          if (widget.analysis.isTruncated)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: SharedSurface(
+                uiStyle: widget.uiStyle,
+                glassRole: GlassSurfaceRole.accent,
+                frosted: true,
+                padding: const EdgeInsets.all(12),
+                borderRadius: BorderRadius.circular(12),
+                child: Row(
+                  children: [
+                    Icon(Icons.warning_amber_rounded, color: theme.colorScheme.error),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Large dataset: Item lists are capped at 10,000.',
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: _showTruncationInfo,
+                      child: const Text('Learn More'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          Text(
+            'Statistics Grid',
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: widget.uiStyle == UiStyle.liquidGlass
+                  ? Colors.white70
+                  : theme.colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              int crossAxisCount = constraints.maxWidth > 600 ? 3 : 2;
+              double width = (constraints.maxWidth - (8 * (crossAxisCount - 1))) /
+                  crossAxisCount;
+
+              return Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  SizedBox(
+                    width: width,
+                    child: _MetricCard(
+                      uiStyle: widget.uiStyle,
+                      title: 'Type:',
+                      value: typeStr,
+                    ),
+                  ),
+                  SizedBox(
+                    width: width,
+                    child: _MetricCard(
+                      uiStyle: widget.uiStyle,
+                      title: 'Elements:',
+                      value: widget.analysis.order,
+                    ),
+                  ),
+                  SizedBox(
+                    width: width,
+                    child: _MetricCard(
+                      uiStyle: widget.uiStyle,
+                      title: 'Generators:',
+                      value: widget.analysis.generators.length.toString(),
+                      onTap: widget.analysis.generators.isNotEmpty
+                          ? () => _scrollToAndExpand(_generatorsKey, () {
+                                setState(() => _generatorsExpanded = true);
+                              })
+                          : null,
+                    ),
+                  ),
+                  SizedBox(
+                    width: width,
+                    child: _MetricCard(
+                      uiStyle: widget.uiStyle,
+                      title: 'Units:',
+                      value: widget.analysis.unitsCount,
+                      onTap: widget.analysis.units.isNotEmpty
+                          ? () => _scrollToAndExpand(_unitsKey, () {
+                                setState(() => _unitsExpanded = true);
+                              })
+                          : null,
+                    ),
+                  ),
+                  SizedBox(
+                    width: width,
+                    child: _MetricCard(
+                      uiStyle: widget.uiStyle,
+                      title: 'Zero Divisors:',
+                      value: widget.analysis.zeroDivisorsCount,
+                      onTap: widget.analysis.zeroDivisors.isNotEmpty
+                          ? () => _scrollToAndExpand(_zeroDivisorsKey, () {
+                                setState(() => _zeroDivisorsExpanded = true);
+                              })
+                          : null,
+                    ),
+                  ),
+                  SizedBox(
+                    width: width,
+                    child: _MetricCard(
+                      uiStyle: widget.uiStyle,
+                      title: 'Idempotents:',
+                      value: widget.analysis.idempotentsCount,
+                      onTap: widget.analysis.idempotents.isNotEmpty
+                          ? () => _scrollToAndExpand(_idempotentsKey, () {
+                                setState(() => _idempotentsExpanded = true);
+                              })
+                          : null,
+                    ),
+                  ),
+                  SizedBox(
+                    width: width,
+                    child: _MetricCard(
+                      uiStyle: widget.uiStyle,
+                      title: 'Nilpotents:',
+                      value: widget.analysis.nilpotentsCount,
+                      onTap: widget.analysis.nilpotents.isNotEmpty
+                          ? () => _scrollToAndExpand(_nilpotentsKey, () {
+                                setState(() => _nilpotentsExpanded = true);
+                              })
+                          : null,
+                    ),
+                  ),
+                  SizedBox(
+                    width: width,
+                    child: _MetricCard(
+                      uiStyle: widget.uiStyle,
+                      title: 'Inverses:',
+                      value: widget.analysis.inverses.length.toString(),
+                      onTap: widget.analysis.inverses.isNotEmpty
+                          ? () => _scrollToAndExpand(_inversesKey, () {
+                                setState(() => _inversesExpanded = true);
+                              })
+                          : null,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 32),
+          Text(
+            'Detailed Structure',
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: widget.uiStyle == UiStyle.liquidGlass
+                  ? Colors.white70
+                  : theme.colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          if (widget.analysis.generators.isNotEmpty)
+            _ExpandableDataSection(
+              key: _generatorsKey,
+              uiStyle: widget.uiStyle,
+              title: 'Generators',
+              count: widget.analysis.generators.length.toString(),
+              isExpanded: _generatorsExpanded,
+              onExpansionChanged: (val) =>
+                  setState(() => _generatorsExpanded = val),
+              child: _DataChipGrid(items: widget.analysis.generators),
+            ),
+          if (widget.analysis.units.isNotEmpty)
+            _ExpandableDataSection(
+              key: _unitsKey,
+              uiStyle: widget.uiStyle,
+              title: 'Units',
+              count: widget.analysis.unitsCount,
+              isExpanded: _unitsExpanded,
+              onExpansionChanged: (val) => setState(() => _unitsExpanded = val),
+              child: _DataChipGrid(items: widget.analysis.units),
+            ),
+          if (widget.analysis.zeroDivisors.isNotEmpty)
+            _ExpandableDataSection(
+              key: _zeroDivisorsKey,
+              uiStyle: widget.uiStyle,
+              title: 'Zero Divisors',
+              count: widget.analysis.zeroDivisorsCount,
+              isExpanded: _zeroDivisorsExpanded,
+              onExpansionChanged: (val) =>
+                  setState(() => _zeroDivisorsExpanded = val),
+              child: _DataChipGrid(items: widget.analysis.zeroDivisors),
+            ),
+          if (widget.analysis.idempotents.isNotEmpty)
+            _ExpandableDataSection(
+              key: _idempotentsKey,
+              uiStyle: widget.uiStyle,
+              title: 'Idempotents',
+              count: widget.analysis.idempotentsCount,
+              isExpanded: _idempotentsExpanded,
+              onExpansionChanged: (val) =>
+                  setState(() => _idempotentsExpanded = val),
+              child: _DataChipGrid(items: widget.analysis.idempotents),
+            ),
+          if (widget.analysis.nilpotents.isNotEmpty)
+            _ExpandableDataSection(
+              key: _nilpotentsKey,
+              uiStyle: widget.uiStyle,
+              title: 'Nilpotents',
+              count: widget.analysis.nilpotentsCount,
+              isExpanded: _nilpotentsExpanded,
+              onExpansionChanged: (val) =>
+                  setState(() => _nilpotentsExpanded = val),
+              child: _DataChipGrid(items: widget.analysis.nilpotents),
+            ),
+          if (widget.analysis.inverses.isNotEmpty)
+            _ExpandableDataSection(
+              key: _inversesKey,
+              uiStyle: widget.uiStyle,
+              title: 'Inverses',
+              count: widget.analysis.inverses.length.toString(),
+              isExpanded: _inversesExpanded,
+              onExpansionChanged: (val) =>
+                  setState(() => _inversesExpanded = val),
+              child: _InverseTable(
+                  uiStyle: widget.uiStyle, inverses: widget.analysis.inverses),
+            ),
+          if (widget.analysis.elementOrders.isNotEmpty)
+            _ExpandableDataSection(
+              key: _elementOrdersKey,
+              uiStyle: widget.uiStyle,
+              title: 'Element Orders',
+              count: widget.analysis.elementOrders.length.toString(),
+              isExpanded: _elementOrdersExpanded,
+              onExpansionChanged: (val) =>
+                  setState(() => _elementOrdersExpanded = val),
+              child: _ElementOrderTable(
+                  uiStyle: widget.uiStyle,
+                  orders: widget.analysis.elementOrders),
+            ),
+          if (widget.analysis.cayleyTable != null)
+            _ExpandableDataSection(
+              uiStyle: widget.uiStyle,
+              title: 'Cayley Table',
+              count: '1',
+              isExpanded: false,
+              onExpansionChanged: (_) {},
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Text(
+                  widget.analysis.cayleyTable!,
+                  style: const TextStyle(fontFamily: 'monospace'),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
   }
 }
 
-class _ModularExpandableSection extends StatelessWidget {
+class _MetricCard extends StatelessWidget {
   final UiStyle uiStyle;
   final String title;
-  final List<Widget> children;
-  final bool initiallyExpanded;
+  final String value;
+  final VoidCallback? onTap;
 
-  const _ModularExpandableSection({
+  const _MetricCard({
     required this.uiStyle,
     required this.title,
-    required this.children,
-    this.initiallyExpanded = false,
+    required this.value,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Theme(
-      data: theme.copyWith(dividerColor: Colors.transparent),
-      child: ExpansionTile(
-        title: Center(
-            child: Text(
-              title,
-              style: theme.textTheme.labelLarge?.copyWith(
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: SharedSurface(
+        uiStyle: uiStyle,
+        glassRole: GlassSurfaceRole.card,
+        frosted: true,
+        borderRadius: BorderRadius.circular(16),
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (onTap != null)
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 12,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: uiStyle == UiStyle.liquidGlass ? Colors.white70 : theme.colorScheme.onSurfaceVariant,
+                color: onTap != null
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurface,
               ),
             ),
-          ),
-        initiallyExpanded: initiallyExpanded,
-        tilePadding: EdgeInsets.zero,
-        childrenPadding: const EdgeInsets.only(bottom: 16),
-        children: [
-          LayoutBuilder(
-            builder: (context, constraints) {
-              int crossAxisCount = constraints.maxWidth > 600 ? 3 : 2;
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-              // Filter out full width children to handle separately if needed,
-              // but Wrap handles full width nicely if child has double.infinity width.
-              return Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: children.map((child) {
-                  if (child is _ModularPropertyCard && child.fullWidth) {
-                    return SizedBox(width: constraints.maxWidth, child: child);
-                  }
-                  return SizedBox(
-                    width:
-                        (constraints.maxWidth - (8 * (crossAxisCount - 1))) /
-                        crossAxisCount,
-                    child: child,
-                  );
-                }).toList(),
-              );
-            },
+class _ExpandableDataSection extends StatelessWidget {
+  final UiStyle uiStyle;
+  final String title;
+  final String count;
+  final bool isExpanded;
+  final ValueChanged<bool> onExpansionChanged;
+  final Widget child;
+
+  const _ExpandableDataSection({
+    super.key,
+    required this.uiStyle,
+    required this.title,
+    required this.count,
+    required this.isExpanded,
+    required this.onExpansionChanged,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Card(
+      elevation: 0,
+      color: Colors.transparent,
+      margin: const EdgeInsets.only(bottom: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
+      ),
+      child: ExpansionTile(
+        title: Text(
+          title,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Text('$count items'),
+        initiallyExpanded: isExpanded,
+        onExpansionChanged: onExpansionChanged,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        collapsedShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        childrenPadding: const EdgeInsets.all(16),
+        children: [
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _DataChipGrid extends StatelessWidget {
+  final List<String> items;
+
+  const _DataChipGrid({required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: items
+            .map((item) => Chip(
+                  label: Text(item),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ))
+            .toList(),
+      ),
+    );
+  }
+}
+
+class _InverseTable extends StatelessWidget {
+  final UiStyle uiStyle;
+  final List<InversePair> inverses;
+
+  const _InverseTable({
+    required this.uiStyle,
+    required this.inverses,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Determine the height based on items to avoid infinite height in Column
+    final height = (inverses.length * 48.0) + 56.0; // Header + Row heights
+    final boundedHeight = height > 400 ? 400.0 : height;
+
+    return SizedBox(
+      height: boundedHeight,
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: Theme.of(context).dividerColor),
+              ),
+            ),
+            child: const Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Element (a)',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    'Inverse (a⁻¹)',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: inverses.length,
+              itemBuilder: (context, index) {
+                final pair = inverses[index];
+                return Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(pair.element),
+                      ),
+                      Expanded(
+                        child: Text(pair.inverse),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -238,68 +568,72 @@ class _ModularExpandableSection extends StatelessWidget {
   }
 }
 
-class _ModularPropertyCard extends StatelessWidget {
+class _ElementOrderTable extends StatelessWidget {
   final UiStyle uiStyle;
-  final String title;
-  final String value;
-  final String? subtitle;
-  final bool fullWidth;
-  final bool isMonospace;
+  final List<ElementOrderPair> orders;
 
-  const _ModularPropertyCard({
+  const _ElementOrderTable({
     required this.uiStyle,
-    required this.title,
-    required this.value,
-    this.subtitle,
-    this.fullWidth = false,
-    this.isMonospace = false,
+    required this.orders,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final height = (orders.length * 48.0) + 56.0;
+    final boundedHeight = height > 400 ? 400.0 : height;
 
-    return SharedSurface(
-      uiStyle: uiStyle,
-      glassRole: GlassSurfaceRole.card,
-      frosted: true,
-      borderRadius: BorderRadius.circular(16),
-      padding: const EdgeInsets.all(12),
+    return SizedBox(
+      height: boundedHeight,
+      width: double.infinity,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            title,
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
-            ),
-          ),
-          if (subtitle != null &&
-              subtitle!.isNotEmpty &&
-              subtitle != 'None') ...[
-            const SizedBox(height: 4),
-            Text(
-              subtitle!,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant.withValues(
-                  alpha: 0.7,
-                ),
-                fontFamily: isMonospace ? 'monospace' : null,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: Theme.of(context).dividerColor),
               ),
-              maxLines: fullWidth ? null : 3,
-              overflow: fullWidth ? null : TextOverflow.ellipsis,
             ),
-          ],
+            child: const Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Element (a)',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    'Order (k)',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: orders.length,
+              itemBuilder: (context, index) {
+                final pair = orders[index];
+                return Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(pair.element),
+                      ),
+                      Expanded(
+                        child: Text(pair.order),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );

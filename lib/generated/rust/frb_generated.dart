@@ -1419,6 +1419,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ElementOrderPair dco_decode_element_order_pair(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return ElementOrderPair(
+      element: dco_decode_String(arr[0]),
+      order: dco_decode_String(arr[1]),
+    );
+  }
+
+  @protected
   double dco_decode_f_64(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as double;
@@ -1493,6 +1505,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  InversePair dco_decode_inverse_pair(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return InversePair(
+      element: dco_decode_String(arr[0]),
+      inverse: dco_decode_String(arr[1]),
+    );
+  }
+
+  @protected
   InvestmentResult dco_decode_investment_result(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -1509,6 +1533,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   List<String> dco_decode_list_String(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return (raw as List<dynamic>).map(dco_decode_String).toList();
+  }
+
+  @protected
+  List<ElementOrderPair> dco_decode_list_element_order_pair(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_element_order_pair).toList();
   }
 
   @protected
@@ -1531,6 +1561,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   List<HistoryEntry> dco_decode_list_history_entry(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return (raw as List<dynamic>).map(dco_decode_history_entry).toList();
+  }
+
+  @protected
+  List<InversePair> dco_decode_list_inverse_pair(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_inverse_pair).toList();
   }
 
   @protected
@@ -1606,23 +1642,28 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   StructureAnalysis dco_decode_structure_analysis(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 14)
-      throw Exception('unexpected arr length: expect 14 but see ${arr.length}');
+    if (arr.length != 19)
+      throw Exception('unexpected arr length: expect 19 but see ${arr.length}');
     return StructureAnalysis(
       label: dco_decode_String(arr[0]),
       order: dco_decode_String(arr[1]),
       isCyclic: dco_decode_bool(arr[2]),
       identity: dco_decode_String(arr[3]),
       elements: dco_decode_String(arr[4]),
-      generators: dco_decode_opt_String(arr[5]),
-      units: dco_decode_opt_String(arr[6]),
-      zeroDivisors: dco_decode_opt_String(arr[7]),
-      idempotents: dco_decode_opt_String(arr[8]),
-      nilpotents: dco_decode_opt_String(arr[9]),
-      inverses: dco_decode_opt_String(arr[10]),
-      elementOrders: dco_decode_opt_String(arr[11]),
-      cayleyTable: dco_decode_opt_String(arr[12]),
-      classification: dco_decode_String(arr[13]),
+      generators: dco_decode_list_String(arr[5]),
+      unitsCount: dco_decode_String(arr[6]),
+      units: dco_decode_list_String(arr[7]),
+      zeroDivisorsCount: dco_decode_String(arr[8]),
+      zeroDivisors: dco_decode_list_String(arr[9]),
+      idempotentsCount: dco_decode_String(arr[10]),
+      idempotents: dco_decode_list_String(arr[11]),
+      nilpotentsCount: dco_decode_String(arr[12]),
+      nilpotents: dco_decode_list_String(arr[13]),
+      inverses: dco_decode_list_inverse_pair(arr[14]),
+      elementOrders: dco_decode_list_element_order_pair(arr[15]),
+      cayleyTable: dco_decode_opt_String(arr[16]),
+      classification: dco_decode_String(arr[17]),
+      isTruncated: dco_decode_bool(arr[18]),
     );
   }
 
@@ -1757,6 +1798,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ElementOrderPair sse_decode_element_order_pair(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_element = sse_decode_String(deserializer);
+    var var_order = sse_decode_String(deserializer);
+    return ElementOrderPair(element: var_element, order: var_order);
+  }
+
+  @protected
   double sse_decode_f_64(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getFloat64();
@@ -1834,6 +1883,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  InversePair sse_decode_inverse_pair(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_element = sse_decode_String(deserializer);
+    var var_inverse = sse_decode_String(deserializer);
+    return InversePair(element: var_element, inverse: var_inverse);
+  }
+
+  @protected
   InvestmentResult sse_decode_investment_result(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_futureValue = sse_decode_f_64(deserializer);
@@ -1854,6 +1911,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var ans_ = <String>[];
     for (var idx_ = 0; idx_ < len_; ++idx_) {
       ans_.add(sse_decode_String(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
+  List<ElementOrderPair> sse_decode_list_element_order_pair(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <ElementOrderPair>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_element_order_pair(deserializer));
     }
     return ans_;
   }
@@ -1894,6 +1965,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var ans_ = <HistoryEntry>[];
     for (var idx_ = 0; idx_ < len_; ++idx_) {
       ans_.add(sse_decode_history_entry(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
+  List<InversePair> sse_decode_list_inverse_pair(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <InversePair>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_inverse_pair(deserializer));
     }
     return ans_;
   }
@@ -2000,15 +2083,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_isCyclic = sse_decode_bool(deserializer);
     var var_identity = sse_decode_String(deserializer);
     var var_elements = sse_decode_String(deserializer);
-    var var_generators = sse_decode_opt_String(deserializer);
-    var var_units = sse_decode_opt_String(deserializer);
-    var var_zeroDivisors = sse_decode_opt_String(deserializer);
-    var var_idempotents = sse_decode_opt_String(deserializer);
-    var var_nilpotents = sse_decode_opt_String(deserializer);
-    var var_inverses = sse_decode_opt_String(deserializer);
-    var var_elementOrders = sse_decode_opt_String(deserializer);
+    var var_generators = sse_decode_list_String(deserializer);
+    var var_unitsCount = sse_decode_String(deserializer);
+    var var_units = sse_decode_list_String(deserializer);
+    var var_zeroDivisorsCount = sse_decode_String(deserializer);
+    var var_zeroDivisors = sse_decode_list_String(deserializer);
+    var var_idempotentsCount = sse_decode_String(deserializer);
+    var var_idempotents = sse_decode_list_String(deserializer);
+    var var_nilpotentsCount = sse_decode_String(deserializer);
+    var var_nilpotents = sse_decode_list_String(deserializer);
+    var var_inverses = sse_decode_list_inverse_pair(deserializer);
+    var var_elementOrders = sse_decode_list_element_order_pair(deserializer);
     var var_cayleyTable = sse_decode_opt_String(deserializer);
     var var_classification = sse_decode_String(deserializer);
+    var var_isTruncated = sse_decode_bool(deserializer);
     return StructureAnalysis(
       label: var_label,
       order: var_order,
@@ -2016,14 +2104,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       identity: var_identity,
       elements: var_elements,
       generators: var_generators,
+      unitsCount: var_unitsCount,
       units: var_units,
+      zeroDivisorsCount: var_zeroDivisorsCount,
       zeroDivisors: var_zeroDivisors,
+      idempotentsCount: var_idempotentsCount,
       idempotents: var_idempotents,
+      nilpotentsCount: var_nilpotentsCount,
       nilpotents: var_nilpotents,
       inverses: var_inverses,
       elementOrders: var_elementOrders,
       cayleyTable: var_cayleyTable,
       classification: var_classification,
+      isTruncated: var_isTruncated,
     );
   }
 
@@ -2154,6 +2247,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_element_order_pair(
+    ElementOrderPair self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.element, serializer);
+    sse_encode_String(self.order, serializer);
+  }
+
+  @protected
   void sse_encode_f_64(double self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putFloat64(self);
@@ -2211,6 +2314,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_inverse_pair(InversePair self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.element, serializer);
+    sse_encode_String(self.inverse, serializer);
+  }
+
+  @protected
   void sse_encode_investment_result(
     InvestmentResult self,
     SseSerializer serializer,
@@ -2227,6 +2337,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
       sse_encode_String(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_list_element_order_pair(
+    List<ElementOrderPair> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_element_order_pair(item, serializer);
     }
   }
 
@@ -2260,6 +2382,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
       sse_encode_history_entry(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_list_inverse_pair(
+    List<InversePair> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_inverse_pair(item, serializer);
     }
   }
 
@@ -2356,15 +2490,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_bool(self.isCyclic, serializer);
     sse_encode_String(self.identity, serializer);
     sse_encode_String(self.elements, serializer);
-    sse_encode_opt_String(self.generators, serializer);
-    sse_encode_opt_String(self.units, serializer);
-    sse_encode_opt_String(self.zeroDivisors, serializer);
-    sse_encode_opt_String(self.idempotents, serializer);
-    sse_encode_opt_String(self.nilpotents, serializer);
-    sse_encode_opt_String(self.inverses, serializer);
-    sse_encode_opt_String(self.elementOrders, serializer);
+    sse_encode_list_String(self.generators, serializer);
+    sse_encode_String(self.unitsCount, serializer);
+    sse_encode_list_String(self.units, serializer);
+    sse_encode_String(self.zeroDivisorsCount, serializer);
+    sse_encode_list_String(self.zeroDivisors, serializer);
+    sse_encode_String(self.idempotentsCount, serializer);
+    sse_encode_list_String(self.idempotents, serializer);
+    sse_encode_String(self.nilpotentsCount, serializer);
+    sse_encode_list_String(self.nilpotents, serializer);
+    sse_encode_list_inverse_pair(self.inverses, serializer);
+    sse_encode_list_element_order_pair(self.elementOrders, serializer);
     sse_encode_opt_String(self.cayleyTable, serializer);
     sse_encode_String(self.classification, serializer);
+    sse_encode_bool(self.isTruncated, serializer);
   }
 
   @protected

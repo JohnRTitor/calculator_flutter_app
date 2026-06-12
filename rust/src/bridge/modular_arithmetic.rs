@@ -56,21 +56,38 @@ pub fn modular_evaluate(
 }
 
 #[frb]
+pub struct InversePair {
+    pub element: String,
+    pub inverse: String,
+}
+
+#[frb]
+pub struct ElementOrderPair {
+    pub element: String,
+    pub order: String,
+}
+
+#[frb]
 pub struct StructureAnalysis {
     pub label: String,
     pub order: String,
     pub is_cyclic: bool,
     pub identity: String,
     pub elements: String,
-    pub generators: Option<String>,
-    pub units: Option<String>,
-    pub zero_divisors: Option<String>,
-    pub idempotents: Option<String>,
-    pub nilpotents: Option<String>,
-    pub inverses: Option<String>,
-    pub element_orders: Option<String>,
+    pub generators: Vec<String>,
+    pub units_count: String,
+    pub units: Vec<String>,
+    pub zero_divisors_count: String,
+    pub zero_divisors: Vec<String>,
+    pub idempotents_count: String,
+    pub idempotents: Vec<String>,
+    pub nilpotents_count: String,
+    pub nilpotents: Vec<String>,
+    pub inverses: Vec<InversePair>,
+    pub element_orders: Vec<ElementOrderPair>,
     pub cayley_table: Option<String>,
     pub classification: String,
+    pub is_truncated: bool,
 }
 
 #[frb]
@@ -105,7 +122,6 @@ pub fn analyze_structure(
     };
 
     // If there is a suggestion, we return it without running the analysis
-    // (the user must accept the suggestion or fix the input)
     if let Some(suggestion) = parsed.suggestion {
         return Ok(StructureAnalysisResponse {
             success: false,
@@ -129,18 +145,20 @@ pub fn analyze_structure(
         });
     }
 
+    let limit = 10000;
+
     // 3. Analyze
     let analysis = match structure_type.to_lowercase().as_str() {
         "ring" => {
             let info = crate::modular_arithmetic::ring_analysis::ring_classify(modulus);
-            let mut inverses_str = String::new();
+            let mut inverses = Vec::new();
             for &u in &info.units {
                 if let Ok(inv) = crate::modular_arithmetic::mod_arith::mod_inv(u, modulus) {
-                    inverses_str.push_str(&format!("{}⁻¹={}, ", u, inv));
+                    inverses.push(InversePair {
+                        element: u.to_string(),
+                        inverse: inv.to_string(),
+                    });
                 }
-            }
-            if !inverses_str.is_empty() {
-                inverses_str.truncate(inverses_str.len() - 2);
             }
 
             let cayley = if modulus <= 25 {
@@ -169,73 +187,50 @@ pub fn analyze_structure(
                 is_cyclic: true, // Z_n is always cyclic under addition
                 identity: "0".to_string(),
                 elements: format!("{{0, 1, ..., {}}}", modulus - 1),
-                generators: Some("1".to_string()),
-                units: Some(format!(
-                    "{{{}}}",
-                    info.units
-                        .iter()
-                        .map(|x| x.to_string())
-                        .collect::<Vec<_>>()
-                        .join(", ")
-                )),
-                zero_divisors: Some(format!(
-                    "{{{}}}",
-                    info.zero_divisors
-                        .iter()
-                        .map(|x| x.to_string())
-                        .collect::<Vec<_>>()
-                        .join(", ")
-                )),
-                idempotents: Some(format!(
-                    "{{{}}}",
-                    info.idempotents
-                        .iter()
-                        .map(|x| x.to_string())
-                        .collect::<Vec<_>>()
-                        .join(", ")
-                )),
-                nilpotents: Some(format!(
-                    "{{{}}}",
-                    info.nilpotents
-                        .iter()
-                        .map(|x| x.to_string())
-                        .collect::<Vec<_>>()
-                        .join(", ")
-                )),
-                inverses: Some(inverses_str),
-                element_orders: None, // Too verbose for additive group
+                generators: vec!["1".to_string()],
+                units_count: info.units_count.to_string(),
+                units: info.units.iter().map(|x| x.to_string()).collect(),
+                zero_divisors_count: info.zero_divisors_count.to_string(),
+                zero_divisors: info.zero_divisors.iter().map(|x| x.to_string()).collect(),
+                idempotents_count: info.idempotents_count.to_string(),
+                idempotents: info.idempotents.iter().map(|x| x.to_string()).collect(),
+                nilpotents_count: info.nilpotents_count.to_string(),
+                nilpotents: info.nilpotents.iter().map(|x| x.to_string()).collect(),
+                inverses,
+                element_orders: Vec::new(), // Too verbose for additive group
                 cayley_table: cayley,
                 classification: info.classification,
+                is_truncated: info.is_truncated,
             }
         }
         "group" => {
             let units = crate::modular_arithmetic::number_theory_ext::unit_group(modulus);
             let generators =
-                crate::modular_arithmetic::number_theory_ext::primitive_roots(modulus).ok();
+                crate::modular_arithmetic::number_theory_ext::primitive_roots(modulus).ok().unwrap_or_default();
 
-            let mut orders_str = String::new();
-            if units.len() <= 50 {
+            let mut element_orders = Vec::new();
+            if units.len() <= limit {
                 for &u in &units {
                     if let Ok(ord) =
                         crate::modular_arithmetic::number_theory_ext::element_order(u, modulus)
                     {
-                        orders_str.push_str(&format!("ord({})={}, ", u, ord));
+                        element_orders.push(ElementOrderPair {
+                            element: u.to_string(),
+                            order: ord.to_string(),
+                        });
                     }
-                }
-                if !orders_str.is_empty() {
-                    orders_str.truncate(orders_str.len() - 2);
                 }
             }
 
-            let mut inverses_str = String::new();
-            if units.len() <= 50 {
+            let mut inverses = Vec::new();
+            if units.len() <= limit {
                 for &u in &units {
                     if let Ok(inv) = crate::modular_arithmetic::mod_arith::mod_inv(u, modulus) {
-                        inverses_str.push_str(&format!("{}⁻¹={}, ", u, inv));
+                        inverses.push(InversePair {
+                            element: u.to_string(),
+                            inverse: inv.to_string(),
+                        });
                     }
-                }
-                if !inverses_str.is_empty() {
-                    inverses_str.truncate(inverses_str.len() - 2);
                 }
             }
 
@@ -260,6 +255,8 @@ pub fn analyze_structure(
                 None
             };
 
+            let is_truncated = units.len() > limit;
+
             StructureAnalysis {
                 label: parsed.canonical_notation.clone(),
                 order: format!(
@@ -268,7 +265,7 @@ pub fn analyze_structure(
                     modulus,
                     units.len()
                 ),
-                is_cyclic: generators.is_some(),
+                is_cyclic: !generators.is_empty(),
                 identity: "1".to_string(),
                 elements: format!(
                     "{{{}}}",
@@ -278,27 +275,24 @@ pub fn analyze_structure(
                         .collect::<Vec<_>>()
                         .join(", ")
                 ),
-                generators: generators.as_ref().map(|g| {
-                    format!(
-                        "{{{}}}",
-                        g.iter()
-                            .map(|x| x.to_string())
-                            .collect::<Vec<_>>()
-                            .join(", ")
-                    )
-                }),
-                units: None,         // Itself
-                zero_divisors: None, // None in a group
-                idempotents: None,
-                nilpotents: None,
-                inverses: Some(inverses_str),
-                element_orders: Some(orders_str),
+                generators: generators.iter().map(|x| x.to_string()).collect(),
+                units_count: units.len().to_string(),
+                units: Vec::new(),         // Itself
+                zero_divisors_count: "0".to_string(),
+                zero_divisors: Vec::new(), // None in a group
+                idempotents_count: "0".to_string(),
+                idempotents: Vec::new(),
+                nilpotents_count: "0".to_string(),
+                nilpotents: Vec::new(),
+                inverses,
+                element_orders,
                 cayley_table: cayley,
-                classification: if generators.is_some() {
+                classification: if !generators.is_empty() {
                     "Cyclic Group".to_string()
                 } else {
                     "Abelian Group".to_string()
                 },
+                is_truncated,
             }
         }
         "field" => {
@@ -329,7 +323,7 @@ pub fn analyze_structure(
 
             let elements = format!("{{0, 1, ..., {}}}", modulus - 1);
             let generators =
-                crate::modular_arithmetic::number_theory_ext::primitive_roots(modulus).ok();
+                crate::modular_arithmetic::number_theory_ext::primitive_roots(modulus).ok().unwrap_or_default();
 
             StructureAnalysis {
                 label: parsed.canonical_notation.clone(),
@@ -337,23 +331,20 @@ pub fn analyze_structure(
                 is_cyclic: true, // Multiplicative group is cyclic
                 identity: "0 (Add), 1 (Mul)".to_string(),
                 elements,
-                generators: generators.as_ref().map(|g| {
-                    format!(
-                        "{{{}}} (Mul)",
-                        g.iter()
-                            .map(|x| x.to_string())
-                            .collect::<Vec<_>>()
-                            .join(", ")
-                    )
-                }),
-                units: Some(format!("{{1, ..., {}}}", modulus - 1)),
-                zero_divisors: Some("{none}".to_string()),
-                idempotents: Some("{0, 1}".to_string()),
-                nilpotents: Some("{0}".to_string()),
-                inverses: Some("All non-zero elements have inverses".to_string()),
-                element_orders: None,
+                generators: generators.iter().map(|x| format!("{} (Mul)", x)).collect(),
+                units_count: (modulus - 1).to_string(),
+                units: Vec::new(),
+                zero_divisors_count: "0".to_string(),
+                zero_divisors: Vec::new(),
+                idempotents_count: "2".to_string(),
+                idempotents: vec!["0".to_string(), "1".to_string()],
+                nilpotents_count: "1".to_string(),
+                nilpotents: vec!["0".to_string()],
+                inverses: Vec::new(),
+                element_orders: Vec::new(),
                 cayley_table: None, // Fields get too large fast, skip for field summary
                 classification: "Finite Field (Galois Field)".to_string(),
+                is_truncated: false,
             }
         }
         _ => {

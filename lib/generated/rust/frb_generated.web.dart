@@ -55,6 +55,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   DiscountResult dco_decode_discount_result(dynamic raw);
 
   @protected
+  ElementOrderPair dco_decode_element_order_pair(dynamic raw);
+
+  @protected
   double dco_decode_f_64(dynamic raw);
 
   @protected
@@ -76,10 +79,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PlatformInt64 dco_decode_i_64(dynamic raw);
 
   @protected
+  InversePair dco_decode_inverse_pair(dynamic raw);
+
+  @protected
   InvestmentResult dco_decode_investment_result(dynamic raw);
 
   @protected
   List<String> dco_decode_list_String(dynamic raw);
+
+  @protected
+  List<ElementOrderPair> dco_decode_list_element_order_pair(dynamic raw);
 
   @protected
   List<FfiConverterCategory> dco_decode_list_ffi_converter_category(
@@ -91,6 +100,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<HistoryEntry> dco_decode_list_history_entry(dynamic raw);
+
+  @protected
+  List<InversePair> dco_decode_list_inverse_pair(dynamic raw);
 
   @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
@@ -169,6 +181,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   DiscountResult sse_decode_discount_result(SseDeserializer deserializer);
 
   @protected
+  ElementOrderPair sse_decode_element_order_pair(SseDeserializer deserializer);
+
+  @protected
   double sse_decode_f_64(SseDeserializer deserializer);
 
   @protected
@@ -192,10 +207,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PlatformInt64 sse_decode_i_64(SseDeserializer deserializer);
 
   @protected
+  InversePair sse_decode_inverse_pair(SseDeserializer deserializer);
+
+  @protected
   InvestmentResult sse_decode_investment_result(SseDeserializer deserializer);
 
   @protected
   List<String> sse_decode_list_String(SseDeserializer deserializer);
+
+  @protected
+  List<ElementOrderPair> sse_decode_list_element_order_pair(
+    SseDeserializer deserializer,
+  );
 
   @protected
   List<FfiConverterCategory> sse_decode_list_ffi_converter_category(
@@ -209,6 +232,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<HistoryEntry> sse_decode_list_history_entry(
     SseDeserializer deserializer,
   );
+
+  @protected
+  List<InversePair> sse_decode_list_inverse_pair(SseDeserializer deserializer);
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
@@ -301,6 +327,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_element_order_pair(
+    ElementOrderPair self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_f_64(double self, SseSerializer serializer);
 
   @protected
@@ -325,6 +357,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_i_64(PlatformInt64 self, SseSerializer serializer);
 
   @protected
+  void sse_encode_inverse_pair(InversePair self, SseSerializer serializer);
+
+  @protected
   void sse_encode_investment_result(
     InvestmentResult self,
     SseSerializer serializer,
@@ -332,6 +367,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_list_String(List<String> self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_list_element_order_pair(
+    List<ElementOrderPair> self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_list_ffi_converter_category(
@@ -345,6 +386,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_history_entry(
     List<HistoryEntry> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_inverse_pair(
+    List<InversePair> self,
     SseSerializer serializer,
   );
 

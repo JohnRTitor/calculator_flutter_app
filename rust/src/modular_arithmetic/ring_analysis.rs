@@ -1,6 +1,6 @@
 use crate::modular_arithmetic::mod_arith::{is_prime, mod_pow};
 use crate::modular_arithmetic::number_theory::gcd;
-use crate::modular_arithmetic::number_theory_ext::unit_group;
+
 
 #[derive(Debug, Clone)]
 pub struct RingInfo {
@@ -8,14 +8,19 @@ pub struct RingInfo {
     pub classification: String,
     pub is_integral_domain: bool,
     pub is_field: bool,
+    pub units_count: i128,
     pub units: Vec<i128>,
+    pub zero_divisors_count: i128,
     pub zero_divisors: Vec<i128>,
+    pub idempotents_count: i128,
     pub idempotents: Vec<i128>,
+    pub nilpotents_count: i128,
     pub nilpotents: Vec<i128>,
+    pub is_truncated: bool,
 }
 
-/// Returns the zero divisors in Z_n. (Non-zero elements not coprime to n)
-pub fn zero_divisors(n: i128) -> Vec<i128> {
+/// Returns the zero divisors in Z_n, up to a limit.
+pub fn zero_divisors_limited(n: i128, limit: usize) -> Vec<i128> {
     let mut zd = Vec::new();
     let n = n.abs();
     if n <= 1 {
@@ -25,6 +30,9 @@ pub fn zero_divisors(n: i128) -> Vec<i128> {
         let g = gcd(i, n);
         if g > 1 && g < n {
             zd.push(i);
+            if zd.len() >= limit {
+                break;
+            }
         }
     }
     zd
@@ -48,8 +56,8 @@ pub fn zero_divisor_pairs(n: i128) -> Vec<(i128, i128)> {
     pairs
 }
 
-/// Returns the idempotent elements of Z_n (elements where a^2 == a mod n).
-pub fn idempotents(n: i128) -> Vec<i128> {
+/// Returns the idempotent elements of Z_n, up to a limit.
+pub fn idempotents_limited(n: i128, limit: usize) -> Vec<i128> {
     let mut idemp = Vec::new();
     let n = n.abs();
     if n <= 1 {
@@ -58,20 +66,22 @@ pub fn idempotents(n: i128) -> Vec<i128> {
     for i in 0..n {
         if mod_pow(i, 2, n).unwrap_or(0) == i {
             idemp.push(i);
+            if idemp.len() >= limit {
+                break;
+            }
         }
     }
     idemp
 }
 
-/// Returns the nilpotent elements of Z_n (elements where a^k == 0 mod n for some k).
-pub fn nilpotents(n: i128) -> Vec<i128> {
+/// Returns the nilpotent elements of Z_n, up to a limit.
+pub fn nilpotents_limited(n: i128, limit: usize) -> Vec<i128> {
     let mut nilp = Vec::new();
     let n = n.abs();
     if n <= 1 {
         return nilp;
     }
 
-    // An element a is nilpotent mod n iff every prime factor of n divides a.
     let factors = crate::modular_arithmetic::number_theory_ext::prime_factorization(n);
     let mut product_of_primes = 1;
     for (p, _) in factors {
@@ -81,6 +91,9 @@ pub fn nilpotents(n: i128) -> Vec<i128> {
     for i in 0..n {
         if i % product_of_primes == 0 {
             nilp.push(i);
+            if nilp.len() >= limit {
+                break;
+            }
         }
     }
     nilp
@@ -97,14 +110,52 @@ pub fn ring_classify(n: i128) -> RingInfo {
         "Commutative Ring with Unity"
     };
 
+    let limit = 10000;
+    let factors = crate::modular_arithmetic::number_theory_ext::prime_factorization(n);
+    let mut product_of_primes = 1;
+    let mut distinct_primes = 0;
+    for (p, _) in &factors {
+        product_of_primes *= p;
+        distinct_primes += 1;
+    }
+
+    let units_count = crate::modular_arithmetic::number_theory_ext::euler_totient(n);
+    let zero_divisors_count = if n > 1 { n - 1 - units_count } else { 0 };
+    let idempotents_count = if n > 1 { 1i128 << distinct_primes } else { 0 };
+    let nilpotents_count = if n > 1 { n / product_of_primes } else { 0 };
+
+    let mut units = Vec::new();
+    for i in 1..n {
+        if gcd(i, n) == 1 {
+            units.push(i);
+            if units.len() >= limit {
+                break;
+            }
+        }
+    }
+
+    let zero_divisors = zero_divisors_limited(n, limit);
+    let idempotents = idempotents_limited(n, limit);
+    let nilpotents = nilpotents_limited(n, limit);
+
+    let is_truncated = units_count > limit as i128 ||
+        zero_divisors_count > limit as i128 ||
+        idempotents_count > limit as i128 ||
+        nilpotents_count > limit as i128;
+
     RingInfo {
         n,
         classification: class_str.to_string(),
         is_integral_domain: is_p,
         is_field: is_p,
-        units: unit_group(n),
-        zero_divisors: zero_divisors(n),
-        idempotents: idempotents(n),
-        nilpotents: nilpotents(n),
+        units_count,
+        units,
+        zero_divisors_count,
+        zero_divisors,
+        idempotents_count,
+        idempotents,
+        nilpotents_count,
+        nilpotents,
+        is_truncated,
     }
 }

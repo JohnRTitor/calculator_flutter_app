@@ -167,7 +167,7 @@ pub fn evaluate_mod_expr(
         }
         ModExpr::ZeroDivisors(m) => {
             let val_m = eval(m, context_modulus)?;
-            let zd = crate::modular_arithmetic::ring_analysis::zero_divisors(val_m);
+            let zd = crate::modular_arithmetic::ring_analysis::zero_divisors_limited(val_m, 10000);
             Ok(ModResult::with_modulus(
                 format_set(&zd),
                 format!("{} zero divisors in Z_{}", zd.len(), val_m),
@@ -176,7 +176,7 @@ pub fn evaluate_mod_expr(
         }
         ModExpr::Idempotents(m) => {
             let val_m = eval(m, context_modulus)?;
-            let id = crate::modular_arithmetic::ring_analysis::idempotents(val_m);
+            let id = crate::modular_arithmetic::ring_analysis::idempotents_limited(val_m, 10000);
             Ok(ModResult::with_modulus(
                 format_set(&id),
                 format!("{} idempotents in Z_{}", id.len(), val_m),
@@ -185,7 +185,7 @@ pub fn evaluate_mod_expr(
         }
         ModExpr::Nilpotents(m) => {
             let val_m = eval(m, context_modulus)?;
-            let ni = crate::modular_arithmetic::ring_analysis::nilpotents(val_m);
+            let ni = crate::modular_arithmetic::ring_analysis::nilpotents_limited(val_m, 10000);
             let ni_str = format!(
                 "{{{}}}",
                 ni.iter()

@@ -1426,6 +1426,18 @@ impl SseDecode for crate::bridge::currency::DiscountResult {
     }
 }
 
+impl SseDecode for crate::bridge::modular_arithmetic::ElementOrderPair {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_element = <String>::sse_decode(deserializer);
+        let mut var_order = <String>::sse_decode(deserializer);
+        return crate::bridge::modular_arithmetic::ElementOrderPair {
+            element: var_element,
+            order: var_order,
+        };
+    }
+}
+
 impl SseDecode for f64 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1511,6 +1523,18 @@ impl SseDecode for i64 {
     }
 }
 
+impl SseDecode for crate::bridge::modular_arithmetic::InversePair {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_element = <String>::sse_decode(deserializer);
+        let mut var_inverse = <String>::sse_decode(deserializer);
+        return crate::bridge::modular_arithmetic::InversePair {
+            element: var_element,
+            inverse: var_inverse,
+        };
+    }
+}
+
 impl SseDecode for crate::bridge::currency::InvestmentResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1532,6 +1556,20 @@ impl SseDecode for Vec<String> {
         let mut ans_ = Vec::with_capacity(len_ as usize);
         for idx_ in 0..len_ {
             ans_.push(<String>::sse_decode(deserializer));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<crate::bridge::modular_arithmetic::ElementOrderPair> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ {
+            ans_.push(
+                <crate::bridge::modular_arithmetic::ElementOrderPair>::sse_decode(deserializer),
+            );
         }
         return ans_;
     }
@@ -1572,6 +1610,18 @@ impl SseDecode for Vec<crate::shared::history::HistoryEntry> {
             ans_.push(<crate::shared::history::HistoryEntry>::sse_decode(
                 deserializer,
             ));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<crate::bridge::modular_arithmetic::InversePair> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ {
+            ans_.push(<crate::bridge::modular_arithmetic::InversePair>::sse_decode(deserializer));
         }
         return ans_;
     }
@@ -1683,15 +1733,22 @@ impl SseDecode for crate::bridge::modular_arithmetic::StructureAnalysis {
         let mut var_isCyclic = <bool>::sse_decode(deserializer);
         let mut var_identity = <String>::sse_decode(deserializer);
         let mut var_elements = <String>::sse_decode(deserializer);
-        let mut var_generators = <Option<String>>::sse_decode(deserializer);
-        let mut var_units = <Option<String>>::sse_decode(deserializer);
-        let mut var_zeroDivisors = <Option<String>>::sse_decode(deserializer);
-        let mut var_idempotents = <Option<String>>::sse_decode(deserializer);
-        let mut var_nilpotents = <Option<String>>::sse_decode(deserializer);
-        let mut var_inverses = <Option<String>>::sse_decode(deserializer);
-        let mut var_elementOrders = <Option<String>>::sse_decode(deserializer);
+        let mut var_generators = <Vec<String>>::sse_decode(deserializer);
+        let mut var_unitsCount = <String>::sse_decode(deserializer);
+        let mut var_units = <Vec<String>>::sse_decode(deserializer);
+        let mut var_zeroDivisorsCount = <String>::sse_decode(deserializer);
+        let mut var_zeroDivisors = <Vec<String>>::sse_decode(deserializer);
+        let mut var_idempotentsCount = <String>::sse_decode(deserializer);
+        let mut var_idempotents = <Vec<String>>::sse_decode(deserializer);
+        let mut var_nilpotentsCount = <String>::sse_decode(deserializer);
+        let mut var_nilpotents = <Vec<String>>::sse_decode(deserializer);
+        let mut var_inverses =
+            <Vec<crate::bridge::modular_arithmetic::InversePair>>::sse_decode(deserializer);
+        let mut var_elementOrders =
+            <Vec<crate::bridge::modular_arithmetic::ElementOrderPair>>::sse_decode(deserializer);
         let mut var_cayleyTable = <Option<String>>::sse_decode(deserializer);
         let mut var_classification = <String>::sse_decode(deserializer);
+        let mut var_isTruncated = <bool>::sse_decode(deserializer);
         return crate::bridge::modular_arithmetic::StructureAnalysis {
             label: var_label,
             order: var_order,
@@ -1699,14 +1756,19 @@ impl SseDecode for crate::bridge::modular_arithmetic::StructureAnalysis {
             identity: var_identity,
             elements: var_elements,
             generators: var_generators,
+            units_count: var_unitsCount,
             units: var_units,
+            zero_divisors_count: var_zeroDivisorsCount,
             zero_divisors: var_zeroDivisors,
+            idempotents_count: var_idempotentsCount,
             idempotents: var_idempotents,
+            nilpotents_count: var_nilpotentsCount,
             nilpotents: var_nilpotents,
             inverses: var_inverses,
             element_orders: var_elementOrders,
             cayley_table: var_cayleyTable,
             classification: var_classification,
+            is_truncated: var_isTruncated,
         };
     }
 }
@@ -1976,6 +2038,27 @@ impl flutter_rust_bridge::IntoIntoDart<crate::bridge::currency::DiscountResult>
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::bridge::modular_arithmetic::ElementOrderPair {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.element.into_into_dart().into_dart(),
+            self.order.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::bridge::modular_arithmetic::ElementOrderPair
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::bridge::modular_arithmetic::ElementOrderPair>
+    for crate::bridge::modular_arithmetic::ElementOrderPair
+{
+    fn into_into_dart(self) -> crate::bridge::modular_arithmetic::ElementOrderPair {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::bridge::converter::FfiConverterCategory {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -2068,6 +2151,27 @@ impl flutter_rust_bridge::IntoIntoDart<crate::shared::history::HistoryEntry>
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::bridge::modular_arithmetic::InversePair {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.element.into_into_dart().into_dart(),
+            self.inverse.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::bridge::modular_arithmetic::InversePair
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::bridge::modular_arithmetic::InversePair>
+    for crate::bridge::modular_arithmetic::InversePair
+{
+    fn into_into_dart(self) -> crate::bridge::modular_arithmetic::InversePair {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::bridge::currency::InvestmentResult {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -2144,14 +2248,19 @@ impl flutter_rust_bridge::IntoDart for crate::bridge::modular_arithmetic::Struct
             self.identity.into_into_dart().into_dart(),
             self.elements.into_into_dart().into_dart(),
             self.generators.into_into_dart().into_dart(),
+            self.units_count.into_into_dart().into_dart(),
             self.units.into_into_dart().into_dart(),
+            self.zero_divisors_count.into_into_dart().into_dart(),
             self.zero_divisors.into_into_dart().into_dart(),
+            self.idempotents_count.into_into_dart().into_dart(),
             self.idempotents.into_into_dart().into_dart(),
+            self.nilpotents_count.into_into_dart().into_dart(),
             self.nilpotents.into_into_dart().into_dart(),
             self.inverses.into_into_dart().into_dart(),
             self.element_orders.into_into_dart().into_dart(),
             self.cayley_table.into_into_dart().into_dart(),
             self.classification.into_into_dart().into_dart(),
+            self.is_truncated.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -2250,6 +2359,14 @@ impl SseEncode for crate::bridge::currency::DiscountResult {
     }
 }
 
+impl SseEncode for crate::bridge::modular_arithmetic::ElementOrderPair {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.element, serializer);
+        <String>::sse_encode(self.order, serializer);
+    }
+}
+
 impl SseEncode for f64 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -2311,6 +2428,14 @@ impl SseEncode for i64 {
     }
 }
 
+impl SseEncode for crate::bridge::modular_arithmetic::InversePair {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.element, serializer);
+        <String>::sse_encode(self.inverse, serializer);
+    }
+}
+
 impl SseEncode for crate::bridge::currency::InvestmentResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -2326,6 +2451,16 @@ impl SseEncode for Vec<String> {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
             <String>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<crate::bridge::modular_arithmetic::ElementOrderPair> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::bridge::modular_arithmetic::ElementOrderPair>::sse_encode(item, serializer);
         }
     }
 }
@@ -2356,6 +2491,16 @@ impl SseEncode for Vec<crate::shared::history::HistoryEntry> {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
             <crate::shared::history::HistoryEntry>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<crate::bridge::modular_arithmetic::InversePair> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::bridge::modular_arithmetic::InversePair>::sse_encode(item, serializer);
         }
     }
 }
@@ -2445,15 +2590,26 @@ impl SseEncode for crate::bridge::modular_arithmetic::StructureAnalysis {
         <bool>::sse_encode(self.is_cyclic, serializer);
         <String>::sse_encode(self.identity, serializer);
         <String>::sse_encode(self.elements, serializer);
-        <Option<String>>::sse_encode(self.generators, serializer);
-        <Option<String>>::sse_encode(self.units, serializer);
-        <Option<String>>::sse_encode(self.zero_divisors, serializer);
-        <Option<String>>::sse_encode(self.idempotents, serializer);
-        <Option<String>>::sse_encode(self.nilpotents, serializer);
-        <Option<String>>::sse_encode(self.inverses, serializer);
-        <Option<String>>::sse_encode(self.element_orders, serializer);
+        <Vec<String>>::sse_encode(self.generators, serializer);
+        <String>::sse_encode(self.units_count, serializer);
+        <Vec<String>>::sse_encode(self.units, serializer);
+        <String>::sse_encode(self.zero_divisors_count, serializer);
+        <Vec<String>>::sse_encode(self.zero_divisors, serializer);
+        <String>::sse_encode(self.idempotents_count, serializer);
+        <Vec<String>>::sse_encode(self.idempotents, serializer);
+        <String>::sse_encode(self.nilpotents_count, serializer);
+        <Vec<String>>::sse_encode(self.nilpotents, serializer);
+        <Vec<crate::bridge::modular_arithmetic::InversePair>>::sse_encode(
+            self.inverses,
+            serializer,
+        );
+        <Vec<crate::bridge::modular_arithmetic::ElementOrderPair>>::sse_encode(
+            self.element_orders,
+            serializer,
+        );
         <Option<String>>::sse_encode(self.cayley_table, serializer);
         <String>::sse_encode(self.classification, serializer);
+        <bool>::sse_encode(self.is_truncated, serializer);
     }
 }
 

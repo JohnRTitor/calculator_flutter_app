@@ -4,8 +4,8 @@ import 'package:calculator_flutter_app/features/calculator/presentation/provider
 import 'package:calculator_flutter_app/features/calculator/presentation/providers/modular_arithmetic_workspace_state.dart';
 import 'package:calculator_flutter_app/app/theme/ui_style.dart';
 import 'package:calculator_flutter_app/features/settings/presentation/providers/theme_provider.dart';
-import 'package:calculator_flutter_app/features/calculator/presentation/widgets/structure_explorer.dart';
-import 'package:calculator_flutter_app/features/calculator/presentation/widgets/modular_onboarding_overlay.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/widgets/modular_arithmetic/structure_explorer.dart';
+import 'package:calculator_flutter_app/features/calculator/presentation/widgets/modular_arithmetic/modular_onboarding_overlay.dart';
 import 'package:calculator_flutter_app/shared/widgets/app_button.dart';
 import 'package:calculator_flutter_app/shared/widgets/app_dropdown_menu.dart';
 

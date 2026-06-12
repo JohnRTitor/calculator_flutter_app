@@ -48,6 +48,42 @@ Future<void> modularHistorySave({required String path}) => RustLib.instance.api
 Future<void> modularHistoryLoad({required String path}) => RustLib.instance.api
     .crateBridgeModularArithmeticModularHistoryLoad(path: path);
 
+class ElementOrderPair {
+  final String element;
+  final String order;
+
+  const ElementOrderPair({required this.element, required this.order});
+
+  @override
+  int get hashCode => element.hashCode ^ order.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ElementOrderPair &&
+          runtimeType == other.runtimeType &&
+          element == other.element &&
+          order == other.order;
+}
+
+class InversePair {
+  final String element;
+  final String inverse;
+
+  const InversePair({required this.element, required this.inverse});
+
+  @override
+  int get hashCode => element.hashCode ^ inverse.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InversePair &&
+          runtimeType == other.runtimeType &&
+          element == other.element &&
+          inverse == other.inverse;
+}
+
 /// Represents the result of a modular calculation
 class ModularResult {
   final String value;
@@ -83,15 +119,20 @@ class StructureAnalysis {
   final bool isCyclic;
   final String identity;
   final String elements;
-  final String? generators;
-  final String? units;
-  final String? zeroDivisors;
-  final String? idempotents;
-  final String? nilpotents;
-  final String? inverses;
-  final String? elementOrders;
+  final List<String> generators;
+  final String unitsCount;
+  final List<String> units;
+  final String zeroDivisorsCount;
+  final List<String> zeroDivisors;
+  final String idempotentsCount;
+  final List<String> idempotents;
+  final String nilpotentsCount;
+  final List<String> nilpotents;
+  final List<InversePair> inverses;
+  final List<ElementOrderPair> elementOrders;
   final String? cayleyTable;
   final String classification;
+  final bool isTruncated;
 
   const StructureAnalysis({
     required this.label,
@@ -99,15 +140,20 @@ class StructureAnalysis {
     required this.isCyclic,
     required this.identity,
     required this.elements,
-    this.generators,
-    this.units,
-    this.zeroDivisors,
-    this.idempotents,
-    this.nilpotents,
-    this.inverses,
-    this.elementOrders,
+    required this.generators,
+    required this.unitsCount,
+    required this.units,
+    required this.zeroDivisorsCount,
+    required this.zeroDivisors,
+    required this.idempotentsCount,
+    required this.idempotents,
+    required this.nilpotentsCount,
+    required this.nilpotents,
+    required this.inverses,
+    required this.elementOrders,
     this.cayleyTable,
     required this.classification,
+    required this.isTruncated,
   });
 
   @override
@@ -118,14 +164,19 @@ class StructureAnalysis {
       identity.hashCode ^
       elements.hashCode ^
       generators.hashCode ^
+      unitsCount.hashCode ^
       units.hashCode ^
+      zeroDivisorsCount.hashCode ^
       zeroDivisors.hashCode ^
+      idempotentsCount.hashCode ^
       idempotents.hashCode ^
+      nilpotentsCount.hashCode ^
       nilpotents.hashCode ^
       inverses.hashCode ^
       elementOrders.hashCode ^
       cayleyTable.hashCode ^
-      classification.hashCode;
+      classification.hashCode ^
+      isTruncated.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -138,14 +189,19 @@ class StructureAnalysis {
           identity == other.identity &&
           elements == other.elements &&
           generators == other.generators &&
+          unitsCount == other.unitsCount &&
           units == other.units &&
+          zeroDivisorsCount == other.zeroDivisorsCount &&
           zeroDivisors == other.zeroDivisors &&
+          idempotentsCount == other.idempotentsCount &&
           idempotents == other.idempotents &&
+          nilpotentsCount == other.nilpotentsCount &&
           nilpotents == other.nilpotents &&
           inverses == other.inverses &&
           elementOrders == other.elementOrders &&
           cayleyTable == other.cayleyTable &&
-          classification == other.classification;
+          classification == other.classification &&
+          isTruncated == other.isTruncated;
 }
 
 class StructureAnalysisResponse {
